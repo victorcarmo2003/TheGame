@@ -1,0 +1,630 @@
+{
+  "protocolVersion": 1,
+  "workspaceHash": "736a2e7eab6df47cb55c5c203e101d096b387b355c70917fa481dffe2a0183c7",
+  "contractHash": "73e70ff04d0835f4c6ada13e08fd06fa9420ce2ff737af89bd7244bf487c33bd",
+  "generatedAt": "2026-06-03T13:08:39Z",
+  "place": {
+    "id": 117698582873122,
+    "name": "Place10"
+  },
+  "components": [
+    {
+      "id": "AliensComponent",
+      "tag": "Aliens",
+      "instances": []
+    },
+    {
+      "id": "RegionComponent",
+      "tag": "Region",
+      "instances": []
+    },
+    {
+      "id": "SolarPanelComponent",
+      "tag": "SolarPanel",
+      "instances": [
+        {
+          "path": "Workspace.SolarPanels.Basic",
+          "className": "Model",
+          "tags": [
+            "SolarPanel"
+          ],
+          "attributes": {
+            "RBX_ReimportId": "string"
+          },
+          "children": [
+            {
+              "name": "Cube_Node",
+              "className": "Model"
+            },
+            {
+              "name": "Cube.001",
+              "className": "Model"
+            },
+            {
+              "name": "Panel",
+              "className": "MeshPart"
+            }
+          ],
+          "classMatches": true
+        }
+      ]
+    },
+    {
+      "id": "VitalComponent",
+      "tag": "Vital",
+      "instances": []
+    },
+    {
+      "id": "ZoneComponent",
+      "tag": "Zone",
+      "instances": []
+    }
+  ],
+  "starterGui": {
+    "screens": [
+      {
+        "name": "ScreenGui",
+        "className": "ScreenGui",
+        "path": "StarterGui.ScreenGui",
+        "tags": [],
+        "attributes": {},
+        "children": [
+          {
+            "name": "Conteiner",
+            "className": "Frame",
+            "path": "StarterGui.ScreenGui.Conteiner",
+            "tags": [],
+            "attributes": {},
+            "children": [
+              {
+                "name": "Hotbar",
+                "className": "Frame",
+                "path": "StarterGui.ScreenGui.Conteiner.Hotbar",
+                "tags": [],
+                "attributes": {},
+                "children": [
+                  {
+                    "name": "Frame",
+                    "className": "Frame",
+                    "path": "StarterGui.ScreenGui.Conteiner.Hotbar.Frame",
+                    "tags": [],
+                    "attributes": {},
+                    "children": [
+                      {
+                        "name": "UICorner",
+                        "className": "UICorner",
+                        "path": "StarterGui.ScreenGui.Conteiner.Hotbar.Frame.UICorner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "UIStroke",
+                        "className": "UIStroke",
+                        "path": "StarterGui.ScreenGui.Conteiner.Hotbar.Frame.UIStroke",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "UIGridLayout",
+                    "className": "UIGridLayout",
+                    "path": "StarterGui.ScreenGui.Conteiner.Hotbar.UIGridLayout",
+                    "tags": [],
+                    "attributes": {},
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "name": "MiniMap",
+                "className": "Frame",
+                "path": "StarterGui.ScreenGui.Conteiner.MiniMap",
+                "tags": [],
+                "attributes": {},
+                "children": [
+                  {
+                    "name": "UIAspectRatioConstraint",
+                    "className": "UIAspectRatioConstraint",
+                    "path": "StarterGui.ScreenGui.Conteiner.MiniMap.UIAspectRatioConstraint",
+                    "tags": [],
+                    "attributes": {},
+                    "children": []
+                  },
+                  {
+                    "name": "UICorner",
+                    "className": "UICorner",
+                    "path": "StarterGui.ScreenGui.Conteiner.MiniMap.UICorner",
+                    "tags": [],
+                    "attributes": {},
+                    "children": []
+                  },
+                  {
+                    "name": "UIStroke",
+                    "className": "UIStroke",
+                    "path": "StarterGui.ScreenGui.Conteiner.MiniMap.UIStroke",
+                    "tags": [],
+                    "attributes": {},
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "name": "Player",
+                "className": "Frame",
+                "path": "StarterGui.ScreenGui.Conteiner.Player",
+                "tags": [],
+                "attributes": {},
+                "children": [
+                  {
+                    "name": "Health",
+                    "className": "Frame",
+                    "path": "StarterGui.ScreenGui.Conteiner.Player.Health",
+                    "tags": [],
+                    "attributes": {},
+                    "children": [
+                      {
+                        "name": "Icon",
+                        "className": "ImageLabel",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Health.Icon",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "Inner",
+                        "className": "Frame",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Health.Inner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": [
+                          {
+                            "name": "UICorner",
+                            "className": "UICorner",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Health.Inner.UICorner",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          },
+                          {
+                            "name": "UIGradient",
+                            "className": "UIGradient",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Health.Inner.UIGradient",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "TextLabel",
+                        "className": "TextLabel",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Health.TextLabel",
+                        "tags": [],
+                        "attributes": {},
+                        "children": [
+                          {
+                            "name": "UIStroke",
+                            "className": "UIStroke",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Health.TextLabel.UIStroke",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          },
+                          {
+                            "name": "UITextSizeConstraint",
+                            "className": "UITextSizeConstraint",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Health.TextLabel.UITextSizeConstraint",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "UICorner",
+                        "className": "UICorner",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Health.UICorner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "UIStroke",
+                        "className": "UIStroke",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Health.UIStroke",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Hunger",
+                    "className": "Frame",
+                    "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger",
+                    "tags": [],
+                    "attributes": {},
+                    "children": [
+                      {
+                        "name": "Icon",
+                        "className": "ImageLabel",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger.Icon",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "Inner",
+                        "className": "Frame",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger.Inner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": [
+                          {
+                            "name": "UICorner",
+                            "className": "UICorner",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger.Inner.UICorner",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          },
+                          {
+                            "name": "UIGradient",
+                            "className": "UIGradient",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger.Inner.UIGradient",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "TextLabel",
+                        "className": "TextLabel",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger.TextLabel",
+                        "tags": [],
+                        "attributes": {},
+                        "children": [
+                          {
+                            "name": "UIStroke",
+                            "className": "UIStroke",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger.TextLabel.UIStroke",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          },
+                          {
+                            "name": "UITextSizeConstraint",
+                            "className": "UITextSizeConstraint",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger.TextLabel.UITextSizeConstraint",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "UICorner",
+                        "className": "UICorner",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger.UICorner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "UIStroke",
+                        "className": "UIStroke",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Hunger.UIStroke",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Oxygen",
+                    "className": "Frame",
+                    "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen",
+                    "tags": [],
+                    "attributes": {},
+                    "children": [
+                      {
+                        "name": "Icon",
+                        "className": "ImageLabel",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen.Icon",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "Inner",
+                        "className": "Frame",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen.Inner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": [
+                          {
+                            "name": "UICorner",
+                            "className": "UICorner",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen.Inner.UICorner",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          },
+                          {
+                            "name": "UIGradient",
+                            "className": "UIGradient",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen.Inner.UIGradient",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "TextLabel",
+                        "className": "TextLabel",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen.TextLabel",
+                        "tags": [],
+                        "attributes": {},
+                        "children": [
+                          {
+                            "name": "UIStroke",
+                            "className": "UIStroke",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen.TextLabel.UIStroke",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          },
+                          {
+                            "name": "UITextSizeConstraint",
+                            "className": "UITextSizeConstraint",
+                            "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen.TextLabel.UITextSizeConstraint",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "UICorner",
+                        "className": "UICorner",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen.UICorner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "UIStroke",
+                        "className": "UIStroke",
+                        "path": "StarterGui.ScreenGui.Conteiner.Player.Oxygen.UIStroke",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Status",
+                "className": "Frame",
+                "path": "StarterGui.ScreenGui.Conteiner.Status",
+                "tags": [],
+                "attributes": {},
+                "children": [
+                  {
+                    "name": "ClockLabel",
+                    "className": "TextLabel",
+                    "path": "StarterGui.ScreenGui.Conteiner.Status.ClockLabel",
+                    "tags": [],
+                    "attributes": {},
+                    "children": [
+                      {
+                        "name": "UICorner",
+                        "className": "UICorner",
+                        "path": "StarterGui.ScreenGui.Conteiner.Status.ClockLabel.UICorner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "UIStroke",
+                        "className": "UIStroke",
+                        "path": "StarterGui.ScreenGui.Conteiner.Status.ClockLabel.UIStroke",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "UITextSizeConstraint",
+                        "className": "UITextSizeConstraint",
+                        "path": "StarterGui.ScreenGui.Conteiner.Status.ClockLabel.UITextSizeConstraint",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "DayLabel",
+                    "className": "TextLabel",
+                    "path": "StarterGui.ScreenGui.Conteiner.Status.DayLabel",
+                    "tags": [],
+                    "attributes": {},
+                    "children": [
+                      {
+                        "name": "UICorner",
+                        "className": "UICorner",
+                        "path": "StarterGui.ScreenGui.Conteiner.Status.DayLabel.UICorner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "UIStroke",
+                        "className": "UIStroke",
+                        "path": "StarterGui.ScreenGui.Conteiner.Status.DayLabel.UIStroke",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "UITextSizeConstraint",
+                        "className": "UITextSizeConstraint",
+                        "path": "StarterGui.ScreenGui.Conteiner.Status.DayLabel.UITextSizeConstraint",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "UIAspectRatioConstraint",
+                    "className": "UIAspectRatioConstraint",
+                    "path": "StarterGui.ScreenGui.Conteiner.Status.UIAspectRatioConstraint",
+                    "tags": [],
+                    "attributes": {},
+                    "children": []
+                  },
+                  {
+                    "name": "UIListLayout",
+                    "className": "UIListLayout",
+                    "path": "StarterGui.ScreenGui.Conteiner.Status.UIListLayout",
+                    "tags": [],
+                    "attributes": {},
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "name": "Windows",
+                "className": "Folder",
+                "path": "StarterGui.ScreenGui.Conteiner.Windows",
+                "tags": [],
+                "attributes": {},
+                "children": [
+                  {
+                    "name": "WorkBench",
+                    "className": "Frame",
+                    "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench",
+                    "tags": [
+                      "ModuxUI.Window"
+                    ],
+                    "attributes": {},
+                    "children": [
+                      {
+                        "name": "CloseButton",
+                        "className": "ImageButton",
+                        "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.CloseButton",
+                        "tags": [
+                          "ModuxUI.CloseButton"
+                        ],
+                        "attributes": {},
+                        "children": [
+                          {
+                            "name": "TextLabel",
+                            "className": "TextLabel",
+                            "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.CloseButton.TextLabel",
+                            "tags": [],
+                            "attributes": {},
+                            "children": [
+                              {
+                                "name": "UIStroke",
+                                "className": "UIStroke",
+                                "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.CloseButton.TextLabel.UIStroke",
+                                "tags": [],
+                                "attributes": {},
+                                "children": []
+                              },
+                              {
+                                "name": "UITextSizeConstraint",
+                                "className": "UITextSizeConstraint",
+                                "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.CloseButton.TextLabel.UITextSizeConstraint",
+                                "tags": [],
+                                "attributes": {},
+                                "children": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "UICorner",
+                            "className": "UICorner",
+                            "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.CloseButton.UICorner",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          },
+                          {
+                            "name": "UIGradient",
+                            "className": "UIGradient",
+                            "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.CloseButton.UIGradient",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          },
+                          {
+                            "name": "UIStroke",
+                            "className": "UIStroke",
+                            "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.CloseButton.UIStroke",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Title",
+                        "className": "TextLabel",
+                        "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.Title",
+                        "tags": [],
+                        "attributes": {},
+                        "children": [
+                          {
+                            "name": "UIStroke",
+                            "className": "UIStroke",
+                            "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.Title.UIStroke",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          },
+                          {
+                            "name": "UITextSizeConstraint",
+                            "className": "UITextSizeConstraint",
+                            "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.Title.UITextSizeConstraint",
+                            "tags": [],
+                            "attributes": {},
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "UICorner",
+                        "className": "UICorner",
+                        "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.UICorner",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      },
+                      {
+                        "name": "UIStroke",
+                        "className": "UIStroke",
+                        "path": "StarterGui.ScreenGui.Conteiner.Windows.WorkBench.UIStroke",
+                        "tags": [],
+                        "attributes": {},
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
