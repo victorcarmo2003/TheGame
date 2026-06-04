@@ -65,23 +65,26 @@ end)
 VitalController:OnStart(function(self)
 	local screenGui = self.ScreenController:GetGui()
 	self.PlayerStatus = screenGui.Conteiner.Player
-	local Vitals = self.Network.Packages.GetVitals:request(nil)
 
-	if Vitals then
-		self.Armor = Vitals.Armor
-		self.Health = Vitals.Health
-		self.Hunger = Vitals.Hunger
-		self.Oxygen = Vitals.Oxygen
-		self.Stamina = Vitals.Stamina
-		self.MaxOxygen = Vitals.MaxOxygen
-		self.MaxHealth = (Vitals.MaxHealth :: number) or 100
-		self.MaxHunger = (Vitals.MaxHunger :: number) or 100
-		self.MaxStamina = (Vitals.MaxStamina :: number) or 100
+	task.spawn(function()
+		local Vitals = self.Network.Packages.GetVitals:request(nil)
 
-		self:UpdateHealth(self.Health)
-		self:UpdateHunger(self.Hunger)
-		self:UpdateOxygen(self.Oxygen)
-	end
+		if Vitals then
+			self.Armor = Vitals.Armor
+			self.Health = Vitals.Health
+			self.Hunger = Vitals.Hunger
+			self.Oxygen = Vitals.Oxygen
+			self.Stamina = Vitals.Stamina
+			self.MaxOxygen = Vitals.MaxOxygen
+			self.MaxHealth = (Vitals.MaxHealth :: number) or 100
+			self.MaxHunger = (Vitals.MaxHunger :: number) or 100
+			self.MaxStamina = (Vitals.MaxStamina :: number) or 100
+
+			self:UpdateHealth(self.Health)
+			self:UpdateHunger(self.Hunger)
+			self:UpdateOxygen(self.Oxygen)
+		end
+	end)
 end)
 
 return VitalController

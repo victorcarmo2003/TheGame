@@ -65,13 +65,16 @@ VitalComponent.Heal = function(self, Amount: number)
 end
 
 VitalComponent.IncreaseHunger = function(self, Amount: number)
-	self.Hunger += Amount
+	local targetAmount = self.Hunger + Amount
+	Amount = math.clamp(targetAmount, 0, 100)
+	self.Hunger = Amount
 	self.Package:sendKey("Hunger", self.Hunger, self.Instance)
 end
 
 VitalComponent.IncreaseOxygen = function(self, Amount: number)
-	Amount = math.clamp(Amount, 0, self.MaxOxygen)
-	self.Oxygen += Amount
+	local targetAmount = self.Oxygen + Amount
+	Amount = math.clamp(targetAmount, 0, self.MaxOxygen)
+	self.Oxygen = Amount
 	self.Package:sendKey("Oxygen", self.Oxygen, self.Instance)
 end
 

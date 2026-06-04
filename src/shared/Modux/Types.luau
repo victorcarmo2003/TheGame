@@ -845,6 +845,7 @@ export type AliensComponent = {
 	ChooseTarget: (self: AliensComponent) -> (),
 	StartSonar: (self: AliensComponent) -> (),
 	Health: number,
+	Range: number,
 	Damage: number,
 	Extend: (self: AliensComponent, id: "PlayerZoneComponent") -> AliensComponent,
 	Import: ComponentImportFn,

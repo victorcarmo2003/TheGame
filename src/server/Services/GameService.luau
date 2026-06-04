@@ -22,8 +22,6 @@ GameService:OnInit(function(self)
 	self.State:Transition("Begin")
 	
 	task.delay(5, function()
-		print(`[STARTING IN 3]`)
-		task.wait(3)
 		self.State:Transition("Normal")
 		self.DayNightService:StartCycle()
 	end)
