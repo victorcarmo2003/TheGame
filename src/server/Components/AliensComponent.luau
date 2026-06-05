@@ -1,17 +1,22 @@
+-- modux ignore file
 local CollectionService = game:GetService("CollectionService")
-local ReplicatedStorage = game:getService("ReplicatedStorage")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Folders
 local Enums = ReplicatedStorage.Shared.Enums
 
 -- Module
 local Modux = require(game.ReplicatedStorage.Shared.Modux)
-local AliensEnum = require(Enums.Aliens)
+local Aliens = require(Enums.Aliens)
+
+-- Type
+type AlienType = Aliens.AlienType
 
 -- Instance
 local CharactersValidLists = {}
 
 local AliensComponent = Modux.Component("AliensComponent")
+AliensComponent
 	:Tag("Aliens") --modux ignore line
 	:ClassName("Model")
 	:Import("PlayerService")
@@ -19,7 +24,7 @@ local AliensComponent = Modux.Component("AliensComponent")
 local function getAlienType(Instance: Model)
 	local InstanceName = Instance.Name
 
-	return AliensEnum[InstanceName]
+	return Aliens[InstanceName]
 end
 
 local function isValidCharacter(Char)
@@ -28,7 +33,7 @@ end
 
 local function createConnections()
 	if #CharactersValidLists <= 0 then
-		CharactersValidLists = self.PlayerService:GetAllCharacters()
+		CharactersValidLists = AliensComponent.PlayerService:GetAllCharacters()
 	end
 
 	AliensComponent.PlayerService:OnCharacterAdded(function(Character, _)
@@ -69,7 +74,7 @@ end
 ]]
 
 AliensComponent:OnInit(function(self)
-	self.Type = getAlienType(self.Instance) or AliensEnum.Common
+	self.Type = getAlienType(self.Instance) or Aliens.Common
 	self.Damage = 10
 	self.Health = 100
 end)

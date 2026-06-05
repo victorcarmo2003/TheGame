@@ -96,16 +96,29 @@ type SequenceAnimationHandle = {
 	GetCurrentPos: (self: SequenceAnimationHandle) -> any,
 	Destroy: (self: SequenceAnimationHandle) -> SequenceAnimationHandle,
 }
-export type ClassDefinition<T> = {
-	Id: number,
-	Name: string,
-	DisplayName: string,
-	Description: string,
-	Stats: T,
-	Apply: ((player: Player, character: Model, definition: ClassDefinition<T>) -> ())?,
-	Remove: ((player: Player, character: Model, definition: ClassDefinition<T>) -> ())?,
+type EnemyConfig = {
+	BaseHealth: number,
+	BaseDamage: number,
+	WalkSpeed: number,
 }
-type AnyClassDefinition = ClassDefinition<any>
+export type AlienType = "Common"
+| "Intermediate"
+| "Runner"
+| "Rage"
+| "Telekinesis"
+| "Screamer"
+| "Shooter"
+| "Knifer"
+| "Sniper"
+| "Tanker"
+| "Brutus"
+| "AlienAnimal"
+type SpawnAreaConfig = {
+	Enabled: boolean,
+	MinDifficulty: number,
+	MaxDifficulty: number,
+	AlienWeights: { [AlienType]: number },
+}
 export type DayCycle = "Day" | "Night" | "Idle"
 type GameStates = "Begin" | "Normal" | "DarkMoon"
 export type StateCallback<State> = (state: State, otherState: State) -> ()
@@ -449,100 +462,8 @@ export type Network = {
 }
 
 --> STARTERGUI TYPES
-export type UIWindowId = "WorkBench"
-
-export type ScreenGuiRoot = ScreenGui & {
-	Conteiner: Frame & {
-		Hotbar: Frame & {
-			Frame: Frame & {
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-			UIGridLayout: UIGridLayout,
-		},
-		MiniMap: Frame & {
-			UIAspectRatioConstraint: UIAspectRatioConstraint,
-			UICorner: UICorner,
-			UIStroke: UIStroke,
-		},
-		Player: Frame & {
-			Health: Frame & {
-				Icon: ImageLabel,
-				Inner: Frame & {
-					UICorner: UICorner,
-					UIGradient: UIGradient,
-				},
-				TextLabel: TextLabel & {
-					UIStroke: UIStroke,
-					UITextSizeConstraint: UITextSizeConstraint,
-				},
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-			Hunger: Frame & {
-				Icon: ImageLabel,
-				Inner: Frame & {
-					UICorner: UICorner,
-					UIGradient: UIGradient,
-				},
-				TextLabel: TextLabel & {
-					UIStroke: UIStroke,
-					UITextSizeConstraint: UITextSizeConstraint,
-				},
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-			Oxygen: Frame & {
-				Icon: ImageLabel,
-				Inner: Frame & {
-					UICorner: UICorner,
-					UIGradient: UIGradient,
-				},
-				TextLabel: TextLabel & {
-					UIStroke: UIStroke,
-					UITextSizeConstraint: UITextSizeConstraint,
-				},
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-			UIAspectRatioConstraint: UIAspectRatioConstraint,
-		},
-		Status: Frame & {
-			ClockLabel: TextLabel & {
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-				UITextSizeConstraint: UITextSizeConstraint,
-			},
-			DayLabel: TextLabel & {
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-				UITextSizeConstraint: UITextSizeConstraint,
-			},
-			UIAspectRatioConstraint: UIAspectRatioConstraint,
-			UIListLayout: UIListLayout,
-		},
-		Windows: Folder & {
-			WorkBench: Frame & {
-				CloseButton: ImageButton & {
-					TextLabel: TextLabel & {
-						UIStroke: UIStroke,
-						UITextSizeConstraint: UITextSizeConstraint,
-					},
-					UICorner: UICorner,
-					UIGradient: UIGradient,
-					UIStroke: UIStroke,
-				},
-				Title: TextLabel & {
-					UIStroke: UIStroke,
-					UITextSizeConstraint: UITextSizeConstraint,
-				},
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-		},
-	},
-}
-
+export type UIWindowId = string
+export type ScreenGuiRoot = ScreenGui
 export type StarterGuiTypes = {
 	ScreenGui: ScreenGuiRoot,
 }
@@ -551,13 +472,19 @@ export type StarterGuiTypes = {
 
 export type AliensComponentInstance = Model
 
+export type CommonAlienComponentInstance = Model
+
+export type GenericAlienComponentInstance = Model
+
+export type IntermediateAlienComponentInstance = Model
+
 export type RegionComponentInstance = Instance
 
-export type SolarPanelComponentInstance = (Model) & {
-	Cube_Node: Model,
-	["Cube.001"]: Model,
-	Panel: MeshPart,
-}
+export type RunnerAlienComponentInstance = Model
+
+export type SolarPanelComponentInstance = Instance
+
+export type SpawnAreaComponentInstance = BasePart
 
 export type VitalComponentInstance = Player
 
@@ -569,7 +496,7 @@ export type DayCycleController = {
 	Type: Type,
 	UpdateClock: (self: DayCycleController, seconds: number) -> (),
 	UpdateDay: (self: DayCycleController, currentDay: number) -> (),
-	Extend: (self: DayCycleController, id: "PlayerZoneComponent") -> DayCycleController,
+	Extend: (self: DayCycleController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> DayCycleController,
 	Import: ControllerImportFn,
 	OnInit: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
 	OnStart: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
@@ -591,10 +518,44 @@ export type DayCycleController = {
 	Attributes: { [string]: any },
 }
 
+export type EnemyRenderController = {
+	ID: string,
+	Type: Type,
+	GetRenderFolder: (self: EnemyRenderController) -> Folder,
+	GetAlienTemplate: (self: EnemyRenderController, alienType: string) -> Model?,
+	RenderProxy: (self: EnemyRenderController, proxy: BasePart) -> any,
+	DespawnProxy: (self: EnemyRenderController, proxy: Instance) -> (),
+	DespawnAll: (self: EnemyRenderController) -> (),
+	LerpRenderedProxy: (self: EnemyRenderController, proxy: BasePart, deltaTime: number) -> any,
+	UpdateProxy: (self: EnemyRenderController, proxy: Instance, root: BasePart, deltaTime: number) -> any,
+	RenderFolder: any?,
+	Rendered: any,
+	Extend: (self: EnemyRenderController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> EnemyRenderController,
+	Import: ControllerImportFn,
+	OnInit: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
+	OnStart: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
+	OnTick: ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), rate: number) -> EnemyRenderController) & ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), rate: number, priority: number?) -> EnemyRenderController),
+	OnSimulation: ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> ()) -> EnemyRenderController) & ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> EnemyRenderController) & ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> EnemyRenderController),
+	OnDestroy: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
+	Tag: (self: EnemyRenderController, tag: string) -> EnemyRenderController,
+	ClassName: (self: EnemyRenderController, className: string) -> EnemyRenderController,
+	AttributeDefaults: (self: EnemyRenderController, schema: { [string]: any }) -> EnemyRenderController,
+	Children: (self: EnemyRenderController, children: { string }) -> EnemyRenderController,
+	New: (self: EnemyRenderController, ID: string, Type: Type) -> EnemyRenderController,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Attributes: { [string]: any },
+}
+
 export type NotificationController = {
 	ID: string,
 	Type: Type,
-	Extend: (self: NotificationController, id: "PlayerZoneComponent") -> NotificationController,
+	Extend: (self: NotificationController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> NotificationController,
 	Import: ControllerImportFn,
 	OnInit: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
 	OnStart: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
@@ -619,7 +580,7 @@ export type NotificationController = {
 export type ProfileController = {
 	ID: string,
 	Type: Type,
-	Extend: (self: ProfileController, id: "PlayerZoneComponent") -> ProfileController,
+	Extend: (self: ProfileController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> ProfileController,
 	Import: ControllerImportFn,
 	OnInit: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
 	OnStart: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
@@ -669,7 +630,7 @@ export type ScreenController = {
 	ButtonConnections: { [Instance]: RBXScriptConnection },
 	OnOpenCallbacks: { [WindowId]: { (window: GuiObject) -> () } },
 	OnCloseCallbacks: { [WindowId]: { (window: GuiObject) -> () } },
-	Extend: (self: ScreenController, id: "PlayerZoneComponent") -> ScreenController,
+	Extend: (self: ScreenController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> ScreenController,
 	Import: ControllerImportFn,
 	OnInit: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
 	OnStart: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
@@ -727,7 +688,7 @@ export type UIAnimationsController = {
 	ActiveConnections: { [GuiObject]: RBXScriptConnection },
 	ActiveAnimations: { [Instance]: { [any]: boolean } },
 	TaggedTasks: { [Instance]: { [string]: { any } } },
-	Extend: (self: UIAnimationsController, id: "PlayerZoneComponent") -> UIAnimationsController,
+	Extend: (self: UIAnimationsController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> UIAnimationsController,
 	Import: ControllerImportFn,
 	OnInit: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
 	OnStart: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
@@ -763,53 +724,12 @@ export type VitalController = {
 	Oxygen: number,
 	MaxOxygen: number,
 	Test: RemoteEvent,
-	PlayerStatus: Frame & {
-	Health: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	Hunger: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	Oxygen: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	UIAspectRatioConstraint: UIAspectRatioConstraint,
-},
+	PlayerStatus: any,
 	Armor: number,
 	Stamina: number,
 	MaxHunger: number,
 	MaxStamina: number,
-	Extend: (self: VitalController, id: "PlayerZoneComponent") -> VitalController,
+	Extend: (self: VitalController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> VitalController,
 	Import: ControllerImportFn,
 	OnInit: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
 	OnStart: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
@@ -831,6 +751,251 @@ export type VitalController = {
 	Attributes: { [string]: any },
 }
 
+export type AlienBaseMixin = {
+	ID: string,
+	Type: Type,
+	Configure: (self: AlienBaseMixin, config: EnemyConfig) -> (),
+	TakeDamage: (self: AlienBaseMixin, amount: number) -> any,
+	Die: (self: AlienBaseMixin) -> any,
+	MoveTo: (self: AlienBaseMixin, position: Vector3) -> (),
+	StopMoving: (self: AlienBaseMixin) -> (),
+	UpdateMovement: (self: AlienBaseMixin, deltaTime: number) -> any,
+	ChooseTarget: (self: AlienBaseMixin) -> (),
+	StartSonar: (self: AlienBaseMixin) -> (),
+	Config: EnemyConfig,
+	Health: number,
+	MaxHealth: number,
+	Damage: number,
+	WalkSpeed: number,
+	IsDead: boolean,
+	MoveTarget: Vector3,
+	IsMoving: boolean,
+	Extend: (self: AlienBaseMixin, id: "PlayerZoneComponent") -> AlienBaseMixin,
+	Import: ImportFn,
+	OnInit: (self: AlienBaseMixin, cb: (self: AlienBaseMixin) -> ()) -> AlienBaseMixin,
+	OnStart: (self: AlienBaseMixin, cb: (self: AlienBaseMixin) -> ()) -> AlienBaseMixin,
+	OnTick: ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), rate: number) -> AlienBaseMixin) & ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), rate: number, priority: number?) -> AlienBaseMixin),
+	OnSimulation: ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> ()) -> AlienBaseMixin) & ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> AlienBaseMixin) & ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> AlienBaseMixin),
+	OnDestroy: (self: AlienBaseMixin, cb: (self: AlienBaseMixin) -> ()) -> AlienBaseMixin,
+	Tag: (self: AlienBaseMixin, tag: string) -> AlienBaseMixin,
+	ClassName: (self: AlienBaseMixin, className: string) -> AlienBaseMixin,
+	AttributeDefaults: (self: AlienBaseMixin, schema: { [string]: any }) -> AlienBaseMixin,
+	Children: (self: AlienBaseMixin, children: { string }) -> AlienBaseMixin,
+	New: (self: AlienBaseMixin, ID: string, Type: Type) -> AlienBaseMixin,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Attributes: { [string]: any },
+}
+
+export type CommonAlienComponent = {
+	ID: string,
+	Type: Type,
+	Configure: (self: CommonAlienComponent, config: EnemyConfig) -> (),
+	TakeDamage: (self: CommonAlienComponent, amount: number) -> any,
+	Die: (self: CommonAlienComponent) -> any,
+	MoveTo: (self: CommonAlienComponent, position: Vector3) -> (),
+	StopMoving: (self: CommonAlienComponent) -> (),
+	UpdateMovement: (self: CommonAlienComponent, deltaTime: number) -> any,
+	ChooseTarget: (self: CommonAlienComponent) -> (),
+	StartSonar: (self: CommonAlienComponent) -> (),
+	Config: EnemyConfig,
+	Health: number,
+	MaxHealth: number,
+	Damage: number,
+	WalkSpeed: number,
+	IsDead: boolean,
+	MoveTarget: Vector3,
+	IsMoving: boolean,
+	Behavior: string,
+	Extend: (self: CommonAlienComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> CommonAlienComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: CommonAlienComponent, cb: (self: CommonAlienComponent) -> ()) -> CommonAlienComponent,
+	OnStart: (self: CommonAlienComponent, cb: (self: CommonAlienComponent) -> ()) -> CommonAlienComponent,
+	OnTick: ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), rate: number) -> CommonAlienComponent) & ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> CommonAlienComponent),
+	OnSimulation: ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> ()) -> CommonAlienComponent) & ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> CommonAlienComponent) & ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> CommonAlienComponent),
+	OnDestroy: (self: CommonAlienComponent, cb: (self: CommonAlienComponent) -> ()) -> CommonAlienComponent,
+	Tag: (self: CommonAlienComponent, tag: string) -> CommonAlienComponent,
+	ClassName: (self: CommonAlienComponent, className: string) -> CommonAlienComponent,
+	AttributeDefaults: (self: CommonAlienComponent, schema: { [string]: any }) -> CommonAlienComponent,
+	Children: (self: CommonAlienComponent, children: { string }) -> CommonAlienComponent,
+	New: (self: CommonAlienComponent, ID: string, Type: Type) -> CommonAlienComponent,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Attributes: { [string]: any },
+	Instance: CommonAlienComponentInstance,
+}
+
+export type GenericAlienComponent = {
+	ID: string,
+	Type: Type,
+	Configure: (self: GenericAlienComponent, config: EnemyConfig) -> (),
+	TakeDamage: (self: GenericAlienComponent, amount: number) -> any,
+	Die: (self: GenericAlienComponent) -> any,
+	MoveTo: (self: GenericAlienComponent, position: Vector3) -> (),
+	StopMoving: (self: GenericAlienComponent) -> (),
+	UpdateMovement: (self: GenericAlienComponent, deltaTime: number) -> any,
+	ChooseTarget: (self: GenericAlienComponent) -> (),
+	StartSonar: (self: GenericAlienComponent) -> (),
+	Config: EnemyConfig,
+	Health: number,
+	MaxHealth: number,
+	Damage: number,
+	WalkSpeed: number,
+	IsDead: boolean,
+	MoveTarget: Vector3,
+	IsMoving: boolean,
+	Behavior: string,
+	Extend: (self: GenericAlienComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> GenericAlienComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: GenericAlienComponent, cb: (self: GenericAlienComponent) -> ()) -> GenericAlienComponent,
+	OnStart: (self: GenericAlienComponent, cb: (self: GenericAlienComponent) -> ()) -> GenericAlienComponent,
+	OnTick: ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), rate: number) -> GenericAlienComponent) & ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> GenericAlienComponent),
+	OnSimulation: ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> ()) -> GenericAlienComponent) & ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> GenericAlienComponent) & ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> GenericAlienComponent),
+	OnDestroy: (self: GenericAlienComponent, cb: (self: GenericAlienComponent) -> ()) -> GenericAlienComponent,
+	Tag: (self: GenericAlienComponent, tag: string) -> GenericAlienComponent,
+	ClassName: (self: GenericAlienComponent, className: string) -> GenericAlienComponent,
+	AttributeDefaults: (self: GenericAlienComponent, schema: { [string]: any }) -> GenericAlienComponent,
+	Children: (self: GenericAlienComponent, children: { string }) -> GenericAlienComponent,
+	New: (self: GenericAlienComponent, ID: string, Type: Type) -> GenericAlienComponent,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Attributes: { [string]: any },
+	Instance: GenericAlienComponentInstance,
+}
+
+export type IntermediateAlienComponent = {
+	ID: string,
+	Type: Type,
+	Configure: (self: IntermediateAlienComponent, config: EnemyConfig) -> (),
+	TakeDamage: (self: IntermediateAlienComponent, amount: number) -> any,
+	Die: (self: IntermediateAlienComponent) -> any,
+	MoveTo: (self: IntermediateAlienComponent, position: Vector3) -> (),
+	StopMoving: (self: IntermediateAlienComponent) -> (),
+	UpdateMovement: (self: IntermediateAlienComponent, deltaTime: number) -> any,
+	ChooseTarget: (self: IntermediateAlienComponent) -> (),
+	StartSonar: (self: IntermediateAlienComponent) -> (),
+	Config: EnemyConfig,
+	Health: number,
+	MaxHealth: number,
+	Damage: number,
+	WalkSpeed: number,
+	IsDead: boolean,
+	MoveTarget: Vector3,
+	IsMoving: boolean,
+	Behavior: string,
+	Extend: (self: IntermediateAlienComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> IntermediateAlienComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent) -> ()) -> IntermediateAlienComponent,
+	OnStart: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent) -> ()) -> IntermediateAlienComponent,
+	OnTick: ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), rate: number) -> IntermediateAlienComponent) & ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> IntermediateAlienComponent),
+	OnSimulation: ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> ()) -> IntermediateAlienComponent) & ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> IntermediateAlienComponent) & ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> IntermediateAlienComponent),
+	OnDestroy: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent) -> ()) -> IntermediateAlienComponent,
+	Tag: (self: IntermediateAlienComponent, tag: string) -> IntermediateAlienComponent,
+	ClassName: (self: IntermediateAlienComponent, className: string) -> IntermediateAlienComponent,
+	AttributeDefaults: (self: IntermediateAlienComponent, schema: { [string]: any }) -> IntermediateAlienComponent,
+	Children: (self: IntermediateAlienComponent, children: { string }) -> IntermediateAlienComponent,
+	New: (self: IntermediateAlienComponent, ID: string, Type: Type) -> IntermediateAlienComponent,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Attributes: { [string]: any },
+	Instance: IntermediateAlienComponentInstance,
+}
+
+export type RunnerAlienComponent = {
+	ID: string,
+	Type: Type,
+	Configure: (self: RunnerAlienComponent, config: EnemyConfig) -> (),
+	TakeDamage: (self: RunnerAlienComponent, amount: number) -> any,
+	Die: (self: RunnerAlienComponent) -> any,
+	MoveTo: (self: RunnerAlienComponent, position: Vector3) -> (),
+	StopMoving: (self: RunnerAlienComponent) -> (),
+	UpdateMovement: (self: RunnerAlienComponent, deltaTime: number) -> any,
+	ChooseTarget: (self: RunnerAlienComponent) -> (),
+	StartSonar: (self: RunnerAlienComponent) -> (),
+	Config: EnemyConfig,
+	Health: number,
+	MaxHealth: number,
+	Damage: number,
+	WalkSpeed: number,
+	IsDead: boolean,
+	MoveTarget: Vector3,
+	IsMoving: boolean,
+	Behavior: string,
+	Extend: (self: RunnerAlienComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> RunnerAlienComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent) -> ()) -> RunnerAlienComponent,
+	OnStart: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent) -> ()) -> RunnerAlienComponent,
+	OnTick: ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), rate: number) -> RunnerAlienComponent) & ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> RunnerAlienComponent),
+	OnSimulation: ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> ()) -> RunnerAlienComponent) & ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> RunnerAlienComponent) & ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> RunnerAlienComponent),
+	OnDestroy: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent) -> ()) -> RunnerAlienComponent,
+	Tag: (self: RunnerAlienComponent, tag: string) -> RunnerAlienComponent,
+	ClassName: (self: RunnerAlienComponent, className: string) -> RunnerAlienComponent,
+	AttributeDefaults: (self: RunnerAlienComponent, schema: { [string]: any }) -> RunnerAlienComponent,
+	Children: (self: RunnerAlienComponent, children: { string }) -> RunnerAlienComponent,
+	New: (self: RunnerAlienComponent, ID: string, Type: Type) -> RunnerAlienComponent,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Attributes: { [string]: any },
+	Instance: RunnerAlienComponentInstance,
+}
+
+export type SpawnAreaComponent = {
+	ID: string,
+	Type: Type,
+	GetAreaType: (self: SpawnAreaComponent) -> string,
+	GetConfig: (self: SpawnAreaComponent) -> SpawnAreaConfig,
+	CanSpawn: (self: SpawnAreaComponent, difficulty: number) -> boolean,
+	GetAlienWeights: ((self: SpawnAreaComponent) -> { [AlienType]: number }) & ((self: SpawnAreaComponent, difficulty: number?) -> { [AlienType]: number }),
+	GetSpawnCFrame: (self: SpawnAreaComponent) -> CFrame,
+	AreaType: string,
+	Extend: (self: SpawnAreaComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> SpawnAreaComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent) -> ()) -> SpawnAreaComponent,
+	OnStart: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent) -> ()) -> SpawnAreaComponent,
+	OnTick: ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), rate: number) -> SpawnAreaComponent) & ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SpawnAreaComponent),
+	OnSimulation: ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> ()) -> SpawnAreaComponent) & ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> SpawnAreaComponent) & ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SpawnAreaComponent),
+	OnDestroy: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent) -> ()) -> SpawnAreaComponent,
+	Tag: (self: SpawnAreaComponent, tag: string) -> SpawnAreaComponent,
+	ClassName: (self: SpawnAreaComponent, className: string) -> SpawnAreaComponent,
+	AttributeDefaults: (self: SpawnAreaComponent, schema: { [string]: any }) -> SpawnAreaComponent,
+	Children: (self: SpawnAreaComponent, children: { string }) -> SpawnAreaComponent,
+	New: (self: SpawnAreaComponent, ID: string, Type: Type) -> SpawnAreaComponent,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Attributes: { [string]: any },
+	Instance: SpawnAreaComponentInstance,
+}
+
 export type AliensComponent = {
 	ID: string,
 	Type: Type,
@@ -840,8 +1005,9 @@ export type AliensComponent = {
 	ChooseTarget: (self: AliensComponent) -> (),
 	StartSonar: (self: AliensComponent) -> (),
 	Health: number,
+	Range: number,
 	Damage: number,
-	Extend: (self: AliensComponent, id: "PlayerZoneComponent") -> AliensComponent,
+	Extend: (self: AliensComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> AliensComponent,
 	Import: ComponentImportFn,
 	OnInit: (self: AliensComponent, cb: (self: AliensComponent) -> ()) -> AliensComponent,
 	OnStart: (self: AliensComponent, cb: (self: AliensComponent) -> ()) -> AliensComponent,
@@ -907,7 +1073,7 @@ export type VitalComponent = {
 	key: "MaxOxygen",
 	value: number,
 }, "Armor" | "Health" | "Hunger" | "Stamina" | "Oxygen" | "MaxOxygen", number>,
-	Extend: (self: VitalComponent, id: "PlayerZoneComponent") -> VitalComponent,
+	Extend: (self: VitalComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> VitalComponent,
 	Import: ComponentImportFn,
 	OnInit: (self: VitalComponent, cb: (self: VitalComponent) -> ()) -> VitalComponent,
 	OnStart: (self: VitalComponent, cb: (self: VitalComponent) -> ()) -> VitalComponent,
@@ -937,7 +1103,7 @@ export type ZoneComponent = {
 	OnEnter: (self: ZoneComponent, callback: callbackZone) -> (),
 	OnExit: (self: ZoneComponent, callback: callbackZone) -> (),
 	ObserverPlayersInPart: (self: ZoneComponent, config: PlayerZoneConfig) -> any,
-	Extend: (self: ZoneComponent, id: "PlayerZoneComponent") -> ZoneComponent,
+	Extend: (self: ZoneComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> ZoneComponent,
 	Import: ComponentImportFn,
 	OnInit: (self: ZoneComponent, cb: (self: ZoneComponent) -> ()) -> ZoneComponent,
 	OnStart: (self: ZoneComponent, cb: (self: ZoneComponent) -> ()) -> ZoneComponent,
@@ -964,7 +1130,7 @@ export type BattleService = {
 	ID: string,
 	Type: Type,
 	StartBattle: (self: BattleService) -> any,
-	Extend: (self: BattleService, id: "PlayerZoneComponent") -> BattleService,
+	Extend: (self: BattleService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> BattleService,
 	Import: ServiceImportFn,
 	OnInit: (self: BattleService, cb: (self: BattleService) -> ()) -> BattleService,
 	OnStart: (self: BattleService, cb: (self: BattleService) -> ()) -> BattleService,
@@ -976,49 +1142,6 @@ export type BattleService = {
 	AttributeDefaults: (self: BattleService, schema: { [string]: any }) -> BattleService,
 	Children: (self: BattleService, children: { string }) -> BattleService,
 	New: (self: BattleService, ID: string, Type: Type) -> BattleService,
-	GetComponent: GetComponentFn,
-	GetAllComponents: GetAllComponentsFn,
-	Cleanup: <T>(self: any, task: T) -> T,
-	Network: Network,
-	Promise: PromiseAPI,
-	GlobalClock: GlobalClock,
-	Signal: SignalAPI,
-	Attributes: { [string]: any },
-}
-
-export type ClassService = {
-	ID: string,
-	Type: Type,
-	PlayerService: PlayerService,
-	ProfileService: ProfileService,
-	Register: (self: ClassService, definition: AnyClassDefinition) -> AnyClassDefinition,
-	Get: (self: ClassService, identifier: number | string) -> AnyClassDefinition?,
-	GetAll: (self: ClassService) -> { AnyClassDefinition },
-	IsUnlocked: (self: ClassService, player: Player, identifier: number | string) -> boolean,
-	Unlock: (self: ClassService, player: Player, identifier: number | string) -> boolean,
-	Lock: (self: ClassService, player: Player, identifier: number | string) -> boolean,
-	GetEquipped: (self: ClassService, player: Player) -> AnyClassDefinition?,
-	Apply: ((self: ClassService, player: Player) -> boolean) & ((self: ClassService, player: Player, character: Model?) -> boolean),
-	Equip: (self: ClassService, player: Player, identifier: number | string) -> boolean,
-	Unequip: (self: ClassService, player: Player) -> boolean,
-	Classes: { [number]: AnyClassDefinition },
-	ClassesByName: { [string]: AnyClassDefinition },
-	OnClassUnlocked: Signal<Player, AnyClassDefinition>,
-	OnClassLocked: Signal<Player, AnyClassDefinition>,
-	OnClassEquipped: Signal<Player, AnyClassDefinition>,
-	OnClassUnequipped: Signal<Player, AnyClassDefinition>,
-	Extend: (self: ClassService, id: "PlayerZoneComponent") -> ClassService,
-	Import: ServiceImportFn,
-	OnInit: (self: ClassService, cb: (self: ClassService) -> ()) -> ClassService,
-	OnStart: (self: ClassService, cb: (self: ClassService) -> ()) -> ClassService,
-	OnTick: ((self: ClassService, cb: (self: ClassService, deltaTime: number) -> (), rate: number) -> ClassService) & ((self: ClassService, cb: (self: ClassService, deltaTime: number) -> (), rate: number, priority: number?) -> ClassService),
-	OnSimulation: ((self: ClassService, cb: (self: ClassService, deltaTime: number) -> ()) -> ClassService) & ((self: ClassService, cb: (self: ClassService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> ClassService) & ((self: ClassService, cb: (self: ClassService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ClassService),
-	OnDestroy: (self: ClassService, cb: (self: ClassService) -> ()) -> ClassService,
-	Tag: (self: ClassService, tag: string) -> ClassService,
-	ClassName: (self: ClassService, className: string) -> ClassService,
-	AttributeDefaults: (self: ClassService, schema: { [string]: any }) -> ClassService,
-	Children: (self: ClassService, children: { string }) -> ClassService,
-	New: (self: ClassService, ID: string, Type: Type) -> ClassService,
 	GetComponent: GetComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
@@ -1042,7 +1165,7 @@ export type DayNightService = {
 	CurrentDay: number,
 	CurrentCycle: DayCycle,
 	OnCycleChanged: Signal<DayCycle, DayCycle>,
-	Extend: (self: DayNightService, id: "PlayerZoneComponent") -> DayNightService,
+	Extend: (self: DayNightService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> DayNightService,
 	Import: ServiceImportFn,
 	OnInit: (self: DayNightService, cb: (self: DayNightService) -> ()) -> DayNightService,
 	OnStart: (self: DayNightService, cb: (self: DayNightService) -> ()) -> DayNightService,
@@ -1067,8 +1190,21 @@ export type DayNightService = {
 export type EnemyService = {
 	ID: string,
 	Type: Type,
-	SpawnEnemy: (self: EnemyService, enemyName: string, difficulty: number) -> (),
-	Extend: (self: EnemyService, id: "PlayerZoneComponent") -> EnemyService,
+	GetValidSpawnAreas: (self: EnemyService, difficulty: number) -> { any },
+	ChooseSpawnArea: (self: EnemyService, difficulty: number) -> nil | any,
+	ChooseAlien: (self: EnemyService, weights: { [AlienType]: number }, difficulty: number) -> AlienType?,
+	GetAlienModel: (self: EnemyService, alienType: AlienType) -> Model?,
+	CreateSpawnProxy: (self: EnemyService, alienType: AlienType, area: any) -> BasePart,
+	GetComponentTag: (self: EnemyService, alienType: AlienType) -> string,
+	ValidateEnemyConfigs: (self: EnemyService) -> boolean,
+	SpawnServerModel: (self: EnemyService, alienType: AlienType, area: any) -> Model?,
+	SpawnAtArea: (self: EnemyService, alienType: AlienType, area: any) -> Instance?,
+	SpawnSpecific: ((self: EnemyService, alienType: AlienType) -> Instance?) & ((self: EnemyService, alienType: AlienType, difficulty: number?) -> Instance?),
+	SpawnRandom: ((self: EnemyService) -> Instance?) & ((self: EnemyService, difficulty: number?) -> Instance?),
+	SpawnEnemy: ((self: EnemyService) -> Instance?) & ((self: EnemyService, alienType: AlienType?) -> Instance?) & ((self: EnemyService, alienType: AlienType?, difficulty: number?) -> Instance?),
+	SpawnDebug: ((self: EnemyService) -> { Instance }) & ((self: EnemyService, difficulty: number?) -> { Instance }) & ((self: EnemyService, difficulty: number?, count: number?) -> { Instance }),
+	DebugInitialSpawnDone: boolean,
+	Extend: (self: EnemyService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> EnemyService,
 	Import: ServiceImportFn,
 	OnInit: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
 	OnStart: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
@@ -1099,7 +1235,7 @@ export type GameService = {
 	OnNormal: Signal<>,
 	OnDarkMoon: Signal<>,
 	State: FSM<GameStates>,
-	Extend: (self: GameService, id: "PlayerZoneComponent") -> GameService,
+	Extend: (self: GameService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> GameService,
 	Import: ServiceImportFn,
 	OnInit: (self: GameService, cb: (self: GameService) -> ()) -> GameService,
 	OnStart: (self: GameService, cb: (self: GameService) -> ()) -> GameService,
@@ -1124,7 +1260,7 @@ export type GameService = {
 export type GeneratorService = {
 	ID: string,
 	Type: Type,
-	Extend: (self: GeneratorService, id: "PlayerZoneComponent") -> GeneratorService,
+	Extend: (self: GeneratorService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> GeneratorService,
 	Import: ServiceImportFn,
 	OnInit: (self: GeneratorService, cb: (self: GeneratorService) -> ()) -> GeneratorService,
 	OnStart: (self: GeneratorService, cb: (self: GeneratorService) -> ()) -> GeneratorService,
@@ -1149,7 +1285,7 @@ export type GeneratorService = {
 export type LeaderstatsService = {
 	ID: string,
 	Type: Type,
-	Extend: (self: LeaderstatsService, id: "PlayerZoneComponent") -> LeaderstatsService,
+	Extend: (self: LeaderstatsService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> LeaderstatsService,
 	Import: ServiceImportFn,
 	OnInit: (self: LeaderstatsService, cb: (self: LeaderstatsService) -> ()) -> LeaderstatsService,
 	OnStart: (self: LeaderstatsService, cb: (self: LeaderstatsService) -> ()) -> LeaderstatsService,
@@ -1175,7 +1311,7 @@ export type PlayerBilboardService = {
 	ID: string,
 	Type: Type,
 	PlayerService: PlayerService,
-	Extend: (self: PlayerBilboardService, id: "PlayerZoneComponent") -> PlayerBilboardService,
+	Extend: (self: PlayerBilboardService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> PlayerBilboardService,
 	Import: ServiceImportFn,
 	OnInit: (self: PlayerBilboardService, cb: (self: PlayerBilboardService) -> ()) -> PlayerBilboardService,
 	OnStart: (self: PlayerBilboardService, cb: (self: PlayerBilboardService) -> ()) -> PlayerBilboardService,
@@ -1208,7 +1344,7 @@ export type PlayerService = {
 	GetAllCharacters: (self: PlayerService) -> { R6 },
 	allPlayers: { [number]: Player },
 	allCharacters: { [number]: R6 },
-	Extend: (self: PlayerService, id: "PlayerZoneComponent") -> PlayerService,
+	Extend: (self: PlayerService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> PlayerService,
 	Import: ServiceImportFn,
 	OnInit: (self: PlayerService, cb: (self: PlayerService) -> ()) -> PlayerService,
 	OnStart: (self: PlayerService, cb: (self: PlayerService) -> ()) -> PlayerService,
@@ -1234,7 +1370,7 @@ export type ProfileService = {
 	ID: string,
 	Type: Type,
 	PlayerService: PlayerService,
-	Set: (self: ProfileService, Player: Player, Key: DataTemplateKey, value: any) -> any | nil,
+	Set: (self: ProfileService, Player: Player, Key: DataTemplateKey, value: any) -> any,
 	ReplicateKey: (self: ProfileService, Player: Player, Key: DataTemplateKey) -> (),
 	Replicate: (self: ProfileService, Player: Player) -> any,
 	GetData: (self: ProfileService, Player: Player) -> DataTemplate?,
@@ -1242,7 +1378,41 @@ export type ProfileService = {
 	Profiles: { [Player]: any },
 	OnUpdateData: Signal<Player, DataTemplate>,
 	OnUpdateKey: Signal<Player, DataTemplateKey, any>,
-	Extend: (self: ProfileService, id: "PlayerZoneComponent") -> ProfileService,
+	Extend: (self: ProfileService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> ProfileService,
+	Import: ServiceImportFn,
+	OnInit: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
+	OnStart: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
+	OnTick: ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), rate: number) -> ProfileService) & ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), rate: number, priority: number?) -> ProfileService),
+	OnSimulation: ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> ()) -> ProfileService) & ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> ProfileService) & ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ProfileService),
+	OnDestroy: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
+	Tag: (self: ProfileService, tag: string) -> ProfileService,
+	ClassName: (self: ProfileService, className: string) -> ProfileService,
+	AttributeDefaults: (self: ProfileService, schema: { [string]: any }) -> ProfileService,
+	Children: (self: ProfileService, children: { string }) -> ProfileService,
+	New: (self: ProfileService, ID: string, Type: Type) -> ProfileService,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Attributes: { [string]: any },
+}
+
+export type ProfileService = {
+	ID: string,
+	Type: Type,
+	PlayerService: PlayerService,
+	Set: (self: ProfileService, Player: Player, Key: DataTemplateKey, value: any) -> any,
+	ReplicateKey: (self: ProfileService, Player: Player, Key: DataTemplateKey) -> (),
+	Replicate: (self: ProfileService, Player: Player) -> any,
+	GetData: (self: ProfileService, Player: Player) -> DataTemplate?,
+	PrintData: boolean,
+	Profiles: { [Player]: any },
+	OnUpdateData: Signal<Player, DataTemplate>,
+	OnUpdateKey: Signal<Player, DataTemplateKey, any>,
+	Extend: (self: ProfileService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> ProfileService,
 	Import: ServiceImportFn,
 	OnInit: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
 	OnStart: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
@@ -1268,7 +1438,7 @@ export type VitalService = {
 	ID: string,
 	Type: Type,
 	PlayerService: PlayerService,
-	Extend: (self: VitalService, id: "PlayerZoneComponent") -> VitalService,
+	Extend: (self: VitalService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> VitalService,
 	Import: ServiceImportFn,
 	OnInit: (self: VitalService, cb: (self: VitalService) -> ()) -> VitalService,
 	OnStart: (self: VitalService, cb: (self: VitalService) -> ()) -> VitalService,
@@ -1298,7 +1468,7 @@ export type ZoneService = {
 	ChangePlayerSafeZone: (self: ZoneService, Player: Player, Zone: any) -> (),
 	zonePlayers: { [Player]: string },
 	safezonePlayers: { [Player]: string },
-	Extend: (self: ZoneService, id: "PlayerZoneComponent") -> ZoneService,
+	Extend: (self: ZoneService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> ZoneService,
 	Import: ServiceImportFn,
 	OnInit: (self: ZoneService, cb: (self: ZoneService) -> ()) -> ZoneService,
 	OnStart: (self: ZoneService, cb: (self: ZoneService) -> ()) -> ZoneService,
@@ -1326,7 +1496,7 @@ export type PlayerZoneComponent = {
 	OnEnter: (self: PlayerZoneComponent, callback: callbackZone) -> (),
 	OnExit: (self: PlayerZoneComponent, callback: callbackZone) -> (),
 	ObserverPlayersInPart: (self: PlayerZoneComponent, config: PlayerZoneConfig) -> any,
-	Extend: (self: PlayerZoneComponent, id: string) -> PlayerZoneComponent,
+	Extend: (self: PlayerZoneComponent, id: "AlienBaseMixin") -> PlayerZoneComponent,
 	Import: ImportFn,
 	OnInit: (self: PlayerZoneComponent, cb: (self: PlayerZoneComponent) -> ()) -> PlayerZoneComponent,
 	OnStart: (self: PlayerZoneComponent, cb: (self: PlayerZoneComponent) -> ()) -> PlayerZoneComponent,
@@ -1354,7 +1524,7 @@ export type RegionComponent = {
 	OnEnter: (self: RegionComponent, callback: callbackZone) -> (),
 	OnExit: (self: RegionComponent, callback: callbackZone) -> (),
 	ObserverPlayersInPart: (self: RegionComponent, config: PlayerZoneConfig) -> any,
-	Extend: (self: RegionComponent, id: "PlayerZoneComponent") -> RegionComponent,
+	Extend: (self: RegionComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> RegionComponent,
 	Import: ComponentImportFn,
 	OnInit: (self: RegionComponent, cb: (self: RegionComponent) -> ()) -> RegionComponent,
 	OnStart: (self: RegionComponent, cb: (self: RegionComponent) -> ()) -> RegionComponent,
@@ -1383,7 +1553,7 @@ export type SolarPanelComponent = {
 	Setup: (self: SolarPanelComponent) -> (),
 	ConnectedTo: Instance?,
 	Production: number,
-	Extend: (self: SolarPanelComponent, id: "PlayerZoneComponent") -> SolarPanelComponent,
+	Extend: (self: SolarPanelComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> SolarPanelComponent,
 	Import: ComponentImportFn,
 	OnInit: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
 	OnStart: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
@@ -1412,7 +1582,6 @@ export type ImportFn = <Self>(self: Self, id: string, scopeKey: string?) -> Self
 
 export type ServiceImportFn =
 	(<Self>(self: Self, id: "BattleService", scopeKey: string?) -> Self) &
-	(<Self>(self: Self, id: "ClassService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "DayNightService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "EnemyService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "GameService", scopeKey: string?) -> Self) &
@@ -1421,11 +1590,13 @@ export type ServiceImportFn =
 	(<Self>(self: Self, id: "PlayerBilboardService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "VitalService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ZoneService", scopeKey: string?) -> Self)
 
 export type ControllerImportFn =
 	(<Self>(self: Self, id: "DayCycleController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "EnemyRenderController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "NotificationController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ScreenController", scopeKey: string?) -> Self) &
@@ -1434,7 +1605,6 @@ export type ControllerImportFn =
 
 export type ComponentImportFn =
 	(<Self>(self: Self, id: "BattleService", scopeKey: string?) -> Self) &
-	(<Self>(self: Self, id: "ClassService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "DayNightService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "EnemyService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "GameService", scopeKey: string?) -> Self) &
@@ -1442,6 +1612,7 @@ export type ComponentImportFn =
 	(<Self>(self: Self, id: "LeaderstatsService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerBilboardService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "VitalService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ZoneService", scopeKey: string?) -> Self)
@@ -1451,31 +1622,45 @@ export type ComponentImportFn =
 export type ExtendFn = <Self>(self: Self, id: string) -> Self
 
 export type ServiceExtendFn =
+	(<Self>(self: Self, id: "AlienBaseMixin") -> Self) &
 	(<Self>(self: Self, id: "PlayerZoneComponent") -> Self)
 
 export type ControllerExtendFn =
+	(<Self>(self: Self, id: "AlienBaseMixin") -> Self) &
 	(<Self>(self: Self, id: "PlayerZoneComponent") -> Self)
 
 export type ComponentExtendFn =
+	(<Self>(self: Self, id: "AlienBaseMixin") -> Self) &
 	(<Self>(self: Self, id: "PlayerZoneComponent") -> Self)
 
 export type MixinExtendFn =
+	(<Self>(self: Self, id: "AlienBaseMixin") -> Self) &
 	(<Self>(self: Self, id: "PlayerZoneComponent") -> Self)
 
 --> COMPONENT LOOKUP FUNCTIONS
 
 export type GetComponentFn =
 	(<Self>(self: Self, instance: AliensComponentInstance, id: "AliensComponent") -> AliensComponent?) &
+	(<Self>(self: Self, instance: CommonAlienComponentInstance, id: "CommonAlienComponent") -> CommonAlienComponent?) &
+	(<Self>(self: Self, instance: GenericAlienComponentInstance, id: "GenericAlienComponent") -> GenericAlienComponent?) &
+	(<Self>(self: Self, instance: IntermediateAlienComponentInstance, id: "IntermediateAlienComponent") -> IntermediateAlienComponent?) &
 	(<Self>(self: Self, instance: RegionComponentInstance, id: "RegionComponent") -> RegionComponent?) &
+	(<Self>(self: Self, instance: RunnerAlienComponentInstance, id: "RunnerAlienComponent") -> RunnerAlienComponent?) &
 	(<Self>(self: Self, instance: SolarPanelComponentInstance, id: "SolarPanelComponent") -> SolarPanelComponent?) &
+	(<Self>(self: Self, instance: SpawnAreaComponentInstance, id: "SpawnAreaComponent") -> SpawnAreaComponent?) &
 	(<Self>(self: Self, instance: VitalComponentInstance, id: "VitalComponent") -> VitalComponent?) &
 	(<Self>(self: Self, instance: ZoneComponentInstance, id: "ZoneComponent") -> ZoneComponent?) &
 	(<Self>(self: Self, instance: Instance, id: string) -> any)
 
 export type GetAllComponentsFn =
 	(<Self>(self: Self, id: "AliensComponent") -> { AliensComponent }) &
+	(<Self>(self: Self, id: "CommonAlienComponent") -> { CommonAlienComponent }) &
+	(<Self>(self: Self, id: "GenericAlienComponent") -> { GenericAlienComponent }) &
+	(<Self>(self: Self, id: "IntermediateAlienComponent") -> { IntermediateAlienComponent }) &
 	(<Self>(self: Self, id: "RegionComponent") -> { RegionComponent }) &
+	(<Self>(self: Self, id: "RunnerAlienComponent") -> { RunnerAlienComponent }) &
 	(<Self>(self: Self, id: "SolarPanelComponent") -> { SolarPanelComponent }) &
+	(<Self>(self: Self, id: "SpawnAreaComponent") -> { SpawnAreaComponent }) &
 	(<Self>(self: Self, id: "VitalComponent") -> { VitalComponent }) &
 	(<Self>(self: Self, id: "ZoneComponent") -> { ZoneComponent }) &
 	(<Self>(self: Self, id: string) -> { any })
@@ -1483,7 +1668,6 @@ export type GetAllComponentsFn =
 --> MODUX OVERLOADS
 export type ServiceFn =
 	((id: "BattleService", mode: Mode?) -> BattleService) &
-	((id: "ClassService", mode: Mode?) -> ClassService) &
 	((id: "DayNightService", mode: Mode?) -> DayNightService) &
 	((id: "EnemyService", mode: Mode?) -> EnemyService) &
 	((id: "GameService", mode: Mode?) -> GameService) &
@@ -1492,11 +1676,13 @@ export type ServiceFn =
 	((id: "PlayerBilboardService", mode: Mode?) -> PlayerBilboardService) &
 	((id: "PlayerService", mode: Mode?) -> PlayerService) &
 	((id: "ProfileService", mode: Mode?) -> ProfileService) &
+	((id: "ProfileService", mode: Mode?) -> ProfileService) &
 	((id: "VitalService", mode: Mode?) -> VitalService) &
 	((id: "ZoneService", mode: Mode?) -> ZoneService)
 
 export type ControllerFn =
 	((id: "DayCycleController", mode: Mode?) -> DayCycleController) &
+	((id: "EnemyRenderController", mode: Mode?) -> EnemyRenderController) &
 	((id: "NotificationController", mode: Mode?) -> NotificationController) &
 	((id: "ProfileController", mode: Mode?) -> ProfileController) &
 	((id: "ScreenController", mode: Mode?) -> ScreenController) &
@@ -1504,6 +1690,11 @@ export type ControllerFn =
 	((id: "VitalController", mode: Mode?) -> VitalController)
 
 export type ComponentFn =
+	((id: "CommonAlienComponent", mode: Mode?) -> CommonAlienComponent) &
+	((id: "GenericAlienComponent", mode: Mode?) -> GenericAlienComponent) &
+	((id: "IntermediateAlienComponent", mode: Mode?) -> IntermediateAlienComponent) &
+	((id: "RunnerAlienComponent", mode: Mode?) -> RunnerAlienComponent) &
+	((id: "SpawnAreaComponent", mode: Mode?) -> SpawnAreaComponent) &
 	((id: "AliensComponent", mode: Mode?) -> AliensComponent) &
 	((id: "VitalComponent", mode: Mode?) -> VitalComponent) &
 	((id: "ZoneComponent", mode: Mode?) -> ZoneComponent) &
@@ -1511,6 +1702,7 @@ export type ComponentFn =
 	((id: "SolarPanelComponent", mode: Mode?) -> SolarPanelComponent)
 
 export type MixinFn =
+	((id: "AlienBaseMixin", mode: Mode?) -> AlienBaseMixin) &
 	((id: "PlayerZoneComponent", mode: Mode?) -> PlayerZoneComponent)
 
 -- END AUTO-GENERATED

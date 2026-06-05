@@ -1,3 +1,4 @@
+--modux ignore file
 local Modux = require(game.ReplicatedStorage.Shared.Modux)
 local ZoneService = Modux.Service("ZoneService")
 ZoneService:Import("ProfileService")

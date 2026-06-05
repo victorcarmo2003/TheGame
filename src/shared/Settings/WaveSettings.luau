@@ -1,3 +1,11 @@
 return {
-    DarkMoon = 25, -- It happens every 25 days
+    Night = {
+        Difficulty = 1,
+        SpawnCount = 5,
+        SpawnInterval = 2,
+    },
+    DarkMoon = {
+        EveryDays = 25,
+        DifficultyBonus = 3,
+    },
 }

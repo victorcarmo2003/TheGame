@@ -4,6 +4,7 @@
 /Packages
 /sync/ReplicatedStorage/Packages
 /sync/ServerScriptService/ServerPackages
+/.modux
 
 # Roblox Studio lock files
 /*.rbxlx.lock

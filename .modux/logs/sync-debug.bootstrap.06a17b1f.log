@@ -1,3 +1,0 @@
-[2026-06-05T00:25:42.156Z] Cloudflare host creating session: baseUrl=https://modux-sync-relay.victorcarmo2003.workers.dev sessionId=717d337a-c6cd-4cb6-982a-6ff60ccdf93b workspaceId=e3a155583ea67bac peer=hakor tokenHash=b12e83a0e2
-[2026-06-05T00:25:43.601Z] Cloudflare host created session: sessionId=717d337a-c6cd-4cb6-982a-6ff60ccdf93b workspaceId=e3a155583ea67bac websocketUrl=wss://modux-sync-relay.victorcarmo2003.workers.dev/session/717d337a-c6cd-4cb6-982a-6ff60ccdf93b tokenHash=b12e83a0e2
-[2026-06-05T00:25:43.622Z] Wrote active Modux Sync session metadata: .modux\sync-session.json
