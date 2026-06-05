@@ -2,10 +2,10 @@
   "protocolVersion": 1,
   "workspaceHash": "736a2e7eab6df47cb55c5c203e101d096b387b355c70917fa481dffe2a0183c7",
   "contractHash": "73e70ff04d0835f4c6ada13e08fd06fa9420ce2ff737af89bd7244bf487c33bd",
-  "generatedAt": "2026-06-04T06:23:26Z",
+  "generatedAt": "2026-06-04T22:46:43Z",
   "place": {
     "id": 117698582873122,
-    "name": "Game"
+    "name": "Place4"
   },
   "components": [
     {
@@ -52,49 +52,7 @@
     {
       "id": "VitalComponent",
       "tag": "Vital",
-      "instances": [
-        {
-          "path": "Players.dev_Hakor",
-          "className": "Player",
-          "tags": [
-            "Vital"
-          ],
-          "attributes": {
-            "ChestOpen": "number",
-            "CurrentClass": "string",
-            "CurrentZone": "string",
-            "DayCount": "number",
-            "Gems": "number",
-            "GemsSpent": "number",
-            "Loaded": "boolean",
-            "MusicVolume": "number",
-            "RobuxSpent": "number",
-            "SoundVolume": "number",
-            "SpinWheel": "number",
-            "TimeSpent": "number",
-            "Wins": "number"
-          },
-          "children": [
-            {
-              "name": "AudioDeviceInput",
-              "className": "AudioDeviceInput"
-            },
-            {
-              "name": "Backpack",
-              "className": "Backpack"
-            },
-            {
-              "name": "PlayerGui",
-              "className": "PlayerGui"
-            },
-            {
-              "name": "StarterGear",
-              "className": "StarterGear"
-            }
-          ],
-          "classMatches": true
-        }
-      ]
+      "instances": []
     },
     {
       "id": "ZoneComponent",

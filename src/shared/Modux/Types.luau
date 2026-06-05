@@ -559,12 +559,7 @@ export type SolarPanelComponentInstance = (Model) & {
 	Panel: MeshPart,
 }
 
-export type VitalComponentInstance = (Player) & {
-	AudioDeviceInput: AudioDeviceInput,
-	Backpack: Backpack,
-	PlayerGui: PlayerGui,
-	StarterGear: StarterGear,
-}
+export type VitalComponentInstance = Player
 
 export type ZoneComponentInstance = Instance
 
@@ -845,7 +840,6 @@ export type AliensComponent = {
 	ChooseTarget: (self: AliensComponent) -> (),
 	StartSonar: (self: AliensComponent) -> (),
 	Health: number,
-	Range: number,
 	Damage: number,
 	Extend: (self: AliensComponent, id: "PlayerZoneComponent") -> AliensComponent,
 	Import: ComponentImportFn,
@@ -1073,6 +1067,7 @@ export type DayNightService = {
 export type EnemyService = {
 	ID: string,
 	Type: Type,
+	SpawnEnemy: (self: EnemyService, enemyName: string, difficulty: number) -> (),
 	Extend: (self: EnemyService, id: "PlayerZoneComponent") -> EnemyService,
 	Import: ServiceImportFn,
 	OnInit: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,

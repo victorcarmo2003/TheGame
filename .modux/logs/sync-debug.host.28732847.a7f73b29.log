@@ -1,0 +1,4 @@
+[2026-06-05T00:23:45.120Z] Core connect: role=host transport=cloudflare url=wss://modux-sync-relay.victorcarmo2003.workers.dev/session/28732847-b432-44f7-b601-c8212da5fb2d sessionId=28732847-b432-44f7-b601-c8212da5fb2d workspaceId=e3a155583ea67bac reconnect=true tokenHash=1d4298f47c
+[2026-06-05T00:23:45.540Z] Sending auth: role=host sessionId=28732847-b432-44f7-b601-c8212da5fb2d workspaceId=e3a155583ea67bac peerId=a7f73b29-241b-4932-b3b1-0f049dea3391 tokenHash=1d4298f47c
+[2026-06-05T00:23:45.543Z] Awareness sent: peerId=a7f73b29-241b-4932-b3b1-0f049dea3391 path=src/server/Components/VitalComponent.luau line=12 character=59
+[2026-06-05T00:23:45.606Z] Rojo mapping checked (connect): ready - Rojo project/sourcemap detected. Rojo serve is not required for VS Code sync; it is only needed for Studio workflows.

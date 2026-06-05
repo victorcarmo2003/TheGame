@@ -3,6 +3,8 @@ local Modux = require(ReplicatedStorage.Shared.Modux)
 
 local VitalComponent = Modux.Component("VitalComponent"):Tag("Vital"):ClassName("Player")
 
+local DEBUG_MODE = true
+
 VitalComponent.OnDie = VitalComponent.Signal.new() :: Modux.Signal<Player>
 
 VitalComponent.ReplicateAll = function(self)
@@ -95,27 +97,29 @@ VitalComponent:OnInit(function(self)
 end)
 
 VitalComponent:OnStart(function(self)
-	warn(`[UI Showcase]`)
-	task.spawn(function()
-		while task.wait(1) do
-			self:TakeDamage(10)
-			self:ConsumeOxygen(5)
-			self:ConsumeHunger(5)
-			task.wait(1)
-			self:TakeDamage(5)
-			self:ConsumeHunger(15)
-			self:ConsumeOxygen(15)
-			task.wait(1)
-			self:TakeDamage(50)
-			self:ConsumeHunger(30)
-			self:ConsumeOxygen(5)
-			warn(`[repetindo]`)
-			task.wait(1)
-			self:Heal(100)
-			self:IncreaseHunger(100)
-			self:IncreaseOxygen(100)
-		end
-	end)
+	if DEBUG_MODE then
+		warn(`[UI Showcase]`)
+		task.spawn(function()
+			while task.wait(1) do
+				self:TakeDamage(10)
+				self:ConsumeOxygen(5)
+				self:ConsumeHunger(5)
+				task.wait(1)
+				self:TakeDamage(5)
+				self:ConsumeHunger(15)
+				self:ConsumeOxygen(15)
+				task.wait(1)
+				self:TakeDamage(50)
+				self:ConsumeHunger(30)
+				self:ConsumeOxygen(5)
+				warn(`[repetindo]`)
+				task.wait(1)
+				self:Heal(100)
+				self:IncreaseHunger(100)
+				self:IncreaseOxygen(100)
+			end
+		end)
+	end
 end)
 
 return VitalComponent

@@ -1,0 +1,4 @@
+[2026-06-04T23:52:21.004Z] Core connect: role=host transport=cloudflare url=wss://modux-sync-relay.victorcarmo2003.workers.dev/session/5aa54b6c-cd71-4940-9ef6-1fb34d747987 sessionId=5aa54b6c-cd71-4940-9ef6-1fb34d747987 workspaceId=e3a155583ea67bac reconnect=true tokenHash=6627e77b04
+[2026-06-04T23:52:21.279Z] Sending auth: role=host sessionId=5aa54b6c-cd71-4940-9ef6-1fb34d747987 workspaceId=e3a155583ea67bac peerId=a7f73b29-241b-4932-b3b1-0f049dea3391 tokenHash=6627e77b04
+[2026-06-04T23:52:21.355Z] Rojo mapping checked (connect): ready - Rojo project/sourcemap detected. Rojo serve is not required for VS Code sync; it is only needed for Studio workflows.
+[2026-06-04T23:52:26.864Z] hakor joined.

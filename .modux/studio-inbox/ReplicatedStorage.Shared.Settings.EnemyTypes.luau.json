@@ -1,0 +1,10 @@
+{
+  "sourceHash": "82c67c60:1145",
+  "updatedAt": "2026-06-04T23:16:50Z",
+  "instancePath": "ReplicatedStorage.Shared.Settings.EnemyTypes",
+  "className": "ModuleScript",
+  "sessionId": "75db2f3c-09a7-4cb0-893f-50148a7bd696",
+  "placeId": 117698582873122,
+  "source": "export type EnemyType = {\n\tModelName: string,\n\tBaseHealth: number,\n\tBaseDamage: number,\n\tWalkSpeed: number,\n\tSpawnCost: number,\n\tMinDifficult: number,\n}\n\nreturn {\n\tCommon = {\n\t\tModelName = \"Common\",\n\t\tBaseHealth = 100,\n\t\tBaseDamage = 10,\n\t\tWalkSpeed = 10,\n\t\tSpawnCost = 10,\n\t\tMinDifficult = 1,\n\t},\n\t\n\tIntermediate = {\n\t\tModelName = \"Intermediate\",\n\t\tBaseHealth = 200,\n\t\tBaseDamage = 20,\n\t\tWalkSpeed = 15,\n\t\tSpawnCost = 20,\n\t\tMinDifficult = 2,\n\t},\n\t\n\tRunner = {\n\t\tModelName = \"Runner\",\n\t\tBaseHealth = 150,\n\t\tBaseDamage = 15,\n\t\tWalkSpeed = 20,\n\t\tSpawnCost = 15,\n\t\tMinDifficult = 3,\n\t},\n\t\n\tRage = {\n\t\tModelName = \"Rage\",\n\t\tBaseHealth = 300,\n\t\tBaseDamage = 30,\n\t\tWalkSpeed = 10,\n\t\tSpawnCost = 30,\n\t\tMinDifficult = 4,\n\t},\n\t\n\tTelekinesis = {\n\t\tModelName = \"Telekinesis\",\n\t\tBaseHealth = 400,\n\t\tBaseDamage = 40,\n\t\tWalkSpeed = 10,\n\t\tSpawnCost = 40,\n\t\tMinDifficult = 5,\n\t},\n\t\n\tScreamer = {\n\t\tModelName = \"Screamer\",\n\t\tBaseHealth = 500,\n\t\tBaseDamage = 50,\n\t\tWalkSpeed = 10,\n\t\tSpawnCost = 50,\n\t\tMinDifficult = 6,\n\t},\n\t\n\tShooter = {\n\t\tModelName = \"Screamer\",\n\t\tBaseHealth = 500,\n\t\tBaseDamage = 50,\n\t\tWalkSpeed = 10,\n\t\tSpawnCost = 50,\n\t\tMinDifficult = 6,\n\t}\n}",
+  "name": "EnemyTypes"
+}

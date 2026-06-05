@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "transport": "cloudflare",
+  "relayBaseUrl": "https://modux-sync-relay.victorcarmo2003.workers.dev",
+  "websocketUrl": "wss://modux-sync-relay.victorcarmo2003.workers.dev/session/717d337a-c6cd-4cb6-982a-6ff60ccdf93b",
+  "joinUrl": "modux-sync://join?url=wss%3A%2F%2Fmodux-sync-relay.victorcarmo2003.workers.dev%2Fsession%2F717d337a-c6cd-4cb6-982a-6ff60ccdf93b&token=12da5fbe",
+  "token": "12da5fbe",
+  "sessionId": "717d337a-c6cd-4cb6-982a-6ff60ccdf93b",
+  "workspaceId": "e3a155583ea67bac",
+  "hostPeerName": "hakor",
+  "createdAt": "2026-06-05T00:25:43.621Z",
+  "expiresAt": "2026-06-05T12:25:43.621Z"
+}

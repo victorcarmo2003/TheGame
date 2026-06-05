@@ -1,0 +1,14 @@
+[2026-06-04T23:06:56.401Z] Cloudflare host creating session: baseUrl=https://modux-sync-relay.victorcarmo2003.workers.dev sessionId=6175ee6a-0daa-433d-95d2-bb9260d2163d workspaceId=e3a155583ea67bac peer=hakor tokenHash=7014596359
+[2026-06-04T23:06:57.854Z] Cloudflare host created session: sessionId=6175ee6a-0daa-433d-95d2-bb9260d2163d workspaceId=e3a155583ea67bac websocketUrl=wss://modux-sync-relay.victorcarmo2003.workers.dev/session/6175ee6a-0daa-433d-95d2-bb9260d2163d tokenHash=7014596359
+[2026-06-04T23:06:57.869Z] Could not persist modux.sync.cloudflareUrl in Workspace Settings; saved it in Modux extension storage instead: Unable to write to Workspace Settings because modux.sync.cloudflareUrl is not a registered configuration.
+[2026-06-04T23:06:57.881Z] Wrote active Modux Sync session metadata: .modux\sync-session.json
+[2026-06-04T23:06:57.882Z] Core connect: role=host transport=cloudflare url=wss://modux-sync-relay.victorcarmo2003.workers.dev/session/6175ee6a-0daa-433d-95d2-bb9260d2163d sessionId=6175ee6a-0daa-433d-95d2-bb9260d2163d workspaceId=e3a155583ea67bac reconnect=true tokenHash=7014596359
+[2026-06-04T23:06:58.118Z] Sending auth: role=host sessionId=6175ee6a-0daa-433d-95d2-bb9260d2163d workspaceId=e3a155583ea67bac peerId=537c9bbc-3444-4672-acc6-9a29c5edbd5d tokenHash=7014596359
+[2026-06-04T23:12:11.606Z] Sending auth: role=host sessionId=6175ee6a-0daa-433d-95d2-bb9260d2163d workspaceId=e3a155583ea67bac peerId=537c9bbc-3444-4672-acc6-9a29c5edbd5d tokenHash=7014596359
+[2026-06-04T23:17:11.905Z] Cloudflare host creating session: baseUrl=https://modux-sync-relay.victorcarmo2003.workers.dev sessionId=92a12a00-88d3-4946-bd0a-25f4a96e80d6 workspaceId=e3a155583ea67bac peer=hakor tokenHash=9a089fde02
+[2026-06-04T23:17:13.343Z] Cloudflare host created session: sessionId=92a12a00-88d3-4946-bd0a-25f4a96e80d6 workspaceId=e3a155583ea67bac websocketUrl=wss://modux-sync-relay.victorcarmo2003.workers.dev/session/92a12a00-88d3-4946-bd0a-25f4a96e80d6 tokenHash=9a089fde02
+[2026-06-04T23:17:13.357Z]C Clould not persist modux.sync.cloudflareUrl in Workspace Settings; saved it in Modux extension storage instead: Unable to write to Workspace Settings because modux.sync.cloudflareUrl is not a registered configuration.
+[2026-06-04T23:17:13.367Z] Wrote active Modux Sync session metadata: .modux\sync-session.json
+[2026-06-04T23:17:13.368Z] Core connect: role=host transport=cloudflare url=wss://modux-sync-relay.victorcarmo2003.workers.dev/session/92a12a00-88d3-4946-bd0a-25f4a96e80d6 sessionId=92a12a00-88d3-4946-bd0a-25f4a96e80d6 workspaceId=e3a155583ea67ac reconnect=true tokenHash=9a089fde02
+[2026-06-04T23:17:13.677Z] Sending auth: role=host sessionId=92a12a00-88d3-4946-bd0a-25f4a96e80d6 workspaceId=e3a155583ea55583ea67bac peerId=537c9bbc-3444-4672-acc6-9a29c5edbd5d tokenHash=9a089sh=7c06256128
+wmo6- Mo10

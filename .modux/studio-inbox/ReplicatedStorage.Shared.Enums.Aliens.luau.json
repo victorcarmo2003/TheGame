@@ -1,0 +1,10 @@
+{
+  "sourceHash": "4f54da28:520",
+  "updatedAt": "2026-06-04T23:14:26Z",
+  "instancePath": "ReplicatedStorage.Shared.Enums.Aliens",
+  "className": "ModuleScript",
+  "sessionId": "75db2f3c-09a7-4cb0-893f-50148a7bd696",
+  "placeId": 117698582873122,
+  "source": "export type AlienType =\n    \"Common\"\n    | \"Intermediate\"\n    | \"Runner\"\n    | \"Rage\"\n    | \"Telekinesis\"\n    | \"Screamer\"\n    | \"Shooter\"\n    | \"Knifer\"\n    | \"Sniper\"\n    | \"Tanker\"\n    | \"Brutus\"\n    | \"AlienAnimal\"\n\nreturn {\n\tCommon = \"Common\",\n\tIntermediate = \"Intermediate\",\n\tRunner = \"Runner\",\n\tRage = \"Rage\",\n\tTelekinesis = \"Telekinesis\",\n\tScreamer = \"Screamer\",\n\tShooter = \"Shooter\",\n\tKnifer = \"Knifer\",\n\tSniper = \"Sniper\",\n\tTanker = \"Tanker\",\n\tBrutus = \"Brutus\",\n\tAlienAnimal = \"AlienAnimal\",\n} :: {AlienType}\n",
+  "name": "Aliens"
+}

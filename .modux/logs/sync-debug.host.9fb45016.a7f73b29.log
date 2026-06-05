@@ -1,0 +1,48 @@
+[2026-06-05T00:02:55.193Z] Core connect: role=host transport=cloudflare url=wss://modux-sync-relay.victorcarmo2003.workers.dev/session/9fb45016-fe2a-4765-b0c3-2be7f48cb4a6 sessionId=9fb45016-fe2a-4765-b0c3-2be7f48cb4a6 workspaceId=e3a155583ea67bac reconnect=true tokenHash=6599fc4fdc
+[2026-06-05T00:02:55.437Z] Sending auth: role=host sessionId=9fb45016-fe2a-4765-b0c3-2be7f48cb4a6 workspaceId=e3a155583ea67bac peerId=a7f73b29-241b-4932-b3b1-0f049dea3391 tokenHash=6599fc4fdc
+[2026-06-05T00:02:55.503Z] Rojo mapping checked (connect): ready - Rojo project/sourcemap detected. Rojo serve is not required for VS Code sync; it is only needed for Studio workflows.
+[2026-06-05T00:03:13.575Z] hakor joined.
+[2026-06-05T00:03:47.018Z] Manual resync requested.
+[2026-06-05T00:04:01.433Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=0 character=0
+[2026-06-05T00:04:02.103Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=59
+[2026-06-05T00:04:02.949Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=60
+[2026-06-05T00:04:08.261Z] Awareness sent: peerId=a7f73b29-241b-4932-b3b1-0f049dea3391 path=src/server/Components/VitalComponent.luau line=0 character=0
+[2026-06-05T00:04:08.267Z] Awareness sent: peerId=a7f73b29-241b-4932-b3b1-0f049dea3391 path=src/server/Components/VitalComponent.luau line=78 character=21
+[2026-06-05T00:04:18.921Z] Awareness sent: peerId=a7f73b29-241b-4932-b3b1-0f049dea3391 path=src/server/Components/VitalComponent.luau line=12 character=59
+[2026-06-05T00:04:21.590Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=61
+[2026-06-05T00:04:21.746Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=62
+[2026-06-05T00:04:21.953Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=63
+[2026-06-05T00:04:22.147Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=64
+[2026-06-05T00:04:22.284Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=65
+[2026-06-05T00:04:27.183Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=64
+[2026-06-05T00:04:27.337Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=63
+[2026-06-05T00:04:27.894Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=62
+[2026-06-05T00:04:27.897Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=61
+[2026-06-05T00:04:28.027Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=60
+[2026-06-05T00:04:28.876Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=59
+[2026-06-05T00:04:28.880Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=60
+[2026-06-05T00:04:28.884Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=61
+[2026-06-05T00:04:28.887Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=62
+[2026-06-05T00:04:29.821Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=63
+[2026-06-05T00:04:30.042Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=64
+[2026-06-05T00:04:30.045Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=65
+[2026-06-05T00:04:30.095Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=66
+[2026-06-05T00:04:30.809Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=67
+[2026-06-05T00:04:30.812Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=68
+[2026-06-05T00:04:31.737Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=66
+[2026-06-05T00:04:32.003Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=63
+[2026-06-05T00:04:32.629Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=60
+[2026-06-05T00:04:33.550Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=59
+[2026-06-05T00:04:35.428Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=60
+[2026-06-05T00:04:36.336Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=61
+[2026-06-05T00:04:38.197Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=62
+[2026-06-05T00:04:38.199Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=63
+[2026-06-05T00:04:38.202Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=64
+[2026-06-05T00:04:38.264Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=65
+[2026-06-05T00:04:38.405Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=66
+[2026-06-05T00:04:38.455Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=67
+[2026-06-05T00:04:39.206Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=68
+[2026-06-05T00:04:39.209Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=69
+[2026-06-05T00:04:39.212Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=70
+[2026-06-05T00:04:40.117Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=62
+[2026-06-05T00:04:40.297Z] Awareness received: peerId=d9b237a2-13c6-40ef-9018-1488a3c12dfe path=src/server/Components/VitalComponent.luau line=11 character=59

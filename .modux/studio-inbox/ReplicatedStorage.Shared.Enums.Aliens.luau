@@ -25,4 +25,4 @@ return {
 	Tanker = "Tanker",
 	Brutus = "Brutus",
 	AlienAnimal = "AlienAnimal",
-} :: AliensTypes
+} :: {AlienType}

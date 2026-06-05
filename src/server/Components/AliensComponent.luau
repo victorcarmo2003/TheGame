@@ -27,6 +27,10 @@ local function isValidCharacter(Char)
 end
 
 local function createConnections()
+	if #CharactersValidLists <= 0 then
+		CharactersValidLists = self.PlayerService:GetAllCharacters()
+	end
+
 	AliensComponent.PlayerService:OnCharacterAdded(function(Character, _)
 		table.insert(CharactersValidLists, Character)
 	end)
@@ -39,7 +43,7 @@ end
 function AliensComponent:TakeDamage(amount: number)
 	self.Health = self.Health - amount
 	if self.Health <= 0 then
-		self:Destroy()
+		self.Attributes:Destroy()
 	end
 end
 
