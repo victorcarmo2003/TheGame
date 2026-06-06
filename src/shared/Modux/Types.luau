@@ -121,6 +121,26 @@ type SpawnAreaConfig = {
 }
 export type DayCycle = "Day" | "Night" | "Idle"
 type GameStates = "Begin" | "Normal" | "DarkMoon"
+type Set<T> = {[T]: any}
+export type Dependent = {
+	update: (Dependent) -> boolean,
+	dependencySet: Set<Dependency>
+}
+export type Dependency = {
+	dependentSet: Set<Dependent>
+}
+export type StateObject<T> = Dependency & {
+	type: string, -- replace with "State" when Luau supports singleton types
+	kind: string,
+	get: (StateObject<T>, asDependency: boolean?) -> T
+}
+export type Value<T> = StateObject<T> & {
+	-- kind: "State" (add this when Luau supports singleton types)
+ 	set: (Value<T>, newValue: any, force: boolean?) -> ()
+}
+export type State<T> = PubTypes.Value<T> & {
+	_value: T
+}
 export type StateCallback<State> = (state: State, otherState: State) -> ()
 export type Disconnect = () -> ()
 export type TransitionCallback<State> = (previousState: State, nextState: State) -> ()
