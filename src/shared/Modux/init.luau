@@ -1,10 +1,13 @@
 --!strict
 local RunService = game:GetService("RunService")
-local Constructor = require(script.src.Core.Constructor)
-local Container = require(script.src.Core.Container)
-local Import = require(script.src.Core.Import)
+
+local src = script:WaitForChild("src")
+
+local Constructor = require(src.Core.Constructor)
+local Container = require(src.Core.Container)
+local Import = require(src.Core.Import)
 local Types = require(script.Types)
-local Loader = require(script.src.Loader)
+local Loader = require(src.Loader)
 
 export type Mode = "Singleton" | "Transient"
 export type Type = "Service" | "Controller" | "Component" | "Mixin"
