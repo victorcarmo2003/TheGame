@@ -462,8 +462,100 @@ export type Network = {
 }
 
 --> STARTERGUI TYPES
-export type UIWindowId = string
-export type ScreenGuiRoot = ScreenGui
+export type UIWindowId = "WorkBench"
+
+export type ScreenGuiRoot = ScreenGui & {
+	Conteiner: Frame & {
+		Hotbar: Frame & {
+			Frame: Frame & {
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+			UIGridLayout: UIGridLayout,
+		},
+		MiniMap: Frame & {
+			UIAspectRatioConstraint: UIAspectRatioConstraint,
+			UICorner: UICorner,
+			UIStroke: UIStroke,
+		},
+		Player: Frame & {
+			Health: Frame & {
+				Icon: ImageLabel,
+				Inner: Frame & {
+					UICorner: UICorner,
+					UIGradient: UIGradient,
+				},
+				TextLabel: TextLabel & {
+					UIStroke: UIStroke,
+					UITextSizeConstraint: UITextSizeConstraint,
+				},
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+			Hunger: Frame & {
+				Icon: ImageLabel,
+				Inner: Frame & {
+					UICorner: UICorner,
+					UIGradient: UIGradient,
+				},
+				TextLabel: TextLabel & {
+					UIStroke: UIStroke,
+					UITextSizeConstraint: UITextSizeConstraint,
+				},
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+			Oxygen: Frame & {
+				Icon: ImageLabel,
+				Inner: Frame & {
+					UICorner: UICorner,
+					UIGradient: UIGradient,
+				},
+				TextLabel: TextLabel & {
+					UIStroke: UIStroke,
+					UITextSizeConstraint: UITextSizeConstraint,
+				},
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+			UIAspectRatioConstraint: UIAspectRatioConstraint,
+		},
+		Status: Frame & {
+			ClockLabel: TextLabel & {
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+				UITextSizeConstraint: UITextSizeConstraint,
+			},
+			DayLabel: TextLabel & {
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+				UITextSizeConstraint: UITextSizeConstraint,
+			},
+			UIAspectRatioConstraint: UIAspectRatioConstraint,
+			UIListLayout: UIListLayout,
+		},
+		Windows: Folder & {
+			WorkBench: Frame & {
+				CloseButton: ImageButton & {
+					TextLabel: TextLabel & {
+						UIStroke: UIStroke,
+						UITextSizeConstraint: UITextSizeConstraint,
+					},
+					UICorner: UICorner,
+					UIGradient: UIGradient,
+					UIStroke: UIStroke,
+				},
+				Title: TextLabel & {
+					UIStroke: UIStroke,
+					UITextSizeConstraint: UITextSizeConstraint,
+				},
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+		},
+	},
+}
+
 export type StarterGuiTypes = {
 	ScreenGui: ScreenGuiRoot,
 }
@@ -482,7 +574,11 @@ export type RegionComponentInstance = Instance
 
 export type RunnerAlienComponentInstance = Model
 
-export type SolarPanelComponentInstance = Instance
+export type SolarPanelComponentInstance = (Model) & {
+	Cube_Node: Model,
+	["Cube.001"]: Model,
+	Panel: MeshPart,
+}
 
 export type SpawnAreaComponentInstance = BasePart
 
@@ -715,6 +811,7 @@ export type VitalController = {
 	Type: Type,
 	ScreenController: ScreenController,
 	UIAnimationsController: UIAnimationsController,
+	AutoConsume: (self: VitalController) -> (),
 	UpdateHunger: (self: VitalController, arg1: number) -> (),
 	UpdateOxygen: (self: VitalController, arg1: number) -> (),
 	UpdateHealth: (self: VitalController, arg1: number) -> (),
@@ -723,8 +820,48 @@ export type VitalController = {
 	Hunger: number,
 	Oxygen: number,
 	MaxOxygen: number,
-	Test: RemoteEvent,
-	PlayerStatus: any,
+	PlayerStatus: Frame & {
+	Health: Frame & {
+		Icon: ImageLabel,
+		Inner: Frame & {
+			UICorner: UICorner,
+			UIGradient: UIGradient,
+		},
+		TextLabel: TextLabel & {
+			UIStroke: UIStroke,
+			UITextSizeConstraint: UITextSizeConstraint,
+		},
+		UICorner: UICorner,
+		UIStroke: UIStroke,
+	},
+	Hunger: Frame & {
+		Icon: ImageLabel,
+		Inner: Frame & {
+			UICorner: UICorner,
+			UIGradient: UIGradient,
+		},
+		TextLabel: TextLabel & {
+			UIStroke: UIStroke,
+			UITextSizeConstraint: UITextSizeConstraint,
+		},
+		UICorner: UICorner,
+		UIStroke: UIStroke,
+	},
+	Oxygen: Frame & {
+		Icon: ImageLabel,
+		Inner: Frame & {
+			UICorner: UICorner,
+			UIGradient: UIGradient,
+		},
+		TextLabel: TextLabel & {
+			UIStroke: UIStroke,
+			UITextSizeConstraint: UITextSizeConstraint,
+		},
+		UICorner: UICorner,
+		UIStroke: UIStroke,
+	},
+	UIAspectRatioConstraint: UIAspectRatioConstraint,
+},
 	Armor: number,
 	Stamina: number,
 	MaxHunger: number,
