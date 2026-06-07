@@ -27,7 +27,7 @@ local function getAlienType(Instance: Model)
 	return Aliens[InstanceName]
 end
 
-local function isValidCharacter(Char)
+local function _isValidCharacter(Char)
 	return CollectionService:HasTag(Char, "Died")
 end
 

@@ -53,6 +53,9 @@ function ComponentManager.Create(id: string, instance: Instance)
 
 	local component = Container.Resolve(nil, id)
 	component.Instance = instance
+	if component._attachClientPlayerReferences then
+		component:_attachClientPlayerReferences()
+	end
 	Registry.Add(instance, id, component)
 	Composition.ResolveImports(component)
 

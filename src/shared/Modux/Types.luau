@@ -52,6 +52,36 @@ export type DataKeyPayload =
 	| { key: "SoundVolume", value: number }
 	| { key: "MusicEnabled", value: boolean }
 	| { key: "SoundEnabled", value: boolean }
+export type HandlerType = {
+	OnPress: (() -> ()) -> (),
+	OnRelease: (() -> ()) -> (),
+	_onPressCallbacks: { [number]: () -> () },
+	_onReleaseCallbacks: { [number]: () -> () },
+}
+export type Context = "Gameplay" | "Menu" | "Cutscene"
+export type StateCallback<State> = (state: State, otherState: State) -> ()
+export type Disconnect = () -> ()
+export type TransitionCallback<State> = (previousState: State, nextState: State) -> ()
+export type Transitions<State> = { [State]: { State } }
+export type FSM<State> = {
+	State: State,
+
+	GetState: (self: FSM<State>) -> State,
+	Is: (self: FSM<State>, state: State) -> boolean,
+	CanTransition: (self: FSM<State>, nextState: State) -> boolean,
+	Transition: (self: FSM<State>, nextState: State) -> boolean,
+	OnEnter: (self: FSM<State>, state: State, callback: StateCallback<State>) -> Disconnect,
+	OnLeave: (self: FSM<State>, state: State, callback: StateCallback<State>) -> Disconnect,
+	OnTransition: (self: FSM<State>, callback: TransitionCallback<State>) -> Disconnect,
+	Destroy: (self: FSM<State>) -> (),
+
+	_transitions: Transitions<State>?,
+	_enterListeners: { [State]: { StateCallback<State> } },
+	_leaveListeners: { [State]: { StateCallback<State> } },
+	_transitionListeners: { TransitionCallback<State> },
+	_destroyed: boolean,
+}
+export type MovementStates = "Walking" | "Running" | "Crouch" | "Jumping" | "Dead"
 type MainGui = ScreenGuiRoot
 type WindowId = UIWindowId
 type AnimationHandle<T> = {
@@ -119,30 +149,9 @@ type SpawnAreaConfig = {
 	MaxDifficulty: number,
 	AlienWeights: { [AlienType]: number },
 }
+export type OxygenStates = "Avaliable" | "Unavaliable"
 export type DayCycle = "Day" | "Night" | "Idle"
 type GameStates = "Begin" | "Normal" | "DarkMoon"
-export type StateCallback<State> = (state: State, otherState: State) -> ()
-export type Disconnect = () -> ()
-export type TransitionCallback<State> = (previousState: State, nextState: State) -> ()
-export type Transitions<State> = { [State]: { State } }
-export type FSM<State> = {
-	State: State,
-
-	GetState: (self: FSM<State>) -> State,
-	Is: (self: FSM<State>, state: State) -> boolean,
-	CanTransition: (self: FSM<State>, nextState: State) -> boolean,
-	Transition: (self: FSM<State>, nextState: State) -> boolean,
-	OnEnter: (self: FSM<State>, state: State, callback: StateCallback<State>) -> Disconnect,
-	OnLeave: (self: FSM<State>, state: State, callback: StateCallback<State>) -> Disconnect,
-	OnTransition: (self: FSM<State>, callback: TransitionCallback<State>) -> Disconnect,
-	Destroy: (self: FSM<State>) -> (),
-
-	_transitions: Transitions<State>?,
-	_enterListeners: { [State]: { StateCallback<State> } },
-	_leaveListeners: { [State]: { StateCallback<State> } },
-	_transitionListeners: { TransitionCallback<State> },
-	_destroyed: boolean,
-}
 export type R6 = {
 	Head: {
 		Mesh: SpecialMesh,
@@ -238,6 +247,7 @@ export type PlayerZoneConfig = {
 	Padding: Vector3?,
 	Shape: "Block" | "Ball" | "Cylinder" | "Wedge" | "CornerWedge",
 }
+export type callbackZone = (Player: Player, Zone: PlayerZoneConfig) -> ()
 
 --> LYNC BASE TYPES
 export type LyncConnection = { connected: boolean, disconnect: (self: LyncConnection) -> () }
@@ -313,6 +323,10 @@ export type GlobalClock = {
 	GetTime: (self: GlobalClock) -> number,
 	GetSine: ((self: GlobalClock) -> number) & ((self: GlobalClock, speed: number?) -> number) & ((self: GlobalClock, speed: number?, amplitude: number?) -> number) & ((self: GlobalClock, speed: number?, amplitude: number?, offset: number?) -> number),
 	Lerp: (self: GlobalClock, a: number, b: number, t: number) -> number,
+}
+
+export type Tools = {
+	WaitForChildOfClass: (parent: Instance, className: string) -> Instance,
 }
 
 export type SignalConnection = {
@@ -457,105 +471,19 @@ export type Network = {
 	Oxygen: number,
 	MaxOxygen: number,
 }>,
+		CanMovement: LyncQuery<{
+	ActionName: string,
+}, {
+	CanDo: boolean,
+	CurrentState: (string)?,
+}>,
 	},
 	all: NetworkTarget,
 }
 
 --> STARTERGUI TYPES
-export type UIWindowId = "WorkBench"
-
-export type ScreenGuiRoot = ScreenGui & {
-	Conteiner: Frame & {
-		Hotbar: Frame & {
-			Frame: Frame & {
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-			UIGridLayout: UIGridLayout,
-		},
-		MiniMap: Frame & {
-			UIAspectRatioConstraint: UIAspectRatioConstraint,
-			UICorner: UICorner,
-			UIStroke: UIStroke,
-		},
-		Player: Frame & {
-			Health: Frame & {
-				Icon: ImageLabel,
-				Inner: Frame & {
-					UICorner: UICorner,
-					UIGradient: UIGradient,
-				},
-				TextLabel: TextLabel & {
-					UIStroke: UIStroke,
-					UITextSizeConstraint: UITextSizeConstraint,
-				},
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-			Hunger: Frame & {
-				Icon: ImageLabel,
-				Inner: Frame & {
-					UICorner: UICorner,
-					UIGradient: UIGradient,
-				},
-				TextLabel: TextLabel & {
-					UIStroke: UIStroke,
-					UITextSizeConstraint: UITextSizeConstraint,
-				},
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-			Oxygen: Frame & {
-				Icon: ImageLabel,
-				Inner: Frame & {
-					UICorner: UICorner,
-					UIGradient: UIGradient,
-				},
-				TextLabel: TextLabel & {
-					UIStroke: UIStroke,
-					UITextSizeConstraint: UITextSizeConstraint,
-				},
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-			UIAspectRatioConstraint: UIAspectRatioConstraint,
-		},
-		Status: Frame & {
-			ClockLabel: TextLabel & {
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-				UITextSizeConstraint: UITextSizeConstraint,
-			},
-			DayLabel: TextLabel & {
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-				UITextSizeConstraint: UITextSizeConstraint,
-			},
-			UIAspectRatioConstraint: UIAspectRatioConstraint,
-			UIListLayout: UIListLayout,
-		},
-		Windows: Folder & {
-			WorkBench: Frame & {
-				CloseButton: ImageButton & {
-					TextLabel: TextLabel & {
-						UIStroke: UIStroke,
-						UITextSizeConstraint: UITextSizeConstraint,
-					},
-					UICorner: UICorner,
-					UIGradient: UIGradient,
-					UIStroke: UIStroke,
-				},
-				Title: TextLabel & {
-					UIStroke: UIStroke,
-					UITextSizeConstraint: UITextSizeConstraint,
-				},
-				UICorner: UICorner,
-				UIStroke: UIStroke,
-			},
-		},
-	},
-}
-
+export type UIWindowId = string
+export type ScreenGuiRoot = ScreenGui
 export type StarterGuiTypes = {
 	ScreenGui: ScreenGuiRoot,
 }
@@ -570,15 +498,13 @@ export type GenericAlienComponentInstance = Model
 
 export type IntermediateAlienComponentInstance = Model
 
+export type OxygenComponentInstance = Player
+
 export type RegionComponentInstance = Instance
 
 export type RunnerAlienComponentInstance = Model
 
-export type SolarPanelComponentInstance = (Model) & {
-	Cube_Node: Model,
-	["Cube.001"]: Model,
-	Panel: MeshPart,
-}
+export type SolarPanelComponentInstance = Instance
 
 export type SpawnAreaComponentInstance = BasePart
 
@@ -590,14 +516,17 @@ export type ZoneComponentInstance = Instance
 export type DayCycleController = {
 	ID: string,
 	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
 	UpdateClock: (self: DayCycleController, seconds: number) -> (),
 	UpdateDay: (self: DayCycleController, currentDay: number) -> (),
 	Extend: (self: DayCycleController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> DayCycleController,
 	Import: ControllerImportFn,
 	OnInit: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
 	OnStart: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
-	OnTick: ((self: DayCycleController, cb: (self: DayCycleController, deltaTime: number) -> (), rate: number) -> DayCycleController) & ((self: DayCycleController, cb: (self: DayCycleController, deltaTime: number) -> (), rate: number, priority: number?) -> DayCycleController),
-	OnSimulation: ((self: DayCycleController, cb: (self: DayCycleController, deltaTime: number) -> ()) -> DayCycleController) & ((self: DayCycleController, cb: (self: DayCycleController, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> DayCycleController) & ((self: DayCycleController, cb: (self: DayCycleController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> DayCycleController),
+	OnTick: (self: DayCycleController, cb: (self: DayCycleController, deltaTime: number) -> (), rate: number, priority: number?) -> DayCycleController,
+	OnSimulation: (self: DayCycleController, cb: (self: DayCycleController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> DayCycleController,
 	OnDestroy: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
 	Tag: (self: DayCycleController, tag: string) -> DayCycleController,
 	ClassName: (self: DayCycleController, className: string) -> DayCycleController,
@@ -611,12 +540,16 @@ export type DayCycleController = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
 export type EnemyRenderController = {
 	ID: string,
 	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
 	GetRenderFolder: (self: EnemyRenderController) -> Folder,
 	GetAlienTemplate: (self: EnemyRenderController, alienType: string) -> Model?,
 	RenderProxy: (self: EnemyRenderController, proxy: BasePart) -> any,
@@ -624,14 +557,17 @@ export type EnemyRenderController = {
 	DespawnAll: (self: EnemyRenderController) -> (),
 	LerpRenderedProxy: (self: EnemyRenderController, proxy: BasePart, deltaTime: number) -> any,
 	UpdateProxy: (self: EnemyRenderController, proxy: Instance, root: BasePart, deltaTime: number) -> any,
-	RenderFolder: any?,
-	Rendered: any,
+	RenderFolder: {
+	Name: string,
+	Parent: Workspace,
+},
+	Rendered: { [any]: any },
 	Extend: (self: EnemyRenderController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> EnemyRenderController,
 	Import: ControllerImportFn,
 	OnInit: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
 	OnStart: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
-	OnTick: ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), rate: number) -> EnemyRenderController) & ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), rate: number, priority: number?) -> EnemyRenderController),
-	OnSimulation: ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> ()) -> EnemyRenderController) & ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> EnemyRenderController) & ((self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> EnemyRenderController),
+	OnTick: (self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), rate: number, priority: number?) -> EnemyRenderController,
+	OnSimulation: (self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> EnemyRenderController,
 	OnDestroy: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
 	Tag: (self: EnemyRenderController, tag: string) -> EnemyRenderController,
 	ClassName: (self: EnemyRenderController, className: string) -> EnemyRenderController,
@@ -645,18 +581,92 @@ export type EnemyRenderController = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type InputController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	UnbindAction: (self: InputController, ActionName: string) -> (),
+	BindAction: ((self: InputController, ActionName: string, ActionKey: Enum.KeyCode, TouchButton: boolean?, ActionPriority: number) -> HandlerType) & ((self: InputController, ActionName: string, ActionKey: Enum.KeyCode, TouchButton: boolean?, ActionPriority: number, Context: Context?) -> HandlerType),
+	ChangeContext: (self: InputController, newContext: Context) -> (),
+	allHandlers: { [string]: HandlerType },
+	Context: Context,
+	Extend: (self: InputController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> InputController,
+	Import: ControllerImportFn,
+	OnInit: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
+	OnStart: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
+	OnTick: (self: InputController, cb: (self: InputController, deltaTime: number) -> (), rate: number, priority: number?) -> InputController,
+	OnSimulation: (self: InputController, cb: (self: InputController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> InputController,
+	OnDestroy: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
+	Tag: (self: InputController, tag: string) -> InputController,
+	ClassName: (self: InputController, className: string) -> InputController,
+	AttributeDefaults: (self: InputController, schema: { [string]: any }) -> InputController,
+	Children: (self: InputController, children: { string }) -> InputController,
+	New: (self: InputController, ID: string, Type: Type) -> InputController,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type MovementController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	InputController: InputController,
+	StartWalk: (self: MovementController) -> (),
+	StartRun: (self: MovementController) -> (),
+	StartCrouch: (self: MovementController) -> (),
+	HandleTranstions: (self: MovementController) -> (),
+	BindKeys: (self: MovementController) -> any,
+	State: FSM<MovementStates>,
+	Extend: (self: MovementController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> MovementController,
+	Import: ControllerImportFn,
+	OnInit: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
+	OnStart: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
+	OnTick: (self: MovementController, cb: (self: MovementController, deltaTime: number) -> (), rate: number, priority: number?) -> MovementController,
+	OnSimulation: (self: MovementController, cb: (self: MovementController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> MovementController,
+	OnDestroy: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
+	Tag: (self: MovementController, tag: string) -> MovementController,
+	ClassName: (self: MovementController, className: string) -> MovementController,
+	AttributeDefaults: (self: MovementController, schema: { [string]: any }) -> MovementController,
+	Children: (self: MovementController, children: { string }) -> MovementController,
+	New: (self: MovementController, ID: string, Type: Type) -> MovementController,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
 export type NotificationController = {
 	ID: string,
 	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
 	Extend: (self: NotificationController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> NotificationController,
 	Import: ControllerImportFn,
 	OnInit: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
 	OnStart: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
-	OnTick: ((self: NotificationController, cb: (self: NotificationController, deltaTime: number) -> (), rate: number) -> NotificationController) & ((self: NotificationController, cb: (self: NotificationController, deltaTime: number) -> (), rate: number, priority: number?) -> NotificationController),
-	OnSimulation: ((self: NotificationController, cb: (self: NotificationController, deltaTime: number) -> ()) -> NotificationController) & ((self: NotificationController, cb: (self: NotificationController, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> NotificationController) & ((self: NotificationController, cb: (self: NotificationController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> NotificationController),
+	OnTick: (self: NotificationController, cb: (self: NotificationController, deltaTime: number) -> (), rate: number, priority: number?) -> NotificationController,
+	OnSimulation: (self: NotificationController, cb: (self: NotificationController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> NotificationController,
 	OnDestroy: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
 	Tag: (self: NotificationController, tag: string) -> NotificationController,
 	ClassName: (self: NotificationController, className: string) -> NotificationController,
@@ -670,18 +680,22 @@ export type NotificationController = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
 export type ProfileController = {
 	ID: string,
 	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
 	Extend: (self: ProfileController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> ProfileController,
 	Import: ControllerImportFn,
 	OnInit: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
 	OnStart: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
-	OnTick: ((self: ProfileController, cb: (self: ProfileController, deltaTime: number) -> (), rate: number) -> ProfileController) & ((self: ProfileController, cb: (self: ProfileController, deltaTime: number) -> (), rate: number, priority: number?) -> ProfileController),
-	OnSimulation: ((self: ProfileController, cb: (self: ProfileController, deltaTime: number) -> ()) -> ProfileController) & ((self: ProfileController, cb: (self: ProfileController, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> ProfileController) & ((self: ProfileController, cb: (self: ProfileController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ProfileController),
+	OnTick: (self: ProfileController, cb: (self: ProfileController, deltaTime: number) -> (), rate: number, priority: number?) -> ProfileController,
+	OnSimulation: (self: ProfileController, cb: (self: ProfileController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ProfileController,
 	OnDestroy: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
 	Tag: (self: ProfileController, tag: string) -> ProfileController,
 	ClassName: (self: ProfileController, className: string) -> ProfileController,
@@ -695,12 +709,16 @@ export type ProfileController = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
 export type ScreenController = {
 	ID: string,
 	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
 	UIAnimationsController: UIAnimationsController,
 	GetGui: (self: ScreenController) -> MainGui,
 	GetWindowId: (self: ScreenController, window: GuiObject) -> WindowId,
@@ -730,8 +748,8 @@ export type ScreenController = {
 	Import: ControllerImportFn,
 	OnInit: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
 	OnStart: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
-	OnTick: ((self: ScreenController, cb: (self: ScreenController, deltaTime: number) -> (), rate: number) -> ScreenController) & ((self: ScreenController, cb: (self: ScreenController, deltaTime: number) -> (), rate: number, priority: number?) -> ScreenController),
-	OnSimulation: ((self: ScreenController, cb: (self: ScreenController, deltaTime: number) -> ()) -> ScreenController) & ((self: ScreenController, cb: (self: ScreenController, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> ScreenController) & ((self: ScreenController, cb: (self: ScreenController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ScreenController),
+	OnTick: (self: ScreenController, cb: (self: ScreenController, deltaTime: number) -> (), rate: number, priority: number?) -> ScreenController,
+	OnSimulation: (self: ScreenController, cb: (self: ScreenController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ScreenController,
 	OnDestroy: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
 	Tag: (self: ScreenController, tag: string) -> ScreenController,
 	ClassName: (self: ScreenController, className: string) -> ScreenController,
@@ -745,12 +763,16 @@ export type ScreenController = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
 export type UIAnimationsController = {
 	ID: string,
 	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
 	EnsureScale: (self: UIAnimationsController, window: GuiObject) -> UIScale,
 	FindCanvas: (self: UIAnimationsController, window: GuiObject) -> CanvasGroup?,
 	RegisterAnimation: (self: UIAnimationsController, target: Instance?, animation: any) -> any,
@@ -788,8 +810,8 @@ export type UIAnimationsController = {
 	Import: ControllerImportFn,
 	OnInit: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
 	OnStart: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
-	OnTick: ((self: UIAnimationsController, cb: (self: UIAnimationsController, deltaTime: number) -> (), rate: number) -> UIAnimationsController) & ((self: UIAnimationsController, cb: (self: UIAnimationsController, deltaTime: number) -> (), rate: number, priority: number?) -> UIAnimationsController),
-	OnSimulation: ((self: UIAnimationsController, cb: (self: UIAnimationsController, deltaTime: number) -> ()) -> UIAnimationsController) & ((self: UIAnimationsController, cb: (self: UIAnimationsController, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> UIAnimationsController) & ((self: UIAnimationsController, cb: (self: UIAnimationsController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> UIAnimationsController),
+	OnTick: (self: UIAnimationsController, cb: (self: UIAnimationsController, deltaTime: number) -> (), rate: number, priority: number?) -> UIAnimationsController,
+	OnSimulation: (self: UIAnimationsController, cb: (self: UIAnimationsController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> UIAnimationsController,
 	OnDestroy: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
 	Tag: (self: UIAnimationsController, tag: string) -> UIAnimationsController,
 	ClassName: (self: UIAnimationsController, className: string) -> UIAnimationsController,
@@ -803,12 +825,16 @@ export type UIAnimationsController = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
 export type VitalController = {
 	ID: string,
 	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
 	ScreenController: ScreenController,
 	UIAnimationsController: UIAnimationsController,
 	AutoConsume: (self: VitalController) -> (),
@@ -820,48 +846,7 @@ export type VitalController = {
 	Hunger: number,
 	Oxygen: number,
 	MaxOxygen: number,
-	PlayerStatus: Frame & {
-	Health: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	Hunger: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	Oxygen: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	UIAspectRatioConstraint: UIAspectRatioConstraint,
-},
+	PlayerStatus: any,
 	Armor: number,
 	Stamina: number,
 	MaxHunger: number,
@@ -870,8 +855,8 @@ export type VitalController = {
 	Import: ControllerImportFn,
 	OnInit: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
 	OnStart: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
-	OnTick: ((self: VitalController, cb: (self: VitalController, deltaTime: number) -> (), rate: number) -> VitalController) & ((self: VitalController, cb: (self: VitalController, deltaTime: number) -> (), rate: number, priority: number?) -> VitalController),
-	OnSimulation: ((self: VitalController, cb: (self: VitalController, deltaTime: number) -> ()) -> VitalController) & ((self: VitalController, cb: (self: VitalController, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> VitalController) & ((self: VitalController, cb: (self: VitalController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> VitalController),
+	OnTick: (self: VitalController, cb: (self: VitalController, deltaTime: number) -> (), rate: number, priority: number?) -> VitalController,
+	OnSimulation: (self: VitalController, cb: (self: VitalController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> VitalController,
 	OnDestroy: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
 	Tag: (self: VitalController, tag: string) -> VitalController,
 	ClassName: (self: VitalController, className: string) -> VitalController,
@@ -885,6 +870,7 @@ export type VitalController = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -911,8 +897,8 @@ export type AlienBaseMixin = {
 	Import: ImportFn,
 	OnInit: (self: AlienBaseMixin, cb: (self: AlienBaseMixin) -> ()) -> AlienBaseMixin,
 	OnStart: (self: AlienBaseMixin, cb: (self: AlienBaseMixin) -> ()) -> AlienBaseMixin,
-	OnTick: ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), rate: number) -> AlienBaseMixin) & ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), rate: number, priority: number?) -> AlienBaseMixin),
-	OnSimulation: ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> ()) -> AlienBaseMixin) & ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> AlienBaseMixin) & ((self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> AlienBaseMixin),
+	OnTick: (self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), rate: number, priority: number?) -> AlienBaseMixin,
+	OnSimulation: (self: AlienBaseMixin, cb: (self: AlienBaseMixin, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> AlienBaseMixin,
 	OnDestroy: (self: AlienBaseMixin, cb: (self: AlienBaseMixin) -> ()) -> AlienBaseMixin,
 	Tag: (self: AlienBaseMixin, tag: string) -> AlienBaseMixin,
 	ClassName: (self: AlienBaseMixin, className: string) -> AlienBaseMixin,
@@ -926,6 +912,7 @@ export type AlienBaseMixin = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -953,8 +940,8 @@ export type CommonAlienComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: CommonAlienComponent, cb: (self: CommonAlienComponent) -> ()) -> CommonAlienComponent,
 	OnStart: (self: CommonAlienComponent, cb: (self: CommonAlienComponent) -> ()) -> CommonAlienComponent,
-	OnTick: ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), rate: number) -> CommonAlienComponent) & ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> CommonAlienComponent),
-	OnSimulation: ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> ()) -> CommonAlienComponent) & ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> CommonAlienComponent) & ((self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> CommonAlienComponent),
+	OnTick: (self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> CommonAlienComponent,
+	OnSimulation: (self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> CommonAlienComponent,
 	OnDestroy: (self: CommonAlienComponent, cb: (self: CommonAlienComponent) -> ()) -> CommonAlienComponent,
 	Tag: (self: CommonAlienComponent, tag: string) -> CommonAlienComponent,
 	ClassName: (self: CommonAlienComponent, className: string) -> CommonAlienComponent,
@@ -968,6 +955,7 @@ export type CommonAlienComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: CommonAlienComponentInstance,
 }
@@ -996,8 +984,8 @@ export type GenericAlienComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: GenericAlienComponent, cb: (self: GenericAlienComponent) -> ()) -> GenericAlienComponent,
 	OnStart: (self: GenericAlienComponent, cb: (self: GenericAlienComponent) -> ()) -> GenericAlienComponent,
-	OnTick: ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), rate: number) -> GenericAlienComponent) & ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> GenericAlienComponent),
-	OnSimulation: ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> ()) -> GenericAlienComponent) & ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> GenericAlienComponent) & ((self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> GenericAlienComponent),
+	OnTick: (self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> GenericAlienComponent,
+	OnSimulation: (self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> GenericAlienComponent,
 	OnDestroy: (self: GenericAlienComponent, cb: (self: GenericAlienComponent) -> ()) -> GenericAlienComponent,
 	Tag: (self: GenericAlienComponent, tag: string) -> GenericAlienComponent,
 	ClassName: (self: GenericAlienComponent, className: string) -> GenericAlienComponent,
@@ -1011,6 +999,7 @@ export type GenericAlienComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: GenericAlienComponentInstance,
 }
@@ -1039,8 +1028,8 @@ export type IntermediateAlienComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent) -> ()) -> IntermediateAlienComponent,
 	OnStart: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent) -> ()) -> IntermediateAlienComponent,
-	OnTick: ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), rate: number) -> IntermediateAlienComponent) & ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> IntermediateAlienComponent),
-	OnSimulation: ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> ()) -> IntermediateAlienComponent) & ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> IntermediateAlienComponent) & ((self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> IntermediateAlienComponent),
+	OnTick: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> IntermediateAlienComponent,
+	OnSimulation: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> IntermediateAlienComponent,
 	OnDestroy: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent) -> ()) -> IntermediateAlienComponent,
 	Tag: (self: IntermediateAlienComponent, tag: string) -> IntermediateAlienComponent,
 	ClassName: (self: IntermediateAlienComponent, className: string) -> IntermediateAlienComponent,
@@ -1054,6 +1043,7 @@ export type IntermediateAlienComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: IntermediateAlienComponentInstance,
 }
@@ -1082,8 +1072,8 @@ export type RunnerAlienComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent) -> ()) -> RunnerAlienComponent,
 	OnStart: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent) -> ()) -> RunnerAlienComponent,
-	OnTick: ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), rate: number) -> RunnerAlienComponent) & ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> RunnerAlienComponent),
-	OnSimulation: ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> ()) -> RunnerAlienComponent) & ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> RunnerAlienComponent) & ((self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> RunnerAlienComponent),
+	OnTick: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> RunnerAlienComponent,
+	OnSimulation: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> RunnerAlienComponent,
 	OnDestroy: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent) -> ()) -> RunnerAlienComponent,
 	Tag: (self: RunnerAlienComponent, tag: string) -> RunnerAlienComponent,
 	ClassName: (self: RunnerAlienComponent, className: string) -> RunnerAlienComponent,
@@ -1097,6 +1087,7 @@ export type RunnerAlienComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: RunnerAlienComponentInstance,
 }
@@ -1114,8 +1105,8 @@ export type SpawnAreaComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent) -> ()) -> SpawnAreaComponent,
 	OnStart: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent) -> ()) -> SpawnAreaComponent,
-	OnTick: ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), rate: number) -> SpawnAreaComponent) & ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SpawnAreaComponent),
-	OnSimulation: ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> ()) -> SpawnAreaComponent) & ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> SpawnAreaComponent) & ((self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SpawnAreaComponent),
+	OnTick: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SpawnAreaComponent,
+	OnSimulation: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SpawnAreaComponent,
 	OnDestroy: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent) -> ()) -> SpawnAreaComponent,
 	Tag: (self: SpawnAreaComponent, tag: string) -> SpawnAreaComponent,
 	ClassName: (self: SpawnAreaComponent, className: string) -> SpawnAreaComponent,
@@ -1129,6 +1120,7 @@ export type SpawnAreaComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: SpawnAreaComponentInstance,
 }
@@ -1148,8 +1140,8 @@ export type AliensComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: AliensComponent, cb: (self: AliensComponent) -> ()) -> AliensComponent,
 	OnStart: (self: AliensComponent, cb: (self: AliensComponent) -> ()) -> AliensComponent,
-	OnTick: ((self: AliensComponent, cb: (self: AliensComponent, deltaTime: number) -> (), rate: number) -> AliensComponent) & ((self: AliensComponent, cb: (self: AliensComponent, deltaTime: number) -> (), rate: number, priority: number?) -> AliensComponent),
-	OnSimulation: ((self: AliensComponent, cb: (self: AliensComponent, deltaTime: number) -> ()) -> AliensComponent) & ((self: AliensComponent, cb: (self: AliensComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> AliensComponent) & ((self: AliensComponent, cb: (self: AliensComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> AliensComponent),
+	OnTick: (self: AliensComponent, cb: (self: AliensComponent, deltaTime: number) -> (), rate: number, priority: number?) -> AliensComponent,
+	OnSimulation: (self: AliensComponent, cb: (self: AliensComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> AliensComponent,
 	OnDestroy: (self: AliensComponent, cb: (self: AliensComponent) -> ()) -> AliensComponent,
 	Tag: (self: AliensComponent, tag: string) -> AliensComponent,
 	ClassName: (self: AliensComponent, className: string) -> AliensComponent,
@@ -1163,8 +1155,42 @@ export type AliensComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: AliensComponentInstance,
+}
+
+export type OxygenComponent = {
+	ID: string,
+	Type: Type,
+	Avaliable: (self: OxygenComponent) -> (),
+	Unavaliable: (self: OxygenComponent) -> (),
+	FSM: FSM<OxygenStates>,
+	ConsumeRate: number,
+	RegenRate: number,
+	SuffocateDamage: number,
+	Extend: (self: OxygenComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> OxygenComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: OxygenComponent, cb: (self: OxygenComponent) -> ()) -> OxygenComponent,
+	OnStart: (self: OxygenComponent, cb: (self: OxygenComponent) -> ()) -> OxygenComponent,
+	OnTick: (self: OxygenComponent, cb: (self: OxygenComponent, deltaTime: number) -> (), rate: number, priority: number?) -> OxygenComponent,
+	OnSimulation: (self: OxygenComponent, cb: (self: OxygenComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> OxygenComponent,
+	OnDestroy: (self: OxygenComponent, cb: (self: OxygenComponent) -> ()) -> OxygenComponent,
+	Tag: (self: OxygenComponent, tag: string) -> OxygenComponent,
+	ClassName: (self: OxygenComponent, className: string) -> OxygenComponent,
+	AttributeDefaults: (self: OxygenComponent, schema: { [string]: any }) -> OxygenComponent,
+	Children: (self: OxygenComponent, children: { string }) -> OxygenComponent,
+	New: (self: OxygenComponent, ID: string, Type: Type) -> OxygenComponent,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: OxygenComponentInstance,
 }
 
 export type VitalComponent = {
@@ -1214,8 +1240,8 @@ export type VitalComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: VitalComponent, cb: (self: VitalComponent) -> ()) -> VitalComponent,
 	OnStart: (self: VitalComponent, cb: (self: VitalComponent) -> ()) -> VitalComponent,
-	OnTick: ((self: VitalComponent, cb: (self: VitalComponent, deltaTime: number) -> (), rate: number) -> VitalComponent) & ((self: VitalComponent, cb: (self: VitalComponent, deltaTime: number) -> (), rate: number, priority: number?) -> VitalComponent),
-	OnSimulation: ((self: VitalComponent, cb: (self: VitalComponent, deltaTime: number) -> ()) -> VitalComponent) & ((self: VitalComponent, cb: (self: VitalComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> VitalComponent) & ((self: VitalComponent, cb: (self: VitalComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> VitalComponent),
+	OnTick: (self: VitalComponent, cb: (self: VitalComponent, deltaTime: number) -> (), rate: number, priority: number?) -> VitalComponent,
+	OnSimulation: (self: VitalComponent, cb: (self: VitalComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> VitalComponent,
 	OnDestroy: (self: VitalComponent, cb: (self: VitalComponent) -> ()) -> VitalComponent,
 	Tag: (self: VitalComponent, tag: string) -> VitalComponent,
 	ClassName: (self: VitalComponent, className: string) -> VitalComponent,
@@ -1229,6 +1255,7 @@ export type VitalComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: VitalComponentInstance,
 }
@@ -1244,8 +1271,8 @@ export type ZoneComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: ZoneComponent, cb: (self: ZoneComponent) -> ()) -> ZoneComponent,
 	OnStart: (self: ZoneComponent, cb: (self: ZoneComponent) -> ()) -> ZoneComponent,
-	OnTick: ((self: ZoneComponent, cb: (self: ZoneComponent, deltaTime: number) -> (), rate: number) -> ZoneComponent) & ((self: ZoneComponent, cb: (self: ZoneComponent, deltaTime: number) -> (), rate: number, priority: number?) -> ZoneComponent),
-	OnSimulation: ((self: ZoneComponent, cb: (self: ZoneComponent, deltaTime: number) -> ()) -> ZoneComponent) & ((self: ZoneComponent, cb: (self: ZoneComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> ZoneComponent) & ((self: ZoneComponent, cb: (self: ZoneComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ZoneComponent),
+	OnTick: (self: ZoneComponent, cb: (self: ZoneComponent, deltaTime: number) -> (), rate: number, priority: number?) -> ZoneComponent,
+	OnSimulation: (self: ZoneComponent, cb: (self: ZoneComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ZoneComponent,
 	OnDestroy: (self: ZoneComponent, cb: (self: ZoneComponent) -> ()) -> ZoneComponent,
 	Tag: (self: ZoneComponent, tag: string) -> ZoneComponent,
 	ClassName: (self: ZoneComponent, className: string) -> ZoneComponent,
@@ -1259,6 +1286,7 @@ export type ZoneComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: ZoneComponentInstance,
 }
@@ -1271,8 +1299,8 @@ export type BattleService = {
 	Import: ServiceImportFn,
 	OnInit: (self: BattleService, cb: (self: BattleService) -> ()) -> BattleService,
 	OnStart: (self: BattleService, cb: (self: BattleService) -> ()) -> BattleService,
-	OnTick: ((self: BattleService, cb: (self: BattleService, deltaTime: number) -> (), rate: number) -> BattleService) & ((self: BattleService, cb: (self: BattleService, deltaTime: number) -> (), rate: number, priority: number?) -> BattleService),
-	OnSimulation: ((self: BattleService, cb: (self: BattleService, deltaTime: number) -> ()) -> BattleService) & ((self: BattleService, cb: (self: BattleService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> BattleService) & ((self: BattleService, cb: (self: BattleService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> BattleService),
+	OnTick: (self: BattleService, cb: (self: BattleService, deltaTime: number) -> (), rate: number, priority: number?) -> BattleService,
+	OnSimulation: (self: BattleService, cb: (self: BattleService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> BattleService,
 	OnDestroy: (self: BattleService, cb: (self: BattleService) -> ()) -> BattleService,
 	Tag: (self: BattleService, tag: string) -> BattleService,
 	ClassName: (self: BattleService, className: string) -> BattleService,
@@ -1286,6 +1314,7 @@ export type BattleService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1306,8 +1335,8 @@ export type DayNightService = {
 	Import: ServiceImportFn,
 	OnInit: (self: DayNightService, cb: (self: DayNightService) -> ()) -> DayNightService,
 	OnStart: (self: DayNightService, cb: (self: DayNightService) -> ()) -> DayNightService,
-	OnTick: ((self: DayNightService, cb: (self: DayNightService, deltaTime: number) -> (), rate: number) -> DayNightService) & ((self: DayNightService, cb: (self: DayNightService, deltaTime: number) -> (), rate: number, priority: number?) -> DayNightService),
-	OnSimulation: ((self: DayNightService, cb: (self: DayNightService, deltaTime: number) -> ()) -> DayNightService) & ((self: DayNightService, cb: (self: DayNightService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> DayNightService) & ((self: DayNightService, cb: (self: DayNightService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> DayNightService),
+	OnTick: (self: DayNightService, cb: (self: DayNightService, deltaTime: number) -> (), rate: number, priority: number?) -> DayNightService,
+	OnSimulation: (self: DayNightService, cb: (self: DayNightService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> DayNightService,
 	OnDestroy: (self: DayNightService, cb: (self: DayNightService) -> ()) -> DayNightService,
 	Tag: (self: DayNightService, tag: string) -> DayNightService,
 	ClassName: (self: DayNightService, className: string) -> DayNightService,
@@ -1321,6 +1350,7 @@ export type DayNightService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1345,8 +1375,8 @@ export type EnemyService = {
 	Import: ServiceImportFn,
 	OnInit: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
 	OnStart: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
-	OnTick: ((self: EnemyService, cb: (self: EnemyService, deltaTime: number) -> (), rate: number) -> EnemyService) & ((self: EnemyService, cb: (self: EnemyService, deltaTime: number) -> (), rate: number, priority: number?) -> EnemyService),
-	OnSimulation: ((self: EnemyService, cb: (self: EnemyService, deltaTime: number) -> ()) -> EnemyService) & ((self: EnemyService, cb: (self: EnemyService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> EnemyService) & ((self: EnemyService, cb: (self: EnemyService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> EnemyService),
+	OnTick: (self: EnemyService, cb: (self: EnemyService, deltaTime: number) -> (), rate: number, priority: number?) -> EnemyService,
+	OnSimulation: (self: EnemyService, cb: (self: EnemyService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> EnemyService,
 	OnDestroy: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
 	Tag: (self: EnemyService, tag: string) -> EnemyService,
 	ClassName: (self: EnemyService, className: string) -> EnemyService,
@@ -1360,6 +1390,7 @@ export type EnemyService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1376,8 +1407,8 @@ export type GameService = {
 	Import: ServiceImportFn,
 	OnInit: (self: GameService, cb: (self: GameService) -> ()) -> GameService,
 	OnStart: (self: GameService, cb: (self: GameService) -> ()) -> GameService,
-	OnTick: ((self: GameService, cb: (self: GameService, deltaTime: number) -> (), rate: number) -> GameService) & ((self: GameService, cb: (self: GameService, deltaTime: number) -> (), rate: number, priority: number?) -> GameService),
-	OnSimulation: ((self: GameService, cb: (self: GameService, deltaTime: number) -> ()) -> GameService) & ((self: GameService, cb: (self: GameService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> GameService) & ((self: GameService, cb: (self: GameService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> GameService),
+	OnTick: (self: GameService, cb: (self: GameService, deltaTime: number) -> (), rate: number, priority: number?) -> GameService,
+	OnSimulation: (self: GameService, cb: (self: GameService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> GameService,
 	OnDestroy: (self: GameService, cb: (self: GameService) -> ()) -> GameService,
 	Tag: (self: GameService, tag: string) -> GameService,
 	ClassName: (self: GameService, className: string) -> GameService,
@@ -1391,6 +1422,7 @@ export type GameService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1401,8 +1433,8 @@ export type GeneratorService = {
 	Import: ServiceImportFn,
 	OnInit: (self: GeneratorService, cb: (self: GeneratorService) -> ()) -> GeneratorService,
 	OnStart: (self: GeneratorService, cb: (self: GeneratorService) -> ()) -> GeneratorService,
-	OnTick: ((self: GeneratorService, cb: (self: GeneratorService, deltaTime: number) -> (), rate: number) -> GeneratorService) & ((self: GeneratorService, cb: (self: GeneratorService, deltaTime: number) -> (), rate: number, priority: number?) -> GeneratorService),
-	OnSimulation: ((self: GeneratorService, cb: (self: GeneratorService, deltaTime: number) -> ()) -> GeneratorService) & ((self: GeneratorService, cb: (self: GeneratorService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> GeneratorService) & ((self: GeneratorService, cb: (self: GeneratorService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> GeneratorService),
+	OnTick: (self: GeneratorService, cb: (self: GeneratorService, deltaTime: number) -> (), rate: number, priority: number?) -> GeneratorService,
+	OnSimulation: (self: GeneratorService, cb: (self: GeneratorService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> GeneratorService,
 	OnDestroy: (self: GeneratorService, cb: (self: GeneratorService) -> ()) -> GeneratorService,
 	Tag: (self: GeneratorService, tag: string) -> GeneratorService,
 	ClassName: (self: GeneratorService, className: string) -> GeneratorService,
@@ -1416,6 +1448,7 @@ export type GeneratorService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1426,8 +1459,8 @@ export type LeaderstatsService = {
 	Import: ServiceImportFn,
 	OnInit: (self: LeaderstatsService, cb: (self: LeaderstatsService) -> ()) -> LeaderstatsService,
 	OnStart: (self: LeaderstatsService, cb: (self: LeaderstatsService) -> ()) -> LeaderstatsService,
-	OnTick: ((self: LeaderstatsService, cb: (self: LeaderstatsService, deltaTime: number) -> (), rate: number) -> LeaderstatsService) & ((self: LeaderstatsService, cb: (self: LeaderstatsService, deltaTime: number) -> (), rate: number, priority: number?) -> LeaderstatsService),
-	OnSimulation: ((self: LeaderstatsService, cb: (self: LeaderstatsService, deltaTime: number) -> ()) -> LeaderstatsService) & ((self: LeaderstatsService, cb: (self: LeaderstatsService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> LeaderstatsService) & ((self: LeaderstatsService, cb: (self: LeaderstatsService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> LeaderstatsService),
+	OnTick: (self: LeaderstatsService, cb: (self: LeaderstatsService, deltaTime: number) -> (), rate: number, priority: number?) -> LeaderstatsService,
+	OnSimulation: (self: LeaderstatsService, cb: (self: LeaderstatsService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> LeaderstatsService,
 	OnDestroy: (self: LeaderstatsService, cb: (self: LeaderstatsService) -> ()) -> LeaderstatsService,
 	Tag: (self: LeaderstatsService, tag: string) -> LeaderstatsService,
 	ClassName: (self: LeaderstatsService, className: string) -> LeaderstatsService,
@@ -1441,6 +1474,60 @@ export type LeaderstatsService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type MovementService = {
+	ID: string,
+	Type: Type,
+	Extend: (self: MovementService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> MovementService,
+	Import: ServiceImportFn,
+	OnInit: (self: MovementService, cb: (self: MovementService) -> ()) -> MovementService,
+	OnStart: (self: MovementService, cb: (self: MovementService) -> ()) -> MovementService,
+	OnTick: (self: MovementService, cb: (self: MovementService, deltaTime: number) -> (), rate: number, priority: number?) -> MovementService,
+	OnSimulation: (self: MovementService, cb: (self: MovementService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> MovementService,
+	OnDestroy: (self: MovementService, cb: (self: MovementService) -> ()) -> MovementService,
+	Tag: (self: MovementService, tag: string) -> MovementService,
+	ClassName: (self: MovementService, className: string) -> MovementService,
+	AttributeDefaults: (self: MovementService, schema: { [string]: any }) -> MovementService,
+	Children: (self: MovementService, children: { string }) -> MovementService,
+	New: (self: MovementService, ID: string, Type: Type) -> MovementService,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type OxygenService = {
+	ID: string,
+	Type: Type,
+	PlayerService: PlayerService,
+	Extend: (self: OxygenService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> OxygenService,
+	Import: ServiceImportFn,
+	OnInit: (self: OxygenService, cb: (self: OxygenService) -> ()) -> OxygenService,
+	OnStart: (self: OxygenService, cb: (self: OxygenService) -> ()) -> OxygenService,
+	OnTick: (self: OxygenService, cb: (self: OxygenService, deltaTime: number) -> (), rate: number, priority: number?) -> OxygenService,
+	OnSimulation: (self: OxygenService, cb: (self: OxygenService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> OxygenService,
+	OnDestroy: (self: OxygenService, cb: (self: OxygenService) -> ()) -> OxygenService,
+	Tag: (self: OxygenService, tag: string) -> OxygenService,
+	ClassName: (self: OxygenService, className: string) -> OxygenService,
+	AttributeDefaults: (self: OxygenService, schema: { [string]: any }) -> OxygenService,
+	Children: (self: OxygenService, children: { string }) -> OxygenService,
+	New: (self: OxygenService, ID: string, Type: Type) -> OxygenService,
+	GetComponent: GetComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1452,8 +1539,8 @@ export type PlayerBilboardService = {
 	Import: ServiceImportFn,
 	OnInit: (self: PlayerBilboardService, cb: (self: PlayerBilboardService) -> ()) -> PlayerBilboardService,
 	OnStart: (self: PlayerBilboardService, cb: (self: PlayerBilboardService) -> ()) -> PlayerBilboardService,
-	OnTick: ((self: PlayerBilboardService, cb: (self: PlayerBilboardService, deltaTime: number) -> (), rate: number) -> PlayerBilboardService) & ((self: PlayerBilboardService, cb: (self: PlayerBilboardService, deltaTime: number) -> (), rate: number, priority: number?) -> PlayerBilboardService),
-	OnSimulation: ((self: PlayerBilboardService, cb: (self: PlayerBilboardService, deltaTime: number) -> ()) -> PlayerBilboardService) & ((self: PlayerBilboardService, cb: (self: PlayerBilboardService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> PlayerBilboardService) & ((self: PlayerBilboardService, cb: (self: PlayerBilboardService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> PlayerBilboardService),
+	OnTick: (self: PlayerBilboardService, cb: (self: PlayerBilboardService, deltaTime: number) -> (), rate: number, priority: number?) -> PlayerBilboardService,
+	OnSimulation: (self: PlayerBilboardService, cb: (self: PlayerBilboardService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> PlayerBilboardService,
 	OnDestroy: (self: PlayerBilboardService, cb: (self: PlayerBilboardService) -> ()) -> PlayerBilboardService,
 	Tag: (self: PlayerBilboardService, tag: string) -> PlayerBilboardService,
 	ClassName: (self: PlayerBilboardService, className: string) -> PlayerBilboardService,
@@ -1467,6 +1554,7 @@ export type PlayerBilboardService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1485,8 +1573,8 @@ export type PlayerService = {
 	Import: ServiceImportFn,
 	OnInit: (self: PlayerService, cb: (self: PlayerService) -> ()) -> PlayerService,
 	OnStart: (self: PlayerService, cb: (self: PlayerService) -> ()) -> PlayerService,
-	OnTick: ((self: PlayerService, cb: (self: PlayerService, deltaTime: number) -> (), rate: number) -> PlayerService) & ((self: PlayerService, cb: (self: PlayerService, deltaTime: number) -> (), rate: number, priority: number?) -> PlayerService),
-	OnSimulation: ((self: PlayerService, cb: (self: PlayerService, deltaTime: number) -> ()) -> PlayerService) & ((self: PlayerService, cb: (self: PlayerService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> PlayerService) & ((self: PlayerService, cb: (self: PlayerService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> PlayerService),
+	OnTick: (self: PlayerService, cb: (self: PlayerService, deltaTime: number) -> (), rate: number, priority: number?) -> PlayerService,
+	OnSimulation: (self: PlayerService, cb: (self: PlayerService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> PlayerService,
 	OnDestroy: (self: PlayerService, cb: (self: PlayerService) -> ()) -> PlayerService,
 	Tag: (self: PlayerService, tag: string) -> PlayerService,
 	ClassName: (self: PlayerService, className: string) -> PlayerService,
@@ -1500,6 +1588,7 @@ export type PlayerService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1519,8 +1608,8 @@ export type ProfileService = {
 	Import: ServiceImportFn,
 	OnInit: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
 	OnStart: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
-	OnTick: ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), rate: number) -> ProfileService) & ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), rate: number, priority: number?) -> ProfileService),
-	OnSimulation: ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> ()) -> ProfileService) & ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> ProfileService) & ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ProfileService),
+	OnTick: (self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), rate: number, priority: number?) -> ProfileService,
+	OnSimulation: (self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ProfileService,
 	OnDestroy: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
 	Tag: (self: ProfileService, tag: string) -> ProfileService,
 	ClassName: (self: ProfileService, className: string) -> ProfileService,
@@ -1534,6 +1623,7 @@ export type ProfileService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1553,8 +1643,8 @@ export type ProfileService = {
 	Import: ServiceImportFn,
 	OnInit: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
 	OnStart: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
-	OnTick: ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), rate: number) -> ProfileService) & ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), rate: number, priority: number?) -> ProfileService),
-	OnSimulation: ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> ()) -> ProfileService) & ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> ProfileService) & ((self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ProfileService),
+	OnTick: (self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), rate: number, priority: number?) -> ProfileService,
+	OnSimulation: (self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ProfileService,
 	OnDestroy: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
 	Tag: (self: ProfileService, tag: string) -> ProfileService,
 	ClassName: (self: ProfileService, className: string) -> ProfileService,
@@ -1568,6 +1658,7 @@ export type ProfileService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1579,8 +1670,8 @@ export type VitalService = {
 	Import: ServiceImportFn,
 	OnInit: (self: VitalService, cb: (self: VitalService) -> ()) -> VitalService,
 	OnStart: (self: VitalService, cb: (self: VitalService) -> ()) -> VitalService,
-	OnTick: ((self: VitalService, cb: (self: VitalService, deltaTime: number) -> (), rate: number) -> VitalService) & ((self: VitalService, cb: (self: VitalService, deltaTime: number) -> (), rate: number, priority: number?) -> VitalService),
-	OnSimulation: ((self: VitalService, cb: (self: VitalService, deltaTime: number) -> ()) -> VitalService) & ((self: VitalService, cb: (self: VitalService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> VitalService) & ((self: VitalService, cb: (self: VitalService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> VitalService),
+	OnTick: (self: VitalService, cb: (self: VitalService, deltaTime: number) -> (), rate: number, priority: number?) -> VitalService,
+	OnSimulation: (self: VitalService, cb: (self: VitalService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> VitalService,
 	OnDestroy: (self: VitalService, cb: (self: VitalService) -> ()) -> VitalService,
 	Tag: (self: VitalService, tag: string) -> VitalService,
 	ClassName: (self: VitalService, className: string) -> VitalService,
@@ -1594,6 +1685,7 @@ export type VitalService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1609,8 +1701,8 @@ export type ZoneService = {
 	Import: ServiceImportFn,
 	OnInit: (self: ZoneService, cb: (self: ZoneService) -> ()) -> ZoneService,
 	OnStart: (self: ZoneService, cb: (self: ZoneService) -> ()) -> ZoneService,
-	OnTick: ((self: ZoneService, cb: (self: ZoneService, deltaTime: number) -> (), rate: number) -> ZoneService) & ((self: ZoneService, cb: (self: ZoneService, deltaTime: number) -> (), rate: number, priority: number?) -> ZoneService),
-	OnSimulation: ((self: ZoneService, cb: (self: ZoneService, deltaTime: number) -> ()) -> ZoneService) & ((self: ZoneService, cb: (self: ZoneService, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> ZoneService) & ((self: ZoneService, cb: (self: ZoneService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ZoneService),
+	OnTick: (self: ZoneService, cb: (self: ZoneService, deltaTime: number) -> (), rate: number, priority: number?) -> ZoneService,
+	OnSimulation: (self: ZoneService, cb: (self: ZoneService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ZoneService,
 	OnDestroy: (self: ZoneService, cb: (self: ZoneService) -> ()) -> ZoneService,
 	Tag: (self: ZoneService, tag: string) -> ZoneService,
 	ClassName: (self: ZoneService, className: string) -> ZoneService,
@@ -1624,6 +1716,7 @@ export type ZoneService = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
@@ -1637,8 +1730,8 @@ export type PlayerZoneComponent = {
 	Import: ImportFn,
 	OnInit: (self: PlayerZoneComponent, cb: (self: PlayerZoneComponent) -> ()) -> PlayerZoneComponent,
 	OnStart: (self: PlayerZoneComponent, cb: (self: PlayerZoneComponent) -> ()) -> PlayerZoneComponent,
-	OnTick: ((self: PlayerZoneComponent, cb: (self: PlayerZoneComponent, deltaTime: number) -> (), rate: number) -> PlayerZoneComponent) & ((self: PlayerZoneComponent, cb: (self: PlayerZoneComponent, deltaTime: number) -> (), rate: number, priority: number?) -> PlayerZoneComponent),
-	OnSimulation: ((self: PlayerZoneComponent, cb: (self: PlayerZoneComponent, deltaTime: number) -> ()) -> PlayerZoneComponent) & ((self: PlayerZoneComponent, cb: (self: PlayerZoneComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> PlayerZoneComponent) & ((self: PlayerZoneComponent, cb: (self: PlayerZoneComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> PlayerZoneComponent),
+	OnTick: (self: PlayerZoneComponent, cb: (self: PlayerZoneComponent, deltaTime: number) -> (), rate: number, priority: number?) -> PlayerZoneComponent,
+	OnSimulation: (self: PlayerZoneComponent, cb: (self: PlayerZoneComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> PlayerZoneComponent,
 	OnDestroy: (self: PlayerZoneComponent, cb: (self: PlayerZoneComponent) -> ()) -> PlayerZoneComponent,
 	Tag: (self: PlayerZoneComponent, tag: string) -> PlayerZoneComponent,
 	ClassName: (self: PlayerZoneComponent, className: string) -> PlayerZoneComponent,
@@ -1652,12 +1745,16 @@ export type PlayerZoneComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 }
 
 export type RegionComponent = {
 	ID: string,
 	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
 	OnEnter: (self: RegionComponent, callback: callbackZone) -> (),
 	OnExit: (self: RegionComponent, callback: callbackZone) -> (),
 	ObserverPlayersInPart: (self: RegionComponent, config: PlayerZoneConfig) -> any,
@@ -1665,8 +1762,8 @@ export type RegionComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: RegionComponent, cb: (self: RegionComponent) -> ()) -> RegionComponent,
 	OnStart: (self: RegionComponent, cb: (self: RegionComponent) -> ()) -> RegionComponent,
-	OnTick: ((self: RegionComponent, cb: (self: RegionComponent, deltaTime: number) -> (), rate: number) -> RegionComponent) & ((self: RegionComponent, cb: (self: RegionComponent, deltaTime: number) -> (), rate: number, priority: number?) -> RegionComponent),
-	OnSimulation: ((self: RegionComponent, cb: (self: RegionComponent, deltaTime: number) -> ()) -> RegionComponent) & ((self: RegionComponent, cb: (self: RegionComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> RegionComponent) & ((self: RegionComponent, cb: (self: RegionComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> RegionComponent),
+	OnTick: (self: RegionComponent, cb: (self: RegionComponent, deltaTime: number) -> (), rate: number, priority: number?) -> RegionComponent,
+	OnSimulation: (self: RegionComponent, cb: (self: RegionComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> RegionComponent,
 	OnDestroy: (self: RegionComponent, cb: (self: RegionComponent) -> ()) -> RegionComponent,
 	Tag: (self: RegionComponent, tag: string) -> RegionComponent,
 	ClassName: (self: RegionComponent, className: string) -> RegionComponent,
@@ -1680,6 +1777,7 @@ export type RegionComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: RegionComponentInstance,
 }
@@ -1687,6 +1785,9 @@ export type RegionComponent = {
 export type SolarPanelComponent = {
 	ID: string,
 	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
 	Setup: (self: SolarPanelComponent) -> (),
 	ConnectedTo: Instance?,
 	Production: number,
@@ -1694,8 +1795,8 @@ export type SolarPanelComponent = {
 	Import: ComponentImportFn,
 	OnInit: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
 	OnStart: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
-	OnTick: ((self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), rate: number) -> SolarPanelComponent) & ((self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SolarPanelComponent),
-	OnSimulation: ((self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> ()) -> SolarPanelComponent) & ((self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?) -> SolarPanelComponent) & ((self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SolarPanelComponent),
+	OnTick: (self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SolarPanelComponent,
+	OnSimulation: (self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SolarPanelComponent,
 	OnDestroy: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
 	Tag: (self: SolarPanelComponent, tag: string) -> SolarPanelComponent,
 	ClassName: (self: SolarPanelComponent, className: string) -> SolarPanelComponent,
@@ -1709,6 +1810,7 @@ export type SolarPanelComponent = {
 	Promise: PromiseAPI,
 	GlobalClock: GlobalClock,
 	Signal: SignalAPI,
+	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: SolarPanelComponentInstance,
 }
@@ -1724,6 +1826,8 @@ export type ServiceImportFn =
 	(<Self>(self: Self, id: "GameService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "GeneratorService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "LeaderstatsService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "MovementService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "OxygenService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerBilboardService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
@@ -1734,6 +1838,8 @@ export type ServiceImportFn =
 export type ControllerImportFn =
 	(<Self>(self: Self, id: "DayCycleController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "EnemyRenderController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "InputController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "MovementController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "NotificationController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ScreenController", scopeKey: string?) -> Self) &
@@ -1747,6 +1853,8 @@ export type ComponentImportFn =
 	(<Self>(self: Self, id: "GameService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "GeneratorService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "LeaderstatsService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "MovementService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "OxygenService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerBilboardService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
@@ -1781,6 +1889,7 @@ export type GetComponentFn =
 	(<Self>(self: Self, instance: CommonAlienComponentInstance, id: "CommonAlienComponent") -> CommonAlienComponent?) &
 	(<Self>(self: Self, instance: GenericAlienComponentInstance, id: "GenericAlienComponent") -> GenericAlienComponent?) &
 	(<Self>(self: Self, instance: IntermediateAlienComponentInstance, id: "IntermediateAlienComponent") -> IntermediateAlienComponent?) &
+	(<Self>(self: Self, instance: OxygenComponentInstance, id: "OxygenComponent") -> OxygenComponent?) &
 	(<Self>(self: Self, instance: RegionComponentInstance, id: "RegionComponent") -> RegionComponent?) &
 	(<Self>(self: Self, instance: RunnerAlienComponentInstance, id: "RunnerAlienComponent") -> RunnerAlienComponent?) &
 	(<Self>(self: Self, instance: SolarPanelComponentInstance, id: "SolarPanelComponent") -> SolarPanelComponent?) &
@@ -1794,6 +1903,7 @@ export type GetAllComponentsFn =
 	(<Self>(self: Self, id: "CommonAlienComponent") -> { CommonAlienComponent }) &
 	(<Self>(self: Self, id: "GenericAlienComponent") -> { GenericAlienComponent }) &
 	(<Self>(self: Self, id: "IntermediateAlienComponent") -> { IntermediateAlienComponent }) &
+	(<Self>(self: Self, id: "OxygenComponent") -> { OxygenComponent }) &
 	(<Self>(self: Self, id: "RegionComponent") -> { RegionComponent }) &
 	(<Self>(self: Self, id: "RunnerAlienComponent") -> { RunnerAlienComponent }) &
 	(<Self>(self: Self, id: "SolarPanelComponent") -> { SolarPanelComponent }) &
@@ -1810,6 +1920,8 @@ export type ServiceFn =
 	((id: "GameService", mode: Mode?) -> GameService) &
 	((id: "GeneratorService", mode: Mode?) -> GeneratorService) &
 	((id: "LeaderstatsService", mode: Mode?) -> LeaderstatsService) &
+	((id: "MovementService", mode: Mode?) -> MovementService) &
+	((id: "OxygenService", mode: Mode?) -> OxygenService) &
 	((id: "PlayerBilboardService", mode: Mode?) -> PlayerBilboardService) &
 	((id: "PlayerService", mode: Mode?) -> PlayerService) &
 	((id: "ProfileService", mode: Mode?) -> ProfileService) &
@@ -1820,6 +1932,8 @@ export type ServiceFn =
 export type ControllerFn =
 	((id: "DayCycleController", mode: Mode?) -> DayCycleController) &
 	((id: "EnemyRenderController", mode: Mode?) -> EnemyRenderController) &
+	((id: "InputController", mode: Mode?) -> InputController) &
+	((id: "MovementController", mode: Mode?) -> MovementController) &
 	((id: "NotificationController", mode: Mode?) -> NotificationController) &
 	((id: "ProfileController", mode: Mode?) -> ProfileController) &
 	((id: "ScreenController", mode: Mode?) -> ScreenController) &
@@ -1833,6 +1947,7 @@ export type ComponentFn =
 	((id: "RunnerAlienComponent", mode: Mode?) -> RunnerAlienComponent) &
 	((id: "SpawnAreaComponent", mode: Mode?) -> SpawnAreaComponent) &
 	((id: "AliensComponent", mode: Mode?) -> AliensComponent) &
+	((id: "OxygenComponent", mode: Mode?) -> OxygenComponent) &
 	((id: "VitalComponent", mode: Mode?) -> VitalComponent) &
 	((id: "ZoneComponent", mode: Mode?) -> ZoneComponent) &
 	((id: "RegionComponent", mode: Mode?) -> RegionComponent) &

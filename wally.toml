@@ -11,7 +11,7 @@ sera = "enzzyfrenzzy/sera@0.0.2"
 quickzone = "levnth/quickzone@0.0.1"
 lync = "axp3cter/lync@2.3.3"
 fusion = "mattschrubb/fusion@1.2.5"
-custompackages = "custompackages@1.1.1"
+jecs = "ukendio/jecs@0.11.0"
 
 [server-dependencies]
 profilestore = "ddashdev/profilestore@1.0.4"
