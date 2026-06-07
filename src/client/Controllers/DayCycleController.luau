@@ -4,7 +4,7 @@ local Modux = require(game.ReplicatedStorage.Shared.Modux)
 local DayCycleController = Modux.Controller("DayCycleController")
 
 local localPlayer = game.Players.LocalPlayer
-local ScreenGui = localPlayer.PlayerGui:WaitForChild("ScreenGui")
+local ScreenGui = localPlayer.PlayerGui:WaitForChild("ScreenGui", 5)
 local statusUI = ScreenGui.Conteiner.Status
 
 type NumberMessage = { Message: number }

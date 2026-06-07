@@ -1,3 +1,8 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Aliens = require(ReplicatedStorage.Shared.Enums.Aliens)
+
+type AlienType = Aliens.AlienType
+
 export type EnemyType = {
 	ModelName: string,
 	ComponentTag: string?,
@@ -128,4 +133,4 @@ return {
 		SpawnCost = 50,
 		MinDifficulty = 6,
 	},
-} :: { [string]: EnemyType }
+} :: { [AlienType]: EnemyType }

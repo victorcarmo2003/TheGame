@@ -1,16 +1,20 @@
-local Aliens = require(game.ReplicatedStorage.Shared.Enums.Aliens)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Aliens = require(ReplicatedStorage.Shared.Enums.Aliens)
 
 type AlienType = Aliens.AlienType
 
 export type SpawnType = "Base" | "Field"
 
+export type SpawnAreaConfig = {
+	Enabled: boolean,
+	MinDifficulty: number,
+	MaxDifficulty: number,
+	AlienWeights: { [AlienType]: number },
+}
+
 export type SpawnAreaType = {
-	[SpawnType]: {
-		Enabled: boolean,
-		MinDifficulty: number,
-		MaxDifficulty: number,
-		AlienWeights: { [AlienType]: number },
-	},
+	Base: SpawnAreaConfig,
+	Field: SpawnAreaConfig,
 }
 
 return {

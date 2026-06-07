@@ -3,6 +3,7 @@ local Aliens = require(game.ReplicatedStorage.Shared.Enums.Aliens)
 local SpawnAreaSettings = require(game.ReplicatedStorage.Shared.Settings.SpawnArea)
 
 type AlienType = Aliens.AlienType
+type SpawnType = SpawnAreaSettings.SpawnType
 type SpawnAreaConfig = {
 	Enabled: boolean,
 	MinDifficulty: number,
@@ -10,7 +11,7 @@ type SpawnAreaConfig = {
 	AlienWeights: { [AlienType]: number },
 }
 
-local DEFAULT_AREA_TYPE = "Field"
+local DEFAULT_AREA_TYPE: SpawnType = "Field"
 
 local SpawnAreaComponent = Modux.Component("SpawnAreaComponent"):Tag("SpawnArea"):ClassName("BasePart")
 
@@ -24,9 +25,13 @@ local function readBooleanAttribute(instance: Instance, name: string, fallback: 
 	return if typeof(value) == "boolean" then value else fallback
 end
 
-function SpawnAreaComponent:GetAreaType(): string
+function SpawnAreaComponent:GetAreaType(): SpawnType
 	local areaType = self.Instance:GetAttribute("AreaType")
-	return if typeof(areaType) == "string" and SpawnAreaSettings[areaType] then areaType else DEFAULT_AREA_TYPE
+	if typeof(areaType) == "string" and SpawnAreaSettings[areaType :: SpawnType] then
+		return areaType :: SpawnType
+	end
+
+	return DEFAULT_AREA_TYPE
 end
 
 function SpawnAreaComponent:GetConfig(): SpawnAreaConfig
@@ -34,6 +39,7 @@ function SpawnAreaComponent:GetConfig(): SpawnAreaConfig
 	local weights = table.clone(areaConfig.AlienWeights)
 
 	for _, alienType in Aliens do
+		print(alienType)
 		local overrideWeight = self.Instance:GetAttribute(`{alienType}Weight`)
 		if typeof(overrideWeight) ~= "number" then
 			overrideWeight = self.Instance:GetAttribute(`Weight_{alienType}`)
