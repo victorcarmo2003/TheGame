@@ -11,13 +11,20 @@ type AlienVisibleStatus = "Show" | "Hiden"
 
 local DEBUG_MODE = true
 
-local function AlienVisibleController(State: AlienVisibleStatus, EnemyList: {any}): boolean
+function AreaMixin:AlienVisibleController(State: AlienVisibleStatus, EnemyList: { string }): boolean
     if #EnemyList <= 0 then
         return false
     end
 
-    for _, Enemy in EnemyList do
-        -- Ocultar ou aparecer aliens
+    for Index: number, EnemyKey: string in EnemyList do
+       local CurrentAlienConfig = EnemyService:GetAlienByKey(EnemyKey)
+        if not CurrentAlienConfig then
+            warn(`[{script.Name} - AreaMixin] Alien key not find Alien.`)
+            table.remove(EnemyList, Index)
+            continue
+        end
+
+        CurrentAlienConfig.Visible:Transition(false)
     end
 
     return true
@@ -29,7 +36,7 @@ function AreaMixin:CreateAliens()
 
     for i = 0, SortTotalAlien, 1 do
         local SpawnCFrame: CFrame = EnemyService:GetRandomAlienPosition(self.Instance)
-        local AlienKey: string = EnemyService:CreateAlien(self.AreaName, Difficult, SpawnCFrame)
+        local AlienKey: string? = EnemyService:CreateAlien(self.AreaName, Difficult, SpawnCFrame)
         if not AlienKey then
             warn(`[{script.Name} = CreateAliens] CreateAlien not returned Key for alien.`)
             continue
@@ -65,14 +72,19 @@ AreaMixin:OnInit(function(self)
         Show = "Hiden"
     })
 
-    self.MinEnemys = 1
-    self.MaxEnemys = 5
+    self.MinEnemys = 10
+    self.MaxEnemys = 30
 
     self.OnEnemyStatus:OnTransition(function(previousState: "Hiden" | "Show", nextState: "Hiden" | "Show")
         if previousState == nextState then return end;
 
-        return AlienVisibleController(nextState, self.Enemys)
+        return self:AlienVisibleController(nextState, self.Enemys)
     end)
+end)
+
+AreaMixin:OnDestroy(function(self)
+    self.Enemys = {}
+    self.OnEnemyStatus:Destroy()
 end)
 
 return AreaMixin
