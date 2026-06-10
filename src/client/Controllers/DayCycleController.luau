@@ -4,10 +4,8 @@ local Modux = require(game.ReplicatedStorage.Shared.Modux)
 local DayCycleController = Modux.Controller("DayCycleController")
 
 local localPlayer = game.Players.LocalPlayer
-local ScreenGui = localPlayer.PlayerGui:WaitForChild("ScreenGui", 5)
+local ScreenGui = localPlayer.PlayerGui:WaitForChild("ScreenGui")
 local statusUI = ScreenGui.Conteiner.Status
-
-type NumberMessage = { Message: number }
 
 DayCycleController.UpdateClock = function(self, seconds: number)
 	local ClockLabel = statusUI.ClockLabel
@@ -21,12 +19,16 @@ DayCycleController.UpdateDay = function(self, currentDay: number)
 end
 
 DayCycleController:OnInit(function(self)
-	self.Network.Packages.SecondsCycle:on(function(payload: NumberMessage)
-		self:UpdateClock(payload.Message)
+	self.Network.Packages.SecondsCycle:on(function(payload)
+		self:UpdateClock(payload.Seconds)
 	end)
 
-	self.Network.Packages.DayCycle:on(function(payload: NumberMessage)
-		self:UpdateDay(payload.Message)
+	self.Network.Packages.DayCycle:on(function(payload)
+		self:UpdateDay(payload.CurrentDay)
+	end)
+
+	self.Network.Packages.TransitionCycle:on(function(data: { DayTime: string })
+		print(`[CLIENT-SIDE] Daytime:`, data.DayTime)
 	end)
 end)
 
