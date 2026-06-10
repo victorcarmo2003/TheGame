@@ -15,7 +15,7 @@ local WINDOW_ID_ATTRIBUTE = "WindowId"
 
 local ScreenController = Modux.Controller("ScreenController"):Import("UIAnimationsController")
 
-ScreenController.Gui = nil :: MainGui?
+ScreenController.Gui = nil :: MainGui
 ScreenController.Windows = {} :: { [WindowId]: GuiObject }
 ScreenController.CurrentWindow = nil :: WindowId?
 ScreenController.BoundButtons = {} :: { [Instance]: boolean }

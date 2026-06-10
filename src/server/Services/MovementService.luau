@@ -1,30 +1,13 @@
-local Modux = require(game.ReplicatedStorage.Shared.Modux)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CollectionService = game:GetService("CollectionService")
 
-local MovementService = Modux.Service("MovementService")
+local Modux = require(ReplicatedStorage.Shared.Modux)
+local MovementService = Modux.Service("MovementService"):Import("PlayerService")
 
-MovementService:OnInit(function(self)
-	self.Network.Packages.CanMovement:handle(
-		function(request: { ActionName: string }, player: Player?): { CanDo: boolean }?
-			if request.ActionName == "Run" then
-				return { CanDo = true }
-			end
-
-			if request.ActionName == "Walk" then
-				return { CanDo = true }
-			end
-
-			if request.ActionName == "Crouch" then
-				return { CanDo = true }
-			end
-
-			if request.ActionName == "Jump" then
-				return { CanDo = true }
-			end
-			return { CanDo = false }
-		end
-	)
+MovementService:OnStart(function(self) 
+	self.PlayerService:OnPlayerAdded(function(Player: Player)
+		CollectionService:AddTag(Player, "MovementComponent")
+	end)
 end)
-
-MovementService:OnStart(function(self) end)
 
 return MovementService

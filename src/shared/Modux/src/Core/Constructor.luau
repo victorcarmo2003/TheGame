@@ -16,6 +16,7 @@ Constructor._tag = nil
 Constructor._className = nil
 Constructor._attributeSchema = nil
 Constructor._requiredChildren = nil
+Constructor._requiredComponents = nil
 Constructor._cleanupTasks = {}
 
 export type Type = "Service" | "Controller" | "Component" | "Mixin"
@@ -80,6 +81,14 @@ function Constructor:Children(children: { string })
 	return self
 end
 
+function Constructor:RequireComponent(id: string)
+	self._requiredComponents = self._requiredComponents or {}
+	if not table.find(self._requiredComponents, id) then
+		table.insert(self._requiredComponents, id)
+	end
+	return self
+end
+
 -- Retorna todos os componentes ativos de um determinado ID (ex: "Zombie")
 function Constructor:GetAllComponents(id: string)
 	return Registry.GetAll(id)
@@ -88,6 +97,12 @@ end
 -- Retorna o componente específico de uma instância
 function Constructor:GetComponent(instance: Instance, id: string)
 	return Registry.Get(instance, id)
+end
+
+function Constructor:GetRequiredComponent(instance: Instance, id: string)
+	local component = Registry.Get(instance, id)
+	assert(component, `[Modux] Required component "{id}" is not active on {instance:GetFullName()}.`)
+	return component
 end
 
 function Constructor:Cleanup(task: any)
@@ -195,6 +210,7 @@ function Constructor.New(ID: string, Type: Type)
 	self._className = nil
 	self._attributeSchema = nil
 	self._requiredChildren = nil
+	self._requiredComponents = nil
 	self._cleanupTasks = {}
 	self._composed = false
 	if Type == "Controller" then

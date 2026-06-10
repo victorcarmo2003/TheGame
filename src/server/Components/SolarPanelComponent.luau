@@ -7,8 +7,7 @@ local SolarPanelComponent = Modux.Component("SolarPanelComponent"):Tag("SolarPan
 SolarPanelComponent.Setup = function(self)
 	local SolarPanelDatabase = require(Shared.Utils.SolarPanelDatabase)
 	local panelDatabase = SolarPanelDatabase.GetByName(self.Instance.Name)
-	self.ConnectedTo = nil :: Instance?
-	self.Production = 1
+	
 end
 
 SolarPanelComponent:OnStart(function(self) end)

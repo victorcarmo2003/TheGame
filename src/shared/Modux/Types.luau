@@ -59,29 +59,6 @@ export type HandlerType = {
 	_onReleaseCallbacks: { [number]: () -> () },
 }
 export type Context = "Gameplay" | "Menu" | "Cutscene"
-export type StateCallback<State> = (state: State, otherState: State) -> ()
-export type Disconnect = () -> ()
-export type TransitionCallback<State> = (previousState: State, nextState: State) -> ()
-export type Transitions<State> = { [State]: { State } }
-export type FSM<State> = {
-	State: State,
-
-	GetState: (self: FSM<State>) -> State,
-	Is: (self: FSM<State>, state: State) -> boolean,
-	CanTransition: (self: FSM<State>, nextState: State) -> boolean,
-	Transition: (self: FSM<State>, nextState: State) -> boolean,
-	OnEnter: (self: FSM<State>, state: State, callback: StateCallback<State>) -> Disconnect,
-	OnLeave: (self: FSM<State>, state: State, callback: StateCallback<State>) -> Disconnect,
-	OnTransition: (self: FSM<State>, callback: TransitionCallback<State>) -> Disconnect,
-	Destroy: (self: FSM<State>) -> (),
-
-	_transitions: Transitions<State>?,
-	_enterListeners: { [State]: { StateCallback<State> } },
-	_leaveListeners: { [State]: { StateCallback<State> } },
-	_transitionListeners: { TransitionCallback<State> },
-	_destroyed: boolean,
-}
-export type MovementStates = "Walking" | "Running" | "Crouch" | "Jumping" | "Dead"
 type MainGui = ScreenGuiRoot
 type WindowId = UIWindowId
 type AnimationHandle<T> = {
@@ -149,7 +126,31 @@ type SpawnAreaConfig = {
 	MaxDifficulty: number,
 	AlienWeights: { [AlienType]: number },
 }
-export type OxygenStates = "Avaliable" | "Unavaliable"
+export type StateCallback<State> = (state: State, otherState: State) -> ()
+export type Disconnect = () -> ()
+export type TransitionCallback<State> = (previousState: State, nextState: State) -> ()
+export type Transitions<State> = { [State]: { State } }
+export type FSM<State> = {
+	State: State,
+
+	GetState: (self: FSM<State>) -> State,
+	Is: (self: FSM<State>, state: State) -> boolean,
+	CanTransition: (self: FSM<State>, nextState: State) -> boolean,
+	Transition: (self: FSM<State>, nextState: State) -> boolean,
+	OnEnter: (self: FSM<State>, state: State, callback: StateCallback<State>) -> Disconnect,
+	OnLeave: (self: FSM<State>, state: State, callback: StateCallback<State>) -> Disconnect,
+	OnTransition: (self: FSM<State>, callback: TransitionCallback<State>) -> Disconnect,
+	Destroy: (self: FSM<State>) -> (),
+
+	_transitions: Transitions<State>?,
+	_enterListeners: { [State]: { StateCallback<State> } },
+	_leaveListeners: { [State]: { StateCallback<State> } },
+	_transitionListeners: { TransitionCallback<State> },
+	_destroyed: boolean,
+}
+export type MovementStates = "Walking" | "Running" | "Crouch" | "Jumping" | "Dead"
+export type OxygenStates = "Avaliable" | "Unavaliable" | "Low"
+export type VitalAttributes = "Armor" | "Hunger" | "Health" | "Oxygen" | "MaxOxygen"
 export type DayCycle = "Day" | "Night" | "Idle"
 type GameStates = "Begin" | "Normal" | "DarkMoon"
 export type R6 = {
@@ -326,7 +327,9 @@ export type GlobalClock = {
 }
 
 export type Tools = {
-	WaitForChildOfClass: (parent: Instance, className: string) -> Instance,
+	WaitForChildOfClass: any,
+	Spring: typeof(require(script.Parent.src.Tools.SpringWrapper)),
+	Debounce: typeof(require(script.Parent.src.Tools.Debounce)),
 }
 
 export type SignalConnection = {
@@ -349,6 +352,24 @@ export type SignalAPI = {
 --> NETWORK PACKAGES (Lync)
 export type Network = {
 	Packages: {
+		ZoneNotification: LyncPacket<{
+	Message: string,
+}>,
+		TransitionCycle: LyncPacket<{
+	DayTime: string,
+}>,
+		SecondsCycle: LyncPacket<{
+	Seconds: number,
+}>,
+		DayCycle: LyncPacket<{
+	CurrentDay: number,
+}>,
+		ChangeMovement: LyncPacket<{
+	ActionName: string,
+}>,
+		ChangeWalkSpeed: LyncPacket<{
+	WalkSpeed: number,
+}>,
 		Data: LyncPacket<DataTemplate>,
 		DataKey: LyncKeyedPacket<{
 	key: "Gems",
@@ -430,15 +451,6 @@ export type Network = {
 	key: "MusicEnabled",
 	value: boolean,
 }, "Gems" | "Gamepasses" | "Item" | "UnlockedItems" | "UnlockedClasses" | "Badgets" | "FirstLogin" | "Wins" | "DayCount" | "CurrentZone" | "CurrentClass" | "TimeSpent" | "RobuxSpent" | "GemsSpent" | "ChestOpen" | "SpinWheel" | "MusicVolume" | "SoundVolume" | "SoundEnabled" | "MusicEnabled", number | { [string]: boolean } | { [string]: number } | { [number]: boolean } | boolean | string>,
-		ZoneNotification: LyncPacket<{
-	Message: string,
-}>,
-		SecondsCycle: LyncPacket<{
-	Message: number,
-}>,
-		DayCycle: LyncPacket<{
-	Message: number,
-}>,
 		VitalKey: LyncKeyedPacket<{
 	key: "Armor",
 	value: number,
@@ -471,12 +483,6 @@ export type Network = {
 	Oxygen: number,
 	MaxOxygen: number,
 }>,
-		CanMovement: LyncQuery<{
-	ActionName: string,
-}, {
-	CanDo: boolean,
-	CurrentState: (string)?,
-}>,
 	},
 	all: NetworkTarget,
 }
@@ -494,11 +500,19 @@ export type AliensComponentInstance = Model
 
 export type CommonAlienComponentInstance = Model
 
+export type DebugVitalComponentInstance = Instance
+
 export type GenericAlienComponentInstance = Model
+
+export type HungerComponentInstance = Player
 
 export type IntermediateAlienComponentInstance = Model
 
+export type MovementComponentInstance = Instance
+
 export type OxygenComponentInstance = Player
+
+export type OxygenZoneComponentInstance = Instance
 
 export type RegionComponentInstance = Instance
 
@@ -532,8 +546,10 @@ export type DayCycleController = {
 	ClassName: (self: DayCycleController, className: string) -> DayCycleController,
 	AttributeDefaults: (self: DayCycleController, schema: { [string]: any }) -> DayCycleController,
 	Children: (self: DayCycleController, children: { string }) -> DayCycleController,
+	RequireComponent: (self: DayCycleController, id: string) -> DayCycleController,
 	New: (self: DayCycleController, ID: string, Type: Type) -> DayCycleController,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -573,8 +589,10 @@ export type EnemyRenderController = {
 	ClassName: (self: EnemyRenderController, className: string) -> EnemyRenderController,
 	AttributeDefaults: (self: EnemyRenderController, schema: { [string]: any }) -> EnemyRenderController,
 	Children: (self: EnemyRenderController, children: { string }) -> EnemyRenderController,
+	RequireComponent: (self: EnemyRenderController, id: string) -> EnemyRenderController,
 	New: (self: EnemyRenderController, ID: string, Type: Type) -> EnemyRenderController,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -607,8 +625,10 @@ export type InputController = {
 	ClassName: (self: InputController, className: string) -> InputController,
 	AttributeDefaults: (self: InputController, schema: { [string]: any }) -> InputController,
 	Children: (self: InputController, children: { string }) -> InputController,
+	RequireComponent: (self: InputController, id: string) -> InputController,
 	New: (self: InputController, ID: string, Type: Type) -> InputController,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -626,12 +646,7 @@ export type MovementController = {
 	LocalCharacter: Model?,
 	LocalHumanoid: Humanoid?,
 	InputController: InputController,
-	StartWalk: (self: MovementController) -> (),
-	StartRun: (self: MovementController) -> (),
-	StartCrouch: (self: MovementController) -> (),
-	HandleTranstions: (self: MovementController) -> (),
-	BindKeys: (self: MovementController) -> any,
-	State: FSM<MovementStates>,
+	BindKeys: (self: MovementController) -> (),
 	Extend: (self: MovementController, id: "AlienBaseMixin" | "PlayerZoneComponent") -> MovementController,
 	Import: ControllerImportFn,
 	OnInit: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
@@ -643,8 +658,10 @@ export type MovementController = {
 	ClassName: (self: MovementController, className: string) -> MovementController,
 	AttributeDefaults: (self: MovementController, schema: { [string]: any }) -> MovementController,
 	Children: (self: MovementController, children: { string }) -> MovementController,
+	RequireComponent: (self: MovementController, id: string) -> MovementController,
 	New: (self: MovementController, ID: string, Type: Type) -> MovementController,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -672,8 +689,10 @@ export type NotificationController = {
 	ClassName: (self: NotificationController, className: string) -> NotificationController,
 	AttributeDefaults: (self: NotificationController, schema: { [string]: any }) -> NotificationController,
 	Children: (self: NotificationController, children: { string }) -> NotificationController,
+	RequireComponent: (self: NotificationController, id: string) -> NotificationController,
 	New: (self: NotificationController, ID: string, Type: Type) -> NotificationController,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -701,8 +720,10 @@ export type ProfileController = {
 	ClassName: (self: ProfileController, className: string) -> ProfileController,
 	AttributeDefaults: (self: ProfileController, schema: { [string]: any }) -> ProfileController,
 	Children: (self: ProfileController, children: { string }) -> ProfileController,
+	RequireComponent: (self: ProfileController, id: string) -> ProfileController,
 	New: (self: ProfileController, ID: string, Type: Type) -> ProfileController,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -737,7 +758,7 @@ export type ScreenController = {
 	TryBindOpenButton: (self: ScreenController, instance: Instance) -> any,
 	TryBindCloseButton: (self: ScreenController, instance: Instance) -> any,
 	BindTaggedButtons: (self: ScreenController) -> (),
-	Gui: MainGui?,
+	Gui: MainGui,
 	Windows: { [WindowId]: GuiObject },
 	CurrentWindow: WindowId?,
 	BoundButtons: { [Instance]: boolean },
@@ -755,8 +776,10 @@ export type ScreenController = {
 	ClassName: (self: ScreenController, className: string) -> ScreenController,
 	AttributeDefaults: (self: ScreenController, schema: { [string]: any }) -> ScreenController,
 	Children: (self: ScreenController, children: { string }) -> ScreenController,
+	RequireComponent: (self: ScreenController, id: string) -> ScreenController,
 	New: (self: ScreenController, ID: string, Type: Type) -> ScreenController,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -817,8 +840,10 @@ export type UIAnimationsController = {
 	ClassName: (self: UIAnimationsController, className: string) -> UIAnimationsController,
 	AttributeDefaults: (self: UIAnimationsController, schema: { [string]: any }) -> UIAnimationsController,
 	Children: (self: UIAnimationsController, children: { string }) -> UIAnimationsController,
+	RequireComponent: (self: UIAnimationsController, id: string) -> UIAnimationsController,
 	New: (self: UIAnimationsController, ID: string, Type: Type) -> UIAnimationsController,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -862,8 +887,10 @@ export type VitalController = {
 	ClassName: (self: VitalController, className: string) -> VitalController,
 	AttributeDefaults: (self: VitalController, schema: { [string]: any }) -> VitalController,
 	Children: (self: VitalController, children: { string }) -> VitalController,
+	RequireComponent: (self: VitalController, id: string) -> VitalController,
 	New: (self: VitalController, ID: string, Type: Type) -> VitalController,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -904,8 +931,10 @@ export type AlienBaseMixin = {
 	ClassName: (self: AlienBaseMixin, className: string) -> AlienBaseMixin,
 	AttributeDefaults: (self: AlienBaseMixin, schema: { [string]: any }) -> AlienBaseMixin,
 	Children: (self: AlienBaseMixin, children: { string }) -> AlienBaseMixin,
+	RequireComponent: (self: AlienBaseMixin, id: string) -> AlienBaseMixin,
 	New: (self: AlienBaseMixin, ID: string, Type: Type) -> AlienBaseMixin,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -947,8 +976,10 @@ export type CommonAlienComponent = {
 	ClassName: (self: CommonAlienComponent, className: string) -> CommonAlienComponent,
 	AttributeDefaults: (self: CommonAlienComponent, schema: { [string]: any }) -> CommonAlienComponent,
 	Children: (self: CommonAlienComponent, children: { string }) -> CommonAlienComponent,
+	RequireComponent: (self: CommonAlienComponent, id: string) -> CommonAlienComponent,
 	New: (self: CommonAlienComponent, ID: string, Type: Type) -> CommonAlienComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -991,8 +1022,10 @@ export type GenericAlienComponent = {
 	ClassName: (self: GenericAlienComponent, className: string) -> GenericAlienComponent,
 	AttributeDefaults: (self: GenericAlienComponent, schema: { [string]: any }) -> GenericAlienComponent,
 	Children: (self: GenericAlienComponent, children: { string }) -> GenericAlienComponent,
+	RequireComponent: (self: GenericAlienComponent, id: string) -> GenericAlienComponent,
 	New: (self: GenericAlienComponent, ID: string, Type: Type) -> GenericAlienComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1035,8 +1068,10 @@ export type IntermediateAlienComponent = {
 	ClassName: (self: IntermediateAlienComponent, className: string) -> IntermediateAlienComponent,
 	AttributeDefaults: (self: IntermediateAlienComponent, schema: { [string]: any }) -> IntermediateAlienComponent,
 	Children: (self: IntermediateAlienComponent, children: { string }) -> IntermediateAlienComponent,
+	RequireComponent: (self: IntermediateAlienComponent, id: string) -> IntermediateAlienComponent,
 	New: (self: IntermediateAlienComponent, ID: string, Type: Type) -> IntermediateAlienComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1079,8 +1114,10 @@ export type RunnerAlienComponent = {
 	ClassName: (self: RunnerAlienComponent, className: string) -> RunnerAlienComponent,
 	AttributeDefaults: (self: RunnerAlienComponent, schema: { [string]: any }) -> RunnerAlienComponent,
 	Children: (self: RunnerAlienComponent, children: { string }) -> RunnerAlienComponent,
+	RequireComponent: (self: RunnerAlienComponent, id: string) -> RunnerAlienComponent,
 	New: (self: RunnerAlienComponent, ID: string, Type: Type) -> RunnerAlienComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1112,8 +1149,10 @@ export type SpawnAreaComponent = {
 	ClassName: (self: SpawnAreaComponent, className: string) -> SpawnAreaComponent,
 	AttributeDefaults: (self: SpawnAreaComponent, schema: { [string]: any }) -> SpawnAreaComponent,
 	Children: (self: SpawnAreaComponent, children: { string }) -> SpawnAreaComponent,
+	RequireComponent: (self: SpawnAreaComponent, id: string) -> SpawnAreaComponent,
 	New: (self: SpawnAreaComponent, ID: string, Type: Type) -> SpawnAreaComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1147,8 +1186,10 @@ export type AliensComponent = {
 	ClassName: (self: AliensComponent, className: string) -> AliensComponent,
 	AttributeDefaults: (self: AliensComponent, schema: { [string]: any }) -> AliensComponent,
 	Children: (self: AliensComponent, children: { string }) -> AliensComponent,
+	RequireComponent: (self: AliensComponent, id: string) -> AliensComponent,
 	New: (self: AliensComponent, ID: string, Type: Type) -> AliensComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1160,15 +1201,145 @@ export type AliensComponent = {
 	Instance: AliensComponentInstance,
 }
 
+export type OxygenZoneComponent = {
+	ID: string,
+	Type: Type,
+	OnEnter: (self: OxygenZoneComponent, callback: callbackZone) -> (),
+	OnExit: (self: OxygenZoneComponent, callback: callbackZone) -> (),
+	ObserverPlayersInPart: (self: OxygenZoneComponent, config: PlayerZoneConfig) -> any,
+	Extend: (self: OxygenZoneComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> OxygenZoneComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: OxygenZoneComponent, cb: (self: OxygenZoneComponent) -> ()) -> OxygenZoneComponent,
+	OnStart: (self: OxygenZoneComponent, cb: (self: OxygenZoneComponent) -> ()) -> OxygenZoneComponent,
+	OnTick: (self: OxygenZoneComponent, cb: (self: OxygenZoneComponent, deltaTime: number) -> (), rate: number, priority: number?) -> OxygenZoneComponent,
+	OnSimulation: (self: OxygenZoneComponent, cb: (self: OxygenZoneComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> OxygenZoneComponent,
+	OnDestroy: (self: OxygenZoneComponent, cb: (self: OxygenZoneComponent) -> ()) -> OxygenZoneComponent,
+	Tag: (self: OxygenZoneComponent, tag: string) -> OxygenZoneComponent,
+	ClassName: (self: OxygenZoneComponent, className: string) -> OxygenZoneComponent,
+	AttributeDefaults: (self: OxygenZoneComponent, schema: { [string]: any }) -> OxygenZoneComponent,
+	Children: (self: OxygenZoneComponent, children: { string }) -> OxygenZoneComponent,
+	RequireComponent: (self: OxygenZoneComponent, id: string) -> OxygenZoneComponent,
+	New: (self: OxygenZoneComponent, ID: string, Type: Type) -> OxygenZoneComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: OxygenZoneComponentInstance,
+}
+
+export type DebugVitalComponent = {
+	ID: string,
+	Type: Type,
+	Extend: (self: DebugVitalComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> DebugVitalComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: DebugVitalComponent, cb: (self: DebugVitalComponent) -> ()) -> DebugVitalComponent,
+	OnStart: (self: DebugVitalComponent, cb: (self: DebugVitalComponent) -> ()) -> DebugVitalComponent,
+	OnTick: (self: DebugVitalComponent, cb: (self: DebugVitalComponent, deltaTime: number) -> (), rate: number, priority: number?) -> DebugVitalComponent,
+	OnSimulation: (self: DebugVitalComponent, cb: (self: DebugVitalComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> DebugVitalComponent,
+	OnDestroy: (self: DebugVitalComponent, cb: (self: DebugVitalComponent) -> ()) -> DebugVitalComponent,
+	Tag: (self: DebugVitalComponent, tag: string) -> DebugVitalComponent,
+	ClassName: (self: DebugVitalComponent, className: string) -> DebugVitalComponent,
+	AttributeDefaults: (self: DebugVitalComponent, schema: { [string]: any }) -> DebugVitalComponent,
+	Children: (self: DebugVitalComponent, children: { string }) -> DebugVitalComponent,
+	RequireComponent: (self: DebugVitalComponent, id: string) -> DebugVitalComponent,
+	New: (self: DebugVitalComponent, ID: string, Type: Type) -> DebugVitalComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: DebugVitalComponentInstance,
+}
+
+export type HungerComponent = {
+	ID: string,
+	Type: Type,
+	DamagePlayer: (self: HungerComponent) -> any,
+	ConsumeRate: number,
+	HungerDamage: number,
+	Vital: VitalComponent,
+	Extend: (self: HungerComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> HungerComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: HungerComponent, cb: (self: HungerComponent) -> ()) -> HungerComponent,
+	OnStart: (self: HungerComponent, cb: (self: HungerComponent) -> ()) -> HungerComponent,
+	OnTick: (self: HungerComponent, cb: (self: HungerComponent, deltaTime: number) -> (), rate: number, priority: number?) -> HungerComponent,
+	OnSimulation: (self: HungerComponent, cb: (self: HungerComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> HungerComponent,
+	OnDestroy: (self: HungerComponent, cb: (self: HungerComponent) -> ()) -> HungerComponent,
+	Tag: (self: HungerComponent, tag: string) -> HungerComponent,
+	ClassName: (self: HungerComponent, className: string) -> HungerComponent,
+	AttributeDefaults: (self: HungerComponent, schema: { [string]: any }) -> HungerComponent,
+	Children: (self: HungerComponent, children: { string }) -> HungerComponent,
+	RequireComponent: (self: HungerComponent, id: string) -> HungerComponent,
+	New: (self: HungerComponent, ID: string, Type: Type) -> HungerComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: HungerComponentInstance,
+}
+
+export type MovementComponent = {
+	ID: string,
+	Type: Type,
+	StartWalk: (self: MovementComponent, player: Player) -> any,
+	StartRun: (self: MovementComponent, player: Player) -> any,
+	StartCrouch: (self: MovementComponent, player: Player) -> any,
+	State: FSM<MovementStates>,
+	Extend: (self: MovementComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> MovementComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: MovementComponent, cb: (self: MovementComponent) -> ()) -> MovementComponent,
+	OnStart: (self: MovementComponent, cb: (self: MovementComponent) -> ()) -> MovementComponent,
+	OnTick: (self: MovementComponent, cb: (self: MovementComponent, deltaTime: number) -> (), rate: number, priority: number?) -> MovementComponent,
+	OnSimulation: (self: MovementComponent, cb: (self: MovementComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> MovementComponent,
+	OnDestroy: (self: MovementComponent, cb: (self: MovementComponent) -> ()) -> MovementComponent,
+	Tag: (self: MovementComponent, tag: string) -> MovementComponent,
+	ClassName: (self: MovementComponent, className: string) -> MovementComponent,
+	AttributeDefaults: (self: MovementComponent, schema: { [string]: any }) -> MovementComponent,
+	Children: (self: MovementComponent, children: { string }) -> MovementComponent,
+	RequireComponent: (self: MovementComponent, id: string) -> MovementComponent,
+	New: (self: MovementComponent, ID: string, Type: Type) -> MovementComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: MovementComponentInstance,
+}
+
 export type OxygenComponent = {
 	ID: string,
 	Type: Type,
 	Avaliable: (self: OxygenComponent) -> (),
 	Unavaliable: (self: OxygenComponent) -> (),
+	Low: (self: OxygenComponent) -> (),
+	SufocatePlayer: (self: OxygenComponent) -> (),
 	FSM: FSM<OxygenStates>,
 	ConsumeRate: number,
 	RegenRate: number,
 	SuffocateDamage: number,
+	Vital: VitalComponent,
 	Extend: (self: OxygenComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> OxygenComponent,
 	Import: ComponentImportFn,
 	OnInit: (self: OxygenComponent, cb: (self: OxygenComponent) -> ()) -> OxygenComponent,
@@ -1180,8 +1351,10 @@ export type OxygenComponent = {
 	ClassName: (self: OxygenComponent, className: string) -> OxygenComponent,
 	AttributeDefaults: (self: OxygenComponent, schema: { [string]: any }) -> OxygenComponent,
 	Children: (self: OxygenComponent, children: { string }) -> OxygenComponent,
+	RequireComponent: (self: OxygenComponent, id: string) -> OxygenComponent,
 	New: (self: OxygenComponent, ID: string, Type: Type) -> OxygenComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1197,14 +1370,15 @@ export type VitalComponent = {
 	ID: string,
 	Type: Type,
 	ReplicateAll: (self: VitalComponent) -> (),
-	TakeDamage: (self: VitalComponent, Amount: number) -> any,
-	ConsumeOxygen: (self: VitalComponent, Amount: number) -> any,
-	ConsumeHunger: (self: VitalComponent, Amount: number) -> any,
-	SetArmor: (self: VitalComponent, Amount: number) -> (),
-	Heal: (self: VitalComponent, Amount: number) -> (),
-	IncreaseHunger: (self: VitalComponent, Amount: number) -> (),
-	IncreaseOxygen: (self: VitalComponent, Amount: number) -> (),
-	SetMaxOxygen: (self: VitalComponent, Amount: number) -> (),
+	ReplicateKey: (self: VitalComponent, Key: VitalAttributes) -> (),
+	TakeDamage: (self: VitalComponent, Amount: number) -> boolean,
+	ConsumeOxygen: (self: VitalComponent, Amount: number) -> boolean,
+	ConsumeHunger: (self: VitalComponent, Amount: number) -> boolean,
+	SetArmor: (self: VitalComponent, Amount: number) -> boolean,
+	Heal: (self: VitalComponent, Amount: number) -> boolean,
+	IncreaseHunger: (self: VitalComponent, Amount: number) -> boolean,
+	IncreaseOxygen: (self: VitalComponent, Amount: number) -> boolean,
+	SetMaxOxygen: (self: VitalComponent, Amount: number) -> boolean,
 	OnDie: Signal<Player>,
 	Health: number,
 	Oxygen: number,
@@ -1247,8 +1421,10 @@ export type VitalComponent = {
 	ClassName: (self: VitalComponent, className: string) -> VitalComponent,
 	AttributeDefaults: (self: VitalComponent, schema: { [string]: any }) -> VitalComponent,
 	Children: (self: VitalComponent, children: { string }) -> VitalComponent,
+	RequireComponent: (self: VitalComponent, id: string) -> VitalComponent,
 	New: (self: VitalComponent, ID: string, Type: Type) -> VitalComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1258,6 +1434,36 @@ export type VitalComponent = {
 	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: VitalComponentInstance,
+}
+
+export type SolarPanelComponent = {
+	ID: string,
+	Type: Type,
+	Setup: (self: SolarPanelComponent) -> (),
+	Extend: (self: SolarPanelComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> SolarPanelComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
+	OnStart: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
+	OnTick: (self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SolarPanelComponent,
+	OnSimulation: (self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SolarPanelComponent,
+	OnDestroy: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
+	Tag: (self: SolarPanelComponent, tag: string) -> SolarPanelComponent,
+	ClassName: (self: SolarPanelComponent, className: string) -> SolarPanelComponent,
+	AttributeDefaults: (self: SolarPanelComponent, schema: { [string]: any }) -> SolarPanelComponent,
+	Children: (self: SolarPanelComponent, children: { string }) -> SolarPanelComponent,
+	RequireComponent: (self: SolarPanelComponent, id: string) -> SolarPanelComponent,
+	New: (self: SolarPanelComponent, ID: string, Type: Type) -> SolarPanelComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: SolarPanelComponentInstance,
 }
 
 export type ZoneComponent = {
@@ -1278,8 +1484,10 @@ export type ZoneComponent = {
 	ClassName: (self: ZoneComponent, className: string) -> ZoneComponent,
 	AttributeDefaults: (self: ZoneComponent, schema: { [string]: any }) -> ZoneComponent,
 	Children: (self: ZoneComponent, children: { string }) -> ZoneComponent,
+	RequireComponent: (self: ZoneComponent, id: string) -> ZoneComponent,
 	New: (self: ZoneComponent, ID: string, Type: Type) -> ZoneComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1306,8 +1514,10 @@ export type BattleService = {
 	ClassName: (self: BattleService, className: string) -> BattleService,
 	AttributeDefaults: (self: BattleService, schema: { [string]: any }) -> BattleService,
 	Children: (self: BattleService, children: { string }) -> BattleService,
+	RequireComponent: (self: BattleService, id: string) -> BattleService,
 	New: (self: BattleService, ID: string, Type: Type) -> BattleService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1321,6 +1531,7 @@ export type BattleService = {
 export type DayNightService = {
 	ID: string,
 	Type: Type,
+	StartTransition: (self: DayNightService, DayTime: "Night" | "Day") -> (),
 	ReplicateClock: (self: DayNightService) -> (),
 	ObserverCycle: (self: DayNightService, callback: (currentState: DayCycle) -> ()) -> any,
 	IncreaseDay: (self: DayNightService) -> (),
@@ -1342,8 +1553,10 @@ export type DayNightService = {
 	ClassName: (self: DayNightService, className: string) -> DayNightService,
 	AttributeDefaults: (self: DayNightService, schema: { [string]: any }) -> DayNightService,
 	Children: (self: DayNightService, children: { string }) -> DayNightService,
+	RequireComponent: (self: DayNightService, id: string) -> DayNightService,
 	New: (self: DayNightService, ID: string, Type: Type) -> DayNightService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1382,8 +1595,10 @@ export type EnemyService = {
 	ClassName: (self: EnemyService, className: string) -> EnemyService,
 	AttributeDefaults: (self: EnemyService, schema: { [string]: any }) -> EnemyService,
 	Children: (self: EnemyService, children: { string }) -> EnemyService,
+	RequireComponent: (self: EnemyService, id: string) -> EnemyService,
 	New: (self: EnemyService, ID: string, Type: Type) -> EnemyService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1414,8 +1629,10 @@ export type GameService = {
 	ClassName: (self: GameService, className: string) -> GameService,
 	AttributeDefaults: (self: GameService, schema: { [string]: any }) -> GameService,
 	Children: (self: GameService, children: { string }) -> GameService,
+	RequireComponent: (self: GameService, id: string) -> GameService,
 	New: (self: GameService, ID: string, Type: Type) -> GameService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1440,8 +1657,10 @@ export type GeneratorService = {
 	ClassName: (self: GeneratorService, className: string) -> GeneratorService,
 	AttributeDefaults: (self: GeneratorService, schema: { [string]: any }) -> GeneratorService,
 	Children: (self: GeneratorService, children: { string }) -> GeneratorService,
+	RequireComponent: (self: GeneratorService, id: string) -> GeneratorService,
 	New: (self: GeneratorService, ID: string, Type: Type) -> GeneratorService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1466,8 +1685,10 @@ export type LeaderstatsService = {
 	ClassName: (self: LeaderstatsService, className: string) -> LeaderstatsService,
 	AttributeDefaults: (self: LeaderstatsService, schema: { [string]: any }) -> LeaderstatsService,
 	Children: (self: LeaderstatsService, children: { string }) -> LeaderstatsService,
+	RequireComponent: (self: LeaderstatsService, id: string) -> LeaderstatsService,
 	New: (self: LeaderstatsService, ID: string, Type: Type) -> LeaderstatsService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1481,6 +1702,7 @@ export type LeaderstatsService = {
 export type MovementService = {
 	ID: string,
 	Type: Type,
+	PlayerService: PlayerService,
 	Extend: (self: MovementService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> MovementService,
 	Import: ServiceImportFn,
 	OnInit: (self: MovementService, cb: (self: MovementService) -> ()) -> MovementService,
@@ -1492,35 +1714,10 @@ export type MovementService = {
 	ClassName: (self: MovementService, className: string) -> MovementService,
 	AttributeDefaults: (self: MovementService, schema: { [string]: any }) -> MovementService,
 	Children: (self: MovementService, children: { string }) -> MovementService,
+	RequireComponent: (self: MovementService, id: string) -> MovementService,
 	New: (self: MovementService, ID: string, Type: Type) -> MovementService,
 	GetComponent: GetComponentFn,
-	GetAllComponents: GetAllComponentsFn,
-	Cleanup: <T>(self: any, task: T) -> T,
-	Network: Network,
-	Promise: PromiseAPI,
-	GlobalClock: GlobalClock,
-	Signal: SignalAPI,
-	Tools: Tools,
-	Attributes: { [string]: any },
-}
-
-export type OxygenService = {
-	ID: string,
-	Type: Type,
-	PlayerService: PlayerService,
-	Extend: (self: OxygenService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> OxygenService,
-	Import: ServiceImportFn,
-	OnInit: (self: OxygenService, cb: (self: OxygenService) -> ()) -> OxygenService,
-	OnStart: (self: OxygenService, cb: (self: OxygenService) -> ()) -> OxygenService,
-	OnTick: (self: OxygenService, cb: (self: OxygenService, deltaTime: number) -> (), rate: number, priority: number?) -> OxygenService,
-	OnSimulation: (self: OxygenService, cb: (self: OxygenService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> OxygenService,
-	OnDestroy: (self: OxygenService, cb: (self: OxygenService) -> ()) -> OxygenService,
-	Tag: (self: OxygenService, tag: string) -> OxygenService,
-	ClassName: (self: OxygenService, className: string) -> OxygenService,
-	AttributeDefaults: (self: OxygenService, schema: { [string]: any }) -> OxygenService,
-	Children: (self: OxygenService, children: { string }) -> OxygenService,
-	New: (self: OxygenService, ID: string, Type: Type) -> OxygenService,
-	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1546,8 +1743,10 @@ export type PlayerBilboardService = {
 	ClassName: (self: PlayerBilboardService, className: string) -> PlayerBilboardService,
 	AttributeDefaults: (self: PlayerBilboardService, schema: { [string]: any }) -> PlayerBilboardService,
 	Children: (self: PlayerBilboardService, children: { string }) -> PlayerBilboardService,
+	RequireComponent: (self: PlayerBilboardService, id: string) -> PlayerBilboardService,
 	New: (self: PlayerBilboardService, ID: string, Type: Type) -> PlayerBilboardService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1580,8 +1779,10 @@ export type PlayerService = {
 	ClassName: (self: PlayerService, className: string) -> PlayerService,
 	AttributeDefaults: (self: PlayerService, schema: { [string]: any }) -> PlayerService,
 	Children: (self: PlayerService, children: { string }) -> PlayerService,
+	RequireComponent: (self: PlayerService, id: string) -> PlayerService,
 	New: (self: PlayerService, ID: string, Type: Type) -> PlayerService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1615,8 +1816,10 @@ export type ProfileService = {
 	ClassName: (self: ProfileService, className: string) -> ProfileService,
 	AttributeDefaults: (self: ProfileService, schema: { [string]: any }) -> ProfileService,
 	Children: (self: ProfileService, children: { string }) -> ProfileService,
+	RequireComponent: (self: ProfileService, id: string) -> ProfileService,
 	New: (self: ProfileService, ID: string, Type: Type) -> ProfileService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1650,8 +1853,10 @@ export type ProfileService = {
 	ClassName: (self: ProfileService, className: string) -> ProfileService,
 	AttributeDefaults: (self: ProfileService, schema: { [string]: any }) -> ProfileService,
 	Children: (self: ProfileService, children: { string }) -> ProfileService,
+	RequireComponent: (self: ProfileService, id: string) -> ProfileService,
 	New: (self: ProfileService, ID: string, Type: Type) -> ProfileService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1677,8 +1882,10 @@ export type VitalService = {
 	ClassName: (self: VitalService, className: string) -> VitalService,
 	AttributeDefaults: (self: VitalService, schema: { [string]: any }) -> VitalService,
 	Children: (self: VitalService, children: { string }) -> VitalService,
+	RequireComponent: (self: VitalService, id: string) -> VitalService,
 	New: (self: VitalService, ID: string, Type: Type) -> VitalService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1708,8 +1915,10 @@ export type ZoneService = {
 	ClassName: (self: ZoneService, className: string) -> ZoneService,
 	AttributeDefaults: (self: ZoneService, schema: { [string]: any }) -> ZoneService,
 	Children: (self: ZoneService, children: { string }) -> ZoneService,
+	RequireComponent: (self: ZoneService, id: string) -> ZoneService,
 	New: (self: ZoneService, ID: string, Type: Type) -> ZoneService,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1737,8 +1946,10 @@ export type PlayerZoneComponent = {
 	ClassName: (self: PlayerZoneComponent, className: string) -> PlayerZoneComponent,
 	AttributeDefaults: (self: PlayerZoneComponent, schema: { [string]: any }) -> PlayerZoneComponent,
 	Children: (self: PlayerZoneComponent, children: { string }) -> PlayerZoneComponent,
+	RequireComponent: (self: PlayerZoneComponent, id: string) -> PlayerZoneComponent,
 	New: (self: PlayerZoneComponent, ID: string, Type: Type) -> PlayerZoneComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1769,8 +1980,10 @@ export type RegionComponent = {
 	ClassName: (self: RegionComponent, className: string) -> RegionComponent,
 	AttributeDefaults: (self: RegionComponent, schema: { [string]: any }) -> RegionComponent,
 	Children: (self: RegionComponent, children: { string }) -> RegionComponent,
+	RequireComponent: (self: RegionComponent, id: string) -> RegionComponent,
 	New: (self: RegionComponent, ID: string, Type: Type) -> RegionComponent,
 	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
 	Cleanup: <T>(self: any, task: T) -> T,
 	Network: Network,
@@ -1780,39 +1993,6 @@ export type RegionComponent = {
 	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: RegionComponentInstance,
-}
-
-export type SolarPanelComponent = {
-	ID: string,
-	Type: Type,
-	LocalPlayer: Player,
-	LocalCharacter: Model?,
-	LocalHumanoid: Humanoid?,
-	Setup: (self: SolarPanelComponent) -> (),
-	ConnectedTo: Instance?,
-	Production: number,
-	Extend: (self: SolarPanelComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> SolarPanelComponent,
-	Import: ComponentImportFn,
-	OnInit: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
-	OnStart: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
-	OnTick: (self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SolarPanelComponent,
-	OnSimulation: (self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SolarPanelComponent,
-	OnDestroy: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
-	Tag: (self: SolarPanelComponent, tag: string) -> SolarPanelComponent,
-	ClassName: (self: SolarPanelComponent, className: string) -> SolarPanelComponent,
-	AttributeDefaults: (self: SolarPanelComponent, schema: { [string]: any }) -> SolarPanelComponent,
-	Children: (self: SolarPanelComponent, children: { string }) -> SolarPanelComponent,
-	New: (self: SolarPanelComponent, ID: string, Type: Type) -> SolarPanelComponent,
-	GetComponent: GetComponentFn,
-	GetAllComponents: GetAllComponentsFn,
-	Cleanup: <T>(self: any, task: T) -> T,
-	Network: Network,
-	Promise: PromiseAPI,
-	GlobalClock: GlobalClock,
-	Signal: SignalAPI,
-	Tools: Tools,
-	Attributes: { [string]: any },
-	Instance: SolarPanelComponentInstance,
 }
 
 --> IMPORT FUNCTIONS
@@ -1827,7 +2007,6 @@ export type ServiceImportFn =
 	(<Self>(self: Self, id: "GeneratorService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "LeaderstatsService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "MovementService", scopeKey: string?) -> Self) &
-	(<Self>(self: Self, id: "OxygenService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerBilboardService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
@@ -1854,7 +2033,6 @@ export type ComponentImportFn =
 	(<Self>(self: Self, id: "GeneratorService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "LeaderstatsService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "MovementService", scopeKey: string?) -> Self) &
-	(<Self>(self: Self, id: "OxygenService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerBilboardService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
@@ -1887,9 +2065,13 @@ export type MixinExtendFn =
 export type GetComponentFn =
 	(<Self>(self: Self, instance: AliensComponentInstance, id: "AliensComponent") -> AliensComponent?) &
 	(<Self>(self: Self, instance: CommonAlienComponentInstance, id: "CommonAlienComponent") -> CommonAlienComponent?) &
+	(<Self>(self: Self, instance: DebugVitalComponentInstance, id: "DebugVitalComponent") -> DebugVitalComponent?) &
 	(<Self>(self: Self, instance: GenericAlienComponentInstance, id: "GenericAlienComponent") -> GenericAlienComponent?) &
+	(<Self>(self: Self, instance: HungerComponentInstance, id: "HungerComponent") -> HungerComponent?) &
 	(<Self>(self: Self, instance: IntermediateAlienComponentInstance, id: "IntermediateAlienComponent") -> IntermediateAlienComponent?) &
+	(<Self>(self: Self, instance: MovementComponentInstance, id: "MovementComponent") -> MovementComponent?) &
 	(<Self>(self: Self, instance: OxygenComponentInstance, id: "OxygenComponent") -> OxygenComponent?) &
+	(<Self>(self: Self, instance: OxygenZoneComponentInstance, id: "OxygenZoneComponent") -> OxygenZoneComponent?) &
 	(<Self>(self: Self, instance: RegionComponentInstance, id: "RegionComponent") -> RegionComponent?) &
 	(<Self>(self: Self, instance: RunnerAlienComponentInstance, id: "RunnerAlienComponent") -> RunnerAlienComponent?) &
 	(<Self>(self: Self, instance: SolarPanelComponentInstance, id: "SolarPanelComponent") -> SolarPanelComponent?) &
@@ -1898,12 +2080,34 @@ export type GetComponentFn =
 	(<Self>(self: Self, instance: ZoneComponentInstance, id: "ZoneComponent") -> ZoneComponent?) &
 	(<Self>(self: Self, instance: Instance, id: string) -> any)
 
+export type GetRequiredComponentFn =
+	(<Self>(self: Self, instance: AliensComponentInstance, id: "AliensComponent") -> AliensComponent) &
+	(<Self>(self: Self, instance: CommonAlienComponentInstance, id: "CommonAlienComponent") -> CommonAlienComponent) &
+	(<Self>(self: Self, instance: DebugVitalComponentInstance, id: "DebugVitalComponent") -> DebugVitalComponent) &
+	(<Self>(self: Self, instance: GenericAlienComponentInstance, id: "GenericAlienComponent") -> GenericAlienComponent) &
+	(<Self>(self: Self, instance: HungerComponentInstance, id: "HungerComponent") -> HungerComponent) &
+	(<Self>(self: Self, instance: IntermediateAlienComponentInstance, id: "IntermediateAlienComponent") -> IntermediateAlienComponent) &
+	(<Self>(self: Self, instance: MovementComponentInstance, id: "MovementComponent") -> MovementComponent) &
+	(<Self>(self: Self, instance: OxygenComponentInstance, id: "OxygenComponent") -> OxygenComponent) &
+	(<Self>(self: Self, instance: OxygenZoneComponentInstance, id: "OxygenZoneComponent") -> OxygenZoneComponent) &
+	(<Self>(self: Self, instance: RegionComponentInstance, id: "RegionComponent") -> RegionComponent) &
+	(<Self>(self: Self, instance: RunnerAlienComponentInstance, id: "RunnerAlienComponent") -> RunnerAlienComponent) &
+	(<Self>(self: Self, instance: SolarPanelComponentInstance, id: "SolarPanelComponent") -> SolarPanelComponent) &
+	(<Self>(self: Self, instance: SpawnAreaComponentInstance, id: "SpawnAreaComponent") -> SpawnAreaComponent) &
+	(<Self>(self: Self, instance: VitalComponentInstance, id: "VitalComponent") -> VitalComponent) &
+	(<Self>(self: Self, instance: ZoneComponentInstance, id: "ZoneComponent") -> ZoneComponent) &
+	(<Self>(self: Self, instance: Instance, id: string) -> any)
+
 export type GetAllComponentsFn =
 	(<Self>(self: Self, id: "AliensComponent") -> { AliensComponent }) &
 	(<Self>(self: Self, id: "CommonAlienComponent") -> { CommonAlienComponent }) &
+	(<Self>(self: Self, id: "DebugVitalComponent") -> { DebugVitalComponent }) &
 	(<Self>(self: Self, id: "GenericAlienComponent") -> { GenericAlienComponent }) &
+	(<Self>(self: Self, id: "HungerComponent") -> { HungerComponent }) &
 	(<Self>(self: Self, id: "IntermediateAlienComponent") -> { IntermediateAlienComponent }) &
+	(<Self>(self: Self, id: "MovementComponent") -> { MovementComponent }) &
 	(<Self>(self: Self, id: "OxygenComponent") -> { OxygenComponent }) &
+	(<Self>(self: Self, id: "OxygenZoneComponent") -> { OxygenZoneComponent }) &
 	(<Self>(self: Self, id: "RegionComponent") -> { RegionComponent }) &
 	(<Self>(self: Self, id: "RunnerAlienComponent") -> { RunnerAlienComponent }) &
 	(<Self>(self: Self, id: "SolarPanelComponent") -> { SolarPanelComponent }) &
@@ -1921,7 +2125,6 @@ export type ServiceFn =
 	((id: "GeneratorService", mode: Mode?) -> GeneratorService) &
 	((id: "LeaderstatsService", mode: Mode?) -> LeaderstatsService) &
 	((id: "MovementService", mode: Mode?) -> MovementService) &
-	((id: "OxygenService", mode: Mode?) -> OxygenService) &
 	((id: "PlayerBilboardService", mode: Mode?) -> PlayerBilboardService) &
 	((id: "PlayerService", mode: Mode?) -> PlayerService) &
 	((id: "ProfileService", mode: Mode?) -> ProfileService) &
@@ -1947,11 +2150,15 @@ export type ComponentFn =
 	((id: "RunnerAlienComponent", mode: Mode?) -> RunnerAlienComponent) &
 	((id: "SpawnAreaComponent", mode: Mode?) -> SpawnAreaComponent) &
 	((id: "AliensComponent", mode: Mode?) -> AliensComponent) &
+	((id: "OxygenZoneComponent", mode: Mode?) -> OxygenZoneComponent) &
+	((id: "DebugVitalComponent", mode: Mode?) -> DebugVitalComponent) &
+	((id: "HungerComponent", mode: Mode?) -> HungerComponent) &
+	((id: "MovementComponent", mode: Mode?) -> MovementComponent) &
 	((id: "OxygenComponent", mode: Mode?) -> OxygenComponent) &
 	((id: "VitalComponent", mode: Mode?) -> VitalComponent) &
+	((id: "SolarPanelComponent", mode: Mode?) -> SolarPanelComponent) &
 	((id: "ZoneComponent", mode: Mode?) -> ZoneComponent) &
-	((id: "RegionComponent", mode: Mode?) -> RegionComponent) &
-	((id: "SolarPanelComponent", mode: Mode?) -> SolarPanelComponent)
+	((id: "RegionComponent", mode: Mode?) -> RegionComponent)
 
 export type MixinFn =
 	((id: "AlienBaseMixin", mode: Mode?) -> AlienBaseMixin) &

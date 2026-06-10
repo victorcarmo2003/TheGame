@@ -70,7 +70,13 @@ end
 
 -- Codec compartilhado para as keys individuais (reutilizado em Packages e Types)
 Network.Packages = {
-	-- Pacote completo: enviado no login ou quando múltiplas keys mudam de uma vez
+	ZoneNotification = Network.packet("ZoneNotification", Network.struct({ Message = Network.string(20) })),
+	TransitionCycle = Network.packet("TransitionCycle", Network.struct({ DayTime = Network.string(5) })),
+	SecondsCycle = Network.packet("SecondsCycle", Network.struct({ Seconds = Network.int(0, 420) })),
+	DayCycle = Network.packet("DayCycle", Network.struct({ CurrentDay = Network.int(0, 10000) })),
+	ChangeMovement = Network.packet("ChangeMovement", Network.struct({ ActionName = Network.string(10) })),
+	ChangeWalkSpeed = Network.packet("ChangeWalkSpeed", Network.struct({ WalkSpeed = Network.int(0, 48) })),
+
 	Data = Network.packet(
 		"Data",
 		Network.struct({
@@ -102,8 +108,6 @@ Network.Packages = {
 		})
 	) :: Packet<DataTemplate>,
 
-	-- Pacote de key única: 1 byte de tag + N bytes do valor
-	-- Payload cru oficial: { key = "Gems", value = 1000 }
 	DataKey = Network.keyPacket("DataKey", {
 		Gems = Network.int(0, 4294967295),
 		Gamepasses = Network.map(Network.string(10), Network.bool),
@@ -133,27 +137,6 @@ Network.Packages = {
 		MusicEnabled = Network.bool,
 	}) :: KeyedPacket<DataTemplateKey, any> & Packet<DataKeyPayload>,
 
-	ZoneNotification = Network.packet(
-		"ZoneNotification",
-		Network.struct({
-			Message = Network.string(20),
-		})
-	),
-
-	SecondsCycle = Network.packet(
-		"SecondsCycle",
-		Network.struct({
-			Message = Network.int(0, 420),
-		})
-	),
-
-	DayCycle = Network.packet(
-		"DayCycle",
-		Network.struct({
-			Message = Network.int(0, 10000),
-		})
-	),
-
 	VitalKey = Network.keyPacket("VitalKey", {
 		Armor = Network.int(0, 100),
 		Health = Network.int(0, 100),
@@ -173,17 +156,6 @@ Network.Packages = {
 			Stamina = Network.int(0, 100),
 			Oxygen = Network.int(0, 300),
 			MaxOxygen = Network.int(0, 300),
-		})
-	),
-
-	CanMovement = Network.query(
-		"CanMovement",
-		Network.struct({
-			ActionName = Network.string(10),
-		}),
-		Network.struct({
-			CanDo = Network.bool,
-			CurrentState = Network.optional(Network.string(10)),
 		})
 	),
 }

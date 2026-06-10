@@ -1,9 +1,7 @@
 local Modux = require(game.ReplicatedStorage.Shared.Modux)
 local VitalController = Modux.Controller("VitalController"):Import("ScreenController"):Import("UIAnimationsController")
 
-VitalController.AutoConsume = function(self)
-	
-end
+VitalController.AutoConsume = function(self) end
 
 VitalController.UpdateHunger = function(self, number: number)
 	local hungerConteiner = self.PlayerStatus.Hunger

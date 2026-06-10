@@ -1,11 +1,11 @@
 {
   "protocolVersion": 1,
   "workspaceHash": "736a2e7eab6df47cb55c5c203e101d096b387b355c70917fa481dffe2a0183c7",
-  "contractHash": "c04cf2b4e4df1e5ea4b76960c57195cda159a0a6b0a5283712713a0c8aecebfd",
-  "generatedAt": "2026-06-05T23:55:16.926Z",
+  "contractHash": "d9f03e6fe69599ebdd1002962ecb5dd52d2794f061425fc55d6ef908d199dc3e",
+  "generatedAt": "2026-06-09T02:13:19.865Z",
   "place": {
     "id": 117698582873122,
-    "name": "Place9"
+    "name": "THE GAME"
   },
   "components": [
     {
@@ -19,14 +19,79 @@
       "instances": []
     },
     {
+      "id": "DebugVitalComponent",
+      "tag": "DebugVital",
+      "instances": [
+        {
+          "path": "Workspace.Health",
+          "className": "Part",
+          "tags": [
+            "DebugVital"
+          ],
+          "attributes": {},
+          "children": [
+            {
+              "name": "ProximityPrompt",
+              "className": "ProximityPrompt"
+            }
+          ]
+        },
+        {
+          "path": "Workspace.Hunger",
+          "className": "Part",
+          "tags": [
+            "DebugVital"
+          ],
+          "attributes": {},
+          "children": [
+            {
+              "name": "ProximityPrompt",
+              "className": "ProximityPrompt"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "GenericAlienComponent",
       "tag": "Aliens",
+      "instances": []
+    },
+    {
+      "id": "HungerComponent",
+      "tag": "HungerComponent",
       "instances": []
     },
     {
       "id": "IntermediateAlienComponent",
       "tag": "IntermediateAlien",
       "instances": []
+    },
+    {
+      "id": "MovementComponent",
+      "tag": "MovementComponent",
+      "instances": []
+    },
+    {
+      "id": "OxygenComponent",
+      "tag": "OxygenComponent",
+      "instances": []
+    },
+    {
+      "id": "OxygenZoneComponent",
+      "tag": "OxygenZone",
+      "instances": [
+        {
+          "path": "Workspace.Part",
+          "className": "Part",
+          "tags": [
+            "OxygenZone"
+          ],
+          "attributes": {},
+          "children": [],
+          "classMatches": true
+        }
+      ]
     },
     {
       "id": "RegionComponent",
@@ -91,7 +156,7 @@
     },
     {
       "id": "VitalComponent",
-      "tag": "Vital",
+      "tag": "VitalComponent",
       "instances": []
     },
     {

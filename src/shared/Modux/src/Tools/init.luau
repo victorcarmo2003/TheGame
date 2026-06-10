@@ -1,4 +1,7 @@
-local function WaitForChildOfClass(parent, className)
+local springWrapper = require(script.SpringWrapper)
+local debounce = require(script.Debounce)
+
+local function WaitForChildOfClass<T>(parent, className): T
 	local child = parent:FindFirstChildOfClass(className)
 	while not child do
 		child = parent.ChildAdded:Wait()
@@ -11,4 +14,6 @@ end
 
 return {
 	WaitForChildOfClass = WaitForChildOfClass,
+	Spring = springWrapper,
+	Debounce = debounce,
 }
