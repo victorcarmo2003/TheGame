@@ -1,16 +1,15 @@
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
+
 local Modux = require(ReplicatedStorage.Shared.Modux)
+local FSM = require(ReplicatedStorage.Shared.Utils.FSM)
+local AreasConfig = require(ReplicatedStorage.Shared.Settings.AreasConfig)
 
 local SpawnnersService = Modux.Service("SpawnnersService")
 SpawnnersService.AreasRegistred = {} :: AreaRegistredType
 
-local SpawnArea = require(ReplicatedStorage.Shared.Settings.SpawnArea)
-local FSM = require(ReplicatedStorage.Shared.Utils.FSM)
-
 type AreaState = "Active" | "Unactive"
-type SpawnType = SpawnArea.SpawnType
+type SpawnType = AreasConfig.SpawnType
 type AreaRegistredType = {
 	ID: number,
 	Instance: BasePart,
@@ -27,6 +26,7 @@ local DEBUG_DIFFICULT_MODE = "EASY"
 local DEBUG_AREATYPE = "Field"
 
 local function DEBUG_loadSpawnArea()
+	local Workspace = game:GetService("Workspace")
 	local Map = Workspace:FindFirstChild("Map")
 	local SpawnAreas = Map:FindFirstChild("SpawnAreas")
 
@@ -46,7 +46,7 @@ local function AreaRegistred(Area: BasePart): AreaRegistredType | nil
 		return
 	end
 
-	for Index: number, Registers: AreaRegistredType in GetAreaRegistred do
+	for _, Registers: AreaRegistredType in GetAreaRegistred do
 		if Registers.Instance == Area then
 			return Registers
 		end
@@ -114,7 +114,7 @@ function SpawnnersService:RegisterArea(Instance: BasePart, difficulty: number, A
 		return false
 	end
 
-	local ChekingExistsArea = SpawnArea[AreaType]
+	local ChekingExistsArea = AreasConfig[AreaType]
 	if not ChekingExistsArea then
 		warn(`[{script.Name} - RegisterArea] AreaType not exist`)
 		return false
