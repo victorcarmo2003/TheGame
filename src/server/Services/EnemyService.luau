@@ -6,22 +6,26 @@ local AreasConfig = require(game.ReplicatedStorage.Shared.Settings.AreasConfig)
 local FSM = require(game.ReplicatedStorage.Shared.Utils.FSM)
 
 local EnemyService = Modux.Service("EnemyService")
-EnemyService._Aliens = {}
 
 local DEBUG_MODE = true
+local DEBUG_ALIEN_MARKERS_FOLDER = "DEBUG_AlienPositions"
 local Loaded = false
 local RandomGenerator = Random.new()
 
 type BaseTypes = AreasConfig.SpawnType
 type AreaConfig = AreasConfig.SpawnAreaConfig
 type AlienType = AliensList.AlienType
+type AlienState = AliensList.AlienStates
 
 export type AlienConfig = {
 	AlienType: AlienType,
 	Position: CFrame,
-	State: FSM.FSM<AliensList.AlienStates>,
+	State: FSM.FSM<AlienState>,
 	Alived: boolean,
+	Visible: FSM.FSM<boolean>
 }
+
+EnemyService._Aliens = {} :: { [string]: AlienConfig }
 
 local function GetAliensFolder(): Folder
 	local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -96,39 +100,117 @@ local function GetRandomAlienType(AlienWeights: { [AlienType]: number }): AlienT
 	return
 end
 
-local function CreateAlienConfig(AlienModelName: string, SpawnCFrame: CFrame): string
+local function CreateAlienConfig(AlienModelName: AlienType, SpawnCFrame: CFrame): string
 	local AlienKey = tostring(HttpService:GenerateGUID(false))
+	local AlienStateTransitions: FSM.Transitions<AlienState> = {
+		Idle = { "Walk", "Running", "Jumping", "attacking", "attacked" },
+		Walk = { "Idle", "Running", "Jumping", "attacking", "attacked" },
+		Running = { "Idle", "Walk", "Jumping", "attacking", "attacked" },
+		Jumping = { "Idle", "Walk", "Running", "attacked" },
+		attacking = { "Idle", "Walk", "Running", "attacked" },
+		attacked = { "Idle", "Walk", "Running" },
+	}
+	local VisibleTransitions: FSM.Transitions<boolean> = {
+		[true] = { false },
+		[false] = { true },
+	}
+
 	EnemyService._Aliens[AlienKey] = {
 		AlienType = AlienModelName,
 		Position = SpawnCFrame,
-		State = FSM.new<<AliensList.AlienStates>>, "Idle", {
-			Idle = { "Walk", "Running", "Jumping", "attacking", "attacked" },
-			Walk = { "Idle", "Running", "Jumping", "attacking", "attacked" },
-			Running = { "Idle", "Walk", "Jumping", "attacking", "attacked" },
-			Jumping = { "Idle", "Walk", "Running", "attacked" },
-			attacking = { "Idle", "Walk", "Running", "attacked" },
-			attacked = { "Idle", "Walk", "Running" },
-		},
+		State = FSM.new<<AlienState>>("Idle" :: AlienState, AlienStateTransitions),
 		Alived = true,
+		Visible = FSM.new<<boolean>>(false, VisibleTransitions)
 	}
 
 	return AlienKey
 end
 
-local function GetRandomCFrameInArea(AreaInstance: BasePart): CFrame
-	local HalfSize = AreaInstance.Size / 2
-	local RandomX = RandomGenerator:NextNumber(-HalfSize.X, HalfSize.X)
-	local RandomZ = RandomGenerator:NextNumber(-HalfSize.Z, HalfSize.Z)
+local function DEBUG_CreateAlienPositionMarker(AlienKey: string, AlienModelName: string, SpawnCFrame: CFrame)
+	if not DEBUG_MODE then
+		return
+	end
 
-	return AreaInstance.CFrame * CFrame.new(RandomX, HalfSize.Y, RandomZ)
+	local Workspace = game:GetService("Workspace")
+	local DebugFolder = Workspace:FindFirstChild(DEBUG_ALIEN_MARKERS_FOLDER)
+	if not DebugFolder then
+		DebugFolder = Instance.new("Folder")
+		DebugFolder.Name = DEBUG_ALIEN_MARKERS_FOLDER
+		DebugFolder.Parent = Workspace
+	end
+
+	local Marker = Instance.new("Part")
+	Marker.Name = `AlienPosition_{AlienModelName}_{AlienKey}`
+	Marker.Anchored = true
+	Marker.CanCollide = false
+	Marker.CanQuery = false
+	Marker.CanTouch = false
+	Marker.Size = Vector3.new(1.5, 1.5, 1.5)
+	Marker.CFrame = SpawnCFrame
+	Marker.Color = Color3.fromRGB(255, 0, 0)
+	Marker.Material = Enum.Material.Neon
+	Marker.Transparency = 0.15
+	Marker.Parent = DebugFolder
 end
 
-function EnemyService:GetAlienByKey(Key: string)
+local function GetRandomCFrameInArea(AreaInstance: BasePart): CFrame?
+	local HalfSize =  AreaInstance.Size / 2
+
+	local Overlap = OverlapParams.new()
+	Overlap.FilterType = Enum.RaycastFilterType.Exclude
+	Overlap.FilterDescendantsInstances = { AreaInstance }
+
+	local MaxAttempts = 30
+	local Attempt = 0
+
+	while Attempt < MaxAttempts do
+		Attempt += 1
+
+		local RandomX = RandomGenerator:NextNumber(-HalfSize.X, HalfSize.X)
+		local RandomZ = RandomGenerator:NextNumber(-HalfSize.Z, HalfSize.Z)
+		local SpawnCFrame = AreaInstance.CFrame * CFrame.new(RandomX, HalfSize.Y, RandomZ)
+
+		local BoxSize = Vector3.new(4, 6, 4)
+
+		local Obstructions = workspace:GetPartBoundsInBox(
+			SpawnCFrame * CFrame.new(0, BoxSize.Y / 2, 0),
+			BoxSize,
+			Overlap
+		)
+
+		if #Obstructions == 0 then
+			return SpawnCFrame
+		end
+	end 
+
+	return nil
+end
+
+function EnemyService:RemoveAlienByKey(Key: string): boolean
+	local ReferenteAlien = self._Aliens[Key]
+	if not ReferenteAlien then
+		warn()
+		return false
+	end
+
+	
+
+	-- PEDIR AJUDA DO HAKOR AQUI
+	return false
+end
+
+function EnemyService:GetAlienByKey(Key: string): AlienConfig?
 	return self._Aliens[Key]
 end
 
-function EnemyService:GetRandomAlienPosition(AreaInstance: BasePart): CFrame
-	return GetRandomCFrameInArea(AreaInstance)
+function EnemyService:GetRandomAlienPosition(AreaInstance: BasePart): CFrame?
+	local RandomPos: CFrame? = GetRandomCFrameInArea(AreaInstance)
+
+	if not RandomPos then
+		return
+	end
+
+	return RandomPos
 end
 
 function EnemyService:GetRandomAlienType(BaseType: BaseTypes, Difficult: number): AlienType?
@@ -171,7 +253,10 @@ function EnemyService:CreateAlien(BaseType: BaseTypes, Difficult: number, SpawnC
 		return
 	end
 
-	return CreateAlienConfig(SelectedAlienType, SpawnCFrame)
+	local AlienKey = CreateAlienConfig(SelectedAlienType, SpawnCFrame)
+	DEBUG_CreateAlienPositionMarker(AlienKey, SelectedAlienType, SpawnCFrame)
+
+	return AlienKey
 end
 
 EnemyService:OnInit(function(self) end)

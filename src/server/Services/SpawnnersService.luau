@@ -187,7 +187,7 @@ SpawnnersService:OnStart(function(self) end)
 SpawnnersService:OnTick(function(self)
 	if DEBUG_MODE and not DEBUG_PARTS_LOADED then
 		DEBUG_loadSpawnArea()
-		DEBUG_PARTS_LOADED = true
+		DEBUG_PARTS_LOADED = true 
 	end
 end, Modux.TickRate.Hz1)
 

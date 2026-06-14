@@ -1,7 +1,5 @@
 --!strict
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local Registry = require(ReplicatedStorage.Shared.Modux.src.Components.ComponentRegistry)
 local Constructor = {}
 Constructor.__index = Constructor
@@ -16,7 +14,6 @@ Constructor._tag = nil
 Constructor._className = nil
 Constructor._attributeSchema = nil
 Constructor._requiredChildren = nil
-Constructor._requiredComponents = nil
 Constructor._cleanupTasks = {}
 
 export type Type = "Service" | "Controller" | "Component" | "Mixin"
@@ -43,11 +40,7 @@ function Constructor:OnTick(cb: (self: any, deltaTime: number) -> (), rate: numb
 	return self
 end
 
-function Constructor:OnSimulation(
-	cb: (self: any, deltaTime: number) -> (),
-	frequency: Enum.StepFrequency?,
-	priority: number?
-)
+function Constructor:OnSimulation(cb: (self: any, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?)
 	table.insert(self._onSimulation, {
 		Callback = cb,
 		Frequency = frequency,
@@ -81,14 +74,6 @@ function Constructor:Children(children: { string })
 	return self
 end
 
-function Constructor:RequireComponent(id: string)
-	self._requiredComponents = self._requiredComponents or {}
-	if not table.find(self._requiredComponents, id) then
-		table.insert(self._requiredComponents, id)
-	end
-	return self
-end
-
 -- Retorna todos os componentes ativos de um determinado ID (ex: "Zombie")
 function Constructor:GetAllComponents(id: string)
 	return Registry.GetAll(id)
@@ -97,12 +82,6 @@ end
 -- Retorna o componente específico de uma instância
 function Constructor:GetComponent(instance: Instance, id: string)
 	return Registry.Get(instance, id)
-end
-
-function Constructor:GetRequiredComponent(instance: Instance, id: string)
-	local component = Registry.Get(instance, id)
-	assert(component, `[Modux] Required component "{id}" is not active on {instance:GetFullName()}.`)
-	return component
 end
 
 function Constructor:Cleanup(task: any)
@@ -131,53 +110,6 @@ function Constructor:_doCleanup()
 	table.clear(self._cleanupTasks)
 end
 
-function Constructor:_attachClientPlayerReferences()
-	if not RunService:IsClient() or (self.Type ~= "Controller" and self.Type ~= "Component") then
-		return
-	end
-
-	local localPlayer = Players.LocalPlayer
-	self.LocalPlayer = localPlayer
-
-	local function setCharacter(character: Model?)
-		if self._localHumanoidConnection then
-			self._localHumanoidConnection:Disconnect()
-		end
-
-		self.LocalCharacter = character
-		self.LocalHumanoid = nil :: Humanoid?
-
-		if not character then
-			return
-		end
-
-		self.LocalHumanoid = character:FindFirstChildOfClass("Humanoid")
-		self._localHumanoidConnection = self:Cleanup(character.ChildAdded:Connect(function(child)
-			if child:IsA("Humanoid") then
-				self.LocalHumanoid = child
-			end
-		end))
-	end
-
-	setCharacter(localPlayer.Character)
-
-	if self._localCharacterConnection then
-		self._localCharacterConnection:Disconnect()
-	end
-	if self._localCharacterRemovingConnection then
-		self._localCharacterRemovingConnection:Disconnect()
-	end
-
-	self._localCharacterConnection = self:Cleanup(localPlayer.CharacterAdded:Connect(function(character)
-		setCharacter(character)
-	end))
-	self._localCharacterRemovingConnection = self:Cleanup(localPlayer.CharacterRemoving:Connect(function(character)
-		if self.LocalCharacter == character then
-			setCharacter(nil)
-		end
-	end))
-end
-
 function Constructor.New(ID: string, Type: Type)
 	local SRC = ReplicatedStorage.Shared.Modux.src
 	local Network = require(SRC.Network)
@@ -186,7 +118,6 @@ function Constructor.New(ID: string, Type: Type)
 	local GlobalClock = require(script.Parent.GlobalClock)
 	local Import = require(script.Parent.Import)
 	local Extend = require(script.Parent.Extend)
-	local tools = require(script.Parent.Parent.Tools)
 
 	local self = setmetatable({}, Constructor)
 	self.ID = ID
@@ -198,7 +129,6 @@ function Constructor.New(ID: string, Type: Type)
 	self.Signal = Signal
 	self.GlobalClock = GlobalClock
 	self.Attributes = {}
-	self.Tools = tools
 	self._imports = {}
 	self._mixins = {}
 	self._onInit = {}
@@ -210,12 +140,8 @@ function Constructor.New(ID: string, Type: Type)
 	self._className = nil
 	self._attributeSchema = nil
 	self._requiredChildren = nil
-	self._requiredComponents = nil
 	self._cleanupTasks = {}
 	self._composed = false
-	if Type == "Controller" then
-		self:_attachClientPlayerReferences()
-	end
 	return self
 end
 

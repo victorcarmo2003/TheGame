@@ -34,9 +34,10 @@ function AreaMixin:CreateAliens()
     local Difficult: number = DEBUG_MODE and 5 or 1 --No lugar do primeiro valor, será a dificultade vinda do servidor
     local SortTotalAlien: number = math.random(self.MinEnemys, self.MaxEnemys)
 
-    for i = 0, SortTotalAlien, 1 do
-        local SpawnCFrame: CFrame = EnemyService:GetRandomAlienPosition(self.Instance)
+    for i = 1, SortTotalAlien, 1 do
+        local SpawnCFrame: CFrame?  = EnemyService:GetRandomAlienPosition(self.Instance)
         local AlienKey: string? = EnemyService:CreateAlien(self.AreaName, Difficult, SpawnCFrame)
+        
         if not AlienKey then
             warn(`[{script.Name} = CreateAliens] CreateAlien not returned Key for alien.`)
             continue
