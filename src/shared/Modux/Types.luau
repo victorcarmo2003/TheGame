@@ -488,8 +488,100 @@ export type Network = {
 }
 
 --> STARTERGUI TYPES
-export type UIWindowId = string
-export type ScreenGuiRoot = ScreenGui
+export type UIWindowId = "WorkBench"
+
+export type ScreenGuiRoot = ScreenGui & {
+	Conteiner: Frame & {
+		Hotbar: Frame & {
+			Frame: Frame & {
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+			UIGridLayout: UIGridLayout,
+		},
+		MiniMap: Frame & {
+			UIAspectRatioConstraint: UIAspectRatioConstraint,
+			UICorner: UICorner,
+			UIStroke: UIStroke,
+		},
+		Player: Frame & {
+			Health: Frame & {
+				Icon: ImageLabel,
+				Inner: Frame & {
+					UICorner: UICorner,
+					UIGradient: UIGradient,
+				},
+				TextLabel: TextLabel & {
+					UIStroke: UIStroke,
+					UITextSizeConstraint: UITextSizeConstraint,
+				},
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+			Hunger: Frame & {
+				Icon: ImageLabel,
+				Inner: Frame & {
+					UICorner: UICorner,
+					UIGradient: UIGradient,
+				},
+				TextLabel: TextLabel & {
+					UIStroke: UIStroke,
+					UITextSizeConstraint: UITextSizeConstraint,
+				},
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+			Oxygen: Frame & {
+				Icon: ImageLabel,
+				Inner: Frame & {
+					UICorner: UICorner,
+					UIGradient: UIGradient,
+				},
+				TextLabel: TextLabel & {
+					UIStroke: UIStroke,
+					UITextSizeConstraint: UITextSizeConstraint,
+				},
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+			UIAspectRatioConstraint: UIAspectRatioConstraint,
+		},
+		Status: Frame & {
+			ClockLabel: TextLabel & {
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+				UITextSizeConstraint: UITextSizeConstraint,
+			},
+			DayLabel: TextLabel & {
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+				UITextSizeConstraint: UITextSizeConstraint,
+			},
+			UIAspectRatioConstraint: UIAspectRatioConstraint,
+			UIListLayout: UIListLayout,
+		},
+		Windows: Folder & {
+			WorkBench: Frame & {
+				CloseButton: ImageButton & {
+					TextLabel: TextLabel & {
+						UIStroke: UIStroke,
+						UITextSizeConstraint: UITextSizeConstraint,
+					},
+					UICorner: UICorner,
+					UIGradient: UIGradient,
+					UIStroke: UIStroke,
+				},
+				Title: TextLabel & {
+					UIStroke: UIStroke,
+					UITextSizeConstraint: UITextSizeConstraint,
+				},
+				UICorner: UICorner,
+				UIStroke: UIStroke,
+			},
+		},
+	},
+}
+
 export type StarterGuiTypes = {
 	ScreenGui: ScreenGuiRoot,
 }
@@ -500,7 +592,9 @@ export type AliensComponentInstance = Model
 
 export type CommonAlienComponentInstance = Model
 
-export type DebugVitalComponentInstance = Instance
+export type DebugVitalComponentInstance = (Part) & {
+	ProximityPrompt: ProximityPrompt,
+}
 
 export type GenericAlienComponentInstance = Model
 
@@ -512,21 +606,93 @@ export type MovementComponentInstance = Instance
 
 export type OxygenComponentInstance = Player
 
-export type OxygenZoneComponentInstance = Instance
+export type OxygenZoneComponentInstance = Part
 
 export type RegionComponentInstance = Instance
 
 export type RunnerAlienComponentInstance = Model
 
-export type SolarPanelComponentInstance = Instance
+export type SmashButterComponentInstance = BasePart
+
+export type SolarPanelComponentInstance = (Model) & {
+	Cube_Node: Model,
+	["Cube.001"]: Model,
+	Panel: MeshPart,
+}
 
 export type SpawnAreaComponentInstance = BasePart
+
+export type SquishyBlockComponentInstance = BasePart
 
 export type VitalComponentInstance = Player
 
 export type ZoneComponentInstance = Instance
 
 --> SERVICES, CONTROLLERS & COMPONENTS
+export type SmashButterComponent = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	Extend: (self: SmashButterComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> SmashButterComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: SmashButterComponent, cb: (self: SmashButterComponent) -> ()) -> SmashButterComponent,
+	OnStart: (self: SmashButterComponent, cb: (self: SmashButterComponent) -> ()) -> SmashButterComponent,
+	OnTick: (self: SmashButterComponent, cb: (self: SmashButterComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SmashButterComponent,
+	OnSimulation: (self: SmashButterComponent, cb: (self: SmashButterComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SmashButterComponent,
+	OnDestroy: (self: SmashButterComponent, cb: (self: SmashButterComponent) -> ()) -> SmashButterComponent,
+	Tag: (self: SmashButterComponent, tag: string) -> SmashButterComponent,
+	ClassName: (self: SmashButterComponent, className: string) -> SmashButterComponent,
+	AttributeDefaults: (self: SmashButterComponent, schema: { [string]: any }) -> SmashButterComponent,
+	Children: (self: SmashButterComponent, children: { string }) -> SmashButterComponent,
+	RequireComponent: (self: SmashButterComponent, id: string) -> SmashButterComponent,
+	New: (self: SmashButterComponent, ID: string, Type: Type) -> SmashButterComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { Radius: number, MaxDepth: number, FalloffPower: number, TopBand: number, SideDeformDepth: number, HorizontalExpansion: number, HorizontalExpansionPower: number, HorizontalExpansionCenter: number, HorizontalExpansionWidth: number, HorizontalTopFade: number, HorizontalBottomWeight: number, SpringSpeed: number, ReturnSpeed: number, FootHeight: number, CollisionSize: number, CollisionGrid: number, CollisionThickness: number, CollisionDropSpeed: number, CollisionRiseSpeed: number, CollisionMovementPadding: number, CollisionVelocityLeadTime: number, CollisionMaxDepthRatio: number, SurfaceSampleRadius: number, SurfacePadding: number, ImpactDepth: number, ImpactReturnSpeed: number, BounceStrength: number, BounceCooldown: number, BounceMinVelocity: number, BounceMaxVelocity: number, BounceReleaseSpeed: number, BounceSquashRatio: number, BounceSquashDelay: number },
+	Instance: SmashButterComponentInstance,
+}
+
+export type SquishyBlockComponent = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	Extend: (self: SquishyBlockComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> SquishyBlockComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: SquishyBlockComponent, cb: (self: SquishyBlockComponent) -> ()) -> SquishyBlockComponent,
+	OnStart: (self: SquishyBlockComponent, cb: (self: SquishyBlockComponent) -> ()) -> SquishyBlockComponent,
+	OnTick: (self: SquishyBlockComponent, cb: (self: SquishyBlockComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SquishyBlockComponent,
+	OnSimulation: (self: SquishyBlockComponent, cb: (self: SquishyBlockComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SquishyBlockComponent,
+	OnDestroy: (self: SquishyBlockComponent, cb: (self: SquishyBlockComponent) -> ()) -> SquishyBlockComponent,
+	Tag: (self: SquishyBlockComponent, tag: string) -> SquishyBlockComponent,
+	ClassName: (self: SquishyBlockComponent, className: string) -> SquishyBlockComponent,
+	AttributeDefaults: (self: SquishyBlockComponent, schema: { [string]: any }) -> SquishyBlockComponent,
+	Children: (self: SquishyBlockComponent, children: { string }) -> SquishyBlockComponent,
+	RequireComponent: (self: SquishyBlockComponent, id: string) -> SquishyBlockComponent,
+	New: (self: SquishyBlockComponent, ID: string, Type: Type) -> SquishyBlockComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { Radius: number, MaxDepth: number, FalloffPower: number, TopBand: number, SideDeformDepth: number, HorizontalExpansion: number, HorizontalExpansionPower: number, HorizontalExpansionCenter: number, HorizontalExpansionWidth: number, HorizontalTopFade: number, HorizontalBottomWeight: number, SpringSpeed: number, ReturnSpeed: number, FootHeight: number, FakeCollision: boolean, CollisionSize: number, CollisionGrid: number, CollisionThickness: number, CollisionDropSpeed: number, CollisionRiseSpeed: number, CollisionMovementPadding: number, CollisionVelocityLeadTime: number, CollisionMaxDepthRatio: number, SurfaceSampleRadius: number, SurfacePadding: number, ImpactVelocity: number, ImpactDepth: number, ImpactReturnSpeed: number, BounceEnabled: boolean, BounceStrength: number, BounceCooldown: number, BounceMinVelocity: number, BounceMaxVelocity: number, BounceReleaseSpeed: number, BounceSquashRatio: number, BounceSquashDelay: number },
+	Instance: SquishyBlockComponentInstance,
+}
+
 export type DayCycleController = {
 	ID: string,
 	Type: Type,
@@ -871,7 +1037,48 @@ export type VitalController = {
 	Hunger: number,
 	Oxygen: number,
 	MaxOxygen: number,
-	PlayerStatus: any,
+	PlayerStatus: Frame & {
+	Health: Frame & {
+		Icon: ImageLabel,
+		Inner: Frame & {
+			UICorner: UICorner,
+			UIGradient: UIGradient,
+		},
+		TextLabel: TextLabel & {
+			UIStroke: UIStroke,
+			UITextSizeConstraint: UITextSizeConstraint,
+		},
+		UICorner: UICorner,
+		UIStroke: UIStroke,
+	},
+	Hunger: Frame & {
+		Icon: ImageLabel,
+		Inner: Frame & {
+			UICorner: UICorner,
+			UIGradient: UIGradient,
+		},
+		TextLabel: TextLabel & {
+			UIStroke: UIStroke,
+			UITextSizeConstraint: UITextSizeConstraint,
+		},
+		UICorner: UICorner,
+		UIStroke: UIStroke,
+	},
+	Oxygen: Frame & {
+		Icon: ImageLabel,
+		Inner: Frame & {
+			UICorner: UICorner,
+			UIGradient: UIGradient,
+		},
+		TextLabel: TextLabel & {
+			UIStroke: UIStroke,
+			UITextSizeConstraint: UITextSizeConstraint,
+		},
+		UICorner: UICorner,
+		UIStroke: UIStroke,
+	},
+	UIAspectRatioConstraint: UIAspectRatioConstraint,
+},
 	Armor: number,
 	Stamina: number,
 	MaxHunger: number,
@@ -1867,6 +2074,34 @@ export type ProfileService = {
 	Attributes: { [string]: any },
 }
 
+export type TesteService = {
+	ID: string,
+	Type: Type,
+	Extend: (self: TesteService, id: "AlienBaseMixin" | "PlayerZoneComponent") -> TesteService,
+	Import: ServiceImportFn,
+	OnInit: (self: TesteService, cb: (self: TesteService) -> ()) -> TesteService,
+	OnStart: (self: TesteService, cb: (self: TesteService) -> ()) -> TesteService,
+	OnTick: (self: TesteService, cb: (self: TesteService, deltaTime: number) -> (), rate: number, priority: number?) -> TesteService,
+	OnSimulation: (self: TesteService, cb: (self: TesteService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> TesteService,
+	OnDestroy: (self: TesteService, cb: (self: TesteService) -> ()) -> TesteService,
+	Tag: (self: TesteService, tag: string) -> TesteService,
+	ClassName: (self: TesteService, className: string) -> TesteService,
+	AttributeDefaults: (self: TesteService, schema: { [string]: any }) -> TesteService,
+	Children: (self: TesteService, children: { string }) -> TesteService,
+	RequireComponent: (self: TesteService, id: string) -> TesteService,
+	New: (self: TesteService, ID: string, Type: Type) -> TesteService,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
 export type VitalService = {
 	ID: string,
 	Type: Type,
@@ -1995,6 +2230,41 @@ export type RegionComponent = {
 	Instance: RegionComponentInstance,
 }
 
+export type SolarPanelComponent = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	Setup: (self: SolarPanelComponent) -> (),
+	ConnectedTo: Instance?,
+	Production: number,
+	Extend: (self: SolarPanelComponent, id: "AlienBaseMixin" | "PlayerZoneComponent") -> SolarPanelComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
+	OnStart: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
+	OnTick: (self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SolarPanelComponent,
+	OnSimulation: (self: SolarPanelComponent, cb: (self: SolarPanelComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SolarPanelComponent,
+	OnDestroy: (self: SolarPanelComponent, cb: (self: SolarPanelComponent) -> ()) -> SolarPanelComponent,
+	Tag: (self: SolarPanelComponent, tag: string) -> SolarPanelComponent,
+	ClassName: (self: SolarPanelComponent, className: string) -> SolarPanelComponent,
+	AttributeDefaults: (self: SolarPanelComponent, schema: { [string]: any }) -> SolarPanelComponent,
+	Children: (self: SolarPanelComponent, children: { string }) -> SolarPanelComponent,
+	RequireComponent: (self: SolarPanelComponent, id: string) -> SolarPanelComponent,
+	New: (self: SolarPanelComponent, ID: string, Type: Type) -> SolarPanelComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: SolarPanelComponentInstance,
+}
+
 --> IMPORT FUNCTIONS
 
 export type ImportFn = <Self>(self: Self, id: string, scopeKey: string?) -> Self
@@ -2011,6 +2281,7 @@ export type ServiceImportFn =
 	(<Self>(self: Self, id: "PlayerService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "TesteService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "VitalService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ZoneService", scopeKey: string?) -> Self)
 
@@ -2037,6 +2308,7 @@ export type ComponentImportFn =
 	(<Self>(self: Self, id: "PlayerService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "TesteService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "VitalService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ZoneService", scopeKey: string?) -> Self)
 
@@ -2074,8 +2346,11 @@ export type GetComponentFn =
 	(<Self>(self: Self, instance: OxygenZoneComponentInstance, id: "OxygenZoneComponent") -> OxygenZoneComponent?) &
 	(<Self>(self: Self, instance: RegionComponentInstance, id: "RegionComponent") -> RegionComponent?) &
 	(<Self>(self: Self, instance: RunnerAlienComponentInstance, id: "RunnerAlienComponent") -> RunnerAlienComponent?) &
+	(<Self>(self: Self, instance: SmashButterComponentInstance, id: "SmashButterComponent") -> SmashButterComponent?) &
+	(<Self>(self: Self, instance: SolarPanelComponentInstance, id: "SolarPanelComponent") -> SolarPanelComponent?) &
 	(<Self>(self: Self, instance: SolarPanelComponentInstance, id: "SolarPanelComponent") -> SolarPanelComponent?) &
 	(<Self>(self: Self, instance: SpawnAreaComponentInstance, id: "SpawnAreaComponent") -> SpawnAreaComponent?) &
+	(<Self>(self: Self, instance: SquishyBlockComponentInstance, id: "SquishyBlockComponent") -> SquishyBlockComponent?) &
 	(<Self>(self: Self, instance: VitalComponentInstance, id: "VitalComponent") -> VitalComponent?) &
 	(<Self>(self: Self, instance: ZoneComponentInstance, id: "ZoneComponent") -> ZoneComponent?) &
 	(<Self>(self: Self, instance: Instance, id: string) -> any)
@@ -2092,8 +2367,11 @@ export type GetRequiredComponentFn =
 	(<Self>(self: Self, instance: OxygenZoneComponentInstance, id: "OxygenZoneComponent") -> OxygenZoneComponent) &
 	(<Self>(self: Self, instance: RegionComponentInstance, id: "RegionComponent") -> RegionComponent) &
 	(<Self>(self: Self, instance: RunnerAlienComponentInstance, id: "RunnerAlienComponent") -> RunnerAlienComponent) &
+	(<Self>(self: Self, instance: SmashButterComponentInstance, id: "SmashButterComponent") -> SmashButterComponent) &
+	(<Self>(self: Self, instance: SolarPanelComponentInstance, id: "SolarPanelComponent") -> SolarPanelComponent) &
 	(<Self>(self: Self, instance: SolarPanelComponentInstance, id: "SolarPanelComponent") -> SolarPanelComponent) &
 	(<Self>(self: Self, instance: SpawnAreaComponentInstance, id: "SpawnAreaComponent") -> SpawnAreaComponent) &
+	(<Self>(self: Self, instance: SquishyBlockComponentInstance, id: "SquishyBlockComponent") -> SquishyBlockComponent) &
 	(<Self>(self: Self, instance: VitalComponentInstance, id: "VitalComponent") -> VitalComponent) &
 	(<Self>(self: Self, instance: ZoneComponentInstance, id: "ZoneComponent") -> ZoneComponent) &
 	(<Self>(self: Self, instance: Instance, id: string) -> any)
@@ -2110,8 +2388,11 @@ export type GetAllComponentsFn =
 	(<Self>(self: Self, id: "OxygenZoneComponent") -> { OxygenZoneComponent }) &
 	(<Self>(self: Self, id: "RegionComponent") -> { RegionComponent }) &
 	(<Self>(self: Self, id: "RunnerAlienComponent") -> { RunnerAlienComponent }) &
+	(<Self>(self: Self, id: "SmashButterComponent") -> { SmashButterComponent }) &
+	(<Self>(self: Self, id: "SolarPanelComponent") -> { SolarPanelComponent }) &
 	(<Self>(self: Self, id: "SolarPanelComponent") -> { SolarPanelComponent }) &
 	(<Self>(self: Self, id: "SpawnAreaComponent") -> { SpawnAreaComponent }) &
+	(<Self>(self: Self, id: "SquishyBlockComponent") -> { SquishyBlockComponent }) &
 	(<Self>(self: Self, id: "VitalComponent") -> { VitalComponent }) &
 	(<Self>(self: Self, id: "ZoneComponent") -> { ZoneComponent }) &
 	(<Self>(self: Self, id: string) -> { any })
@@ -2129,6 +2410,7 @@ export type ServiceFn =
 	((id: "PlayerService", mode: Mode?) -> PlayerService) &
 	((id: "ProfileService", mode: Mode?) -> ProfileService) &
 	((id: "ProfileService", mode: Mode?) -> ProfileService) &
+	((id: "TesteService", mode: Mode?) -> TesteService) &
 	((id: "VitalService", mode: Mode?) -> VitalService) &
 	((id: "ZoneService", mode: Mode?) -> ZoneService)
 
@@ -2144,6 +2426,8 @@ export type ControllerFn =
 	((id: "VitalController", mode: Mode?) -> VitalController)
 
 export type ComponentFn =
+	((id: "SmashButterComponent", mode: Mode?) -> SmashButterComponent) &
+	((id: "SquishyBlockComponent", mode: Mode?) -> SquishyBlockComponent) &
 	((id: "CommonAlienComponent", mode: Mode?) -> CommonAlienComponent) &
 	((id: "GenericAlienComponent", mode: Mode?) -> GenericAlienComponent) &
 	((id: "IntermediateAlienComponent", mode: Mode?) -> IntermediateAlienComponent) &
@@ -2158,7 +2442,8 @@ export type ComponentFn =
 	((id: "VitalComponent", mode: Mode?) -> VitalComponent) &
 	((id: "SolarPanelComponent", mode: Mode?) -> SolarPanelComponent) &
 	((id: "ZoneComponent", mode: Mode?) -> ZoneComponent) &
-	((id: "RegionComponent", mode: Mode?) -> RegionComponent)
+	((id: "RegionComponent", mode: Mode?) -> RegionComponent) &
+	((id: "SolarPanelComponent", mode: Mode?) -> SolarPanelComponent)
 
 export type MixinFn =
 	((id: "AlienBaseMixin", mode: Mode?) -> AlienBaseMixin) &

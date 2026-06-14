@@ -5,6 +5,7 @@ return {
 	Shared = {
 		"Components.PlayerZoneComponent",
 		"Components.RegionComponent",
+		"Components.SolarPanelComponent",
 	},
 	Server = {
 		"Components.Aliens.AlienBaseMixin",
@@ -33,10 +34,13 @@ return {
 		"Services.PlayerService",
 		"Services.ProfileService",
 		"Services.ProfileService",
+		"Services.TesteService",
 		"Services.VitalService",
 		"Services.ZoneService",
 	},
 	Client = {
+		"Components.SmashButterComponent",
+		"Components.SquishyBlockComponent",
 		"Controllers.DayCycleController",
 		"Controllers.EnemyRenderController",
 		"Controllers.InputController",

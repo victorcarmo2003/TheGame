@@ -1,11 +1,11 @@
 {
   "protocolVersion": 1,
   "workspaceHash": "736a2e7eab6df47cb55c5c203e101d096b387b355c70917fa481dffe2a0183c7",
-  "contractHash": "d9f03e6fe69599ebdd1002962ecb5dd52d2794f061425fc55d6ef908d199dc3e",
-  "generatedAt": "2026-06-09T02:13:19.865Z",
+  "contractHash": "a00c32aac48337418311f781351bc94040d7eace0ff272f1259c5d2a77e52cd1",
+  "generatedAt": "2026-06-14T00:30:20.192Z",
   "place": {
     "id": 117698582873122,
-    "name": "THE GAME"
+    "name": "Escape From Mars"
   },
   "components": [
     {
@@ -22,6 +22,20 @@
       "id": "DebugVitalComponent",
       "tag": "DebugVital",
       "instances": [
+        {
+          "path": "Workspace.Damage",
+          "className": "Part",
+          "tags": [
+            "DebugVital"
+          ],
+          "attributes": {},
+          "children": [
+            {
+              "name": "ProximityPrompt",
+              "className": "ProximityPrompt"
+            }
+          ]
+        },
         {
           "path": "Workspace.Health",
           "className": "Part",
@@ -82,14 +96,22 @@
       "tag": "OxygenZone",
       "instances": [
         {
-          "path": "Workspace.Part",
+          "path": "Workspace.Avaliable",
           "className": "Part",
           "tags": [
             "OxygenZone"
           ],
           "attributes": {},
-          "children": [],
-          "classMatches": true
+          "children": []
+        },
+        {
+          "path": "Workspace.Low",
+          "className": "Part",
+          "tags": [
+            "OxygenZone"
+          ],
+          "attributes": {},
+          "children": []
         }
       ]
     },
@@ -102,6 +124,41 @@
       "id": "RunnerAlienComponent",
       "tag": "RunnerAlien",
       "instances": []
+    },
+    {
+      "id": "SmashButterComponent",
+      "tag": "ButterSmash",
+      "instances": []
+    },
+    {
+      "id": "SolarPanelComponent",
+      "tag": "SolarPanel",
+      "instances": [
+        {
+          "path": "Workspace.SolarPanels.Basic",
+          "className": "Model",
+          "tags": [
+            "SolarPanel"
+          ],
+          "attributes": {
+            "RBX_ReimportId": "string"
+          },
+          "children": [
+            {
+              "name": "Cube_Node",
+              "className": "Model"
+            },
+            {
+              "name": "Cube.001",
+              "className": "Model"
+            },
+            {
+              "name": "Panel",
+              "className": "MeshPart"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "SolarPanelComponent",
@@ -153,6 +210,11 @@
           "classMatches": true
         }
       ]
+    },
+    {
+      "id": "SquishyBlockComponent",
+      "tag": "SquishyBlock",
+      "instances": []
     },
     {
       "id": "VitalComponent",
