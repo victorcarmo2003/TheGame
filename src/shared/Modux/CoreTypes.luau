@@ -119,12 +119,13 @@ export type AlienType = "Common"
 | "Tanker"
 | "Brutus"
 | "AlienAnimal"
-type SpawnAreaConfig = {
+export type SpawnAreaConfig = {
 	Enabled: boolean,
 	MinDifficulty: number,
 	MaxDifficulty: number,
 	AlienWeights: { [AlienType]: number },
 }
+type AlienVisibleStatus = "Show" | "Hiden"
 export type State<T> = PubTypes.Value<T> & {
 	_value: T
 }
@@ -163,7 +164,7 @@ export type AlienConfig = {
 	Alived: boolean,
 	Visible: FSM<boolean>
 }
-export type SpawnType = "Base" | "Field"
+export type SpawnType = "Base" | "Field" | "EnemyBase"
 type GameStates = "Begin" | "Normal" | "DarkMoon"
 export type R6 = {
 	Head: {
@@ -255,6 +256,15 @@ export type R6 = {
 	} & LocalScript,
 	Body_Colors: BodyColors,
 } & Model
+type AreaState = "Active" | "Unactive"
+type AreaRegistredType = {
+	ID: number,
+	Instance: BasePart,
+	AreaType: SpawnType,
+	CurrentDifficult: number,
+	DifficultMode: "EASY" | "MEDIUM" | "HARD",
+	State: FSM<AreaState>,
+}
 export type PlayerZoneConfig = {
 	MinHeight: number,
 	Padding: Vector3?,

@@ -50,4 +50,8 @@ return {
 			Screamer = 10
 		},
 	},
+<<<<<<< Updated upstream
 } :: SpawnAreaType
+=======
+} :: SpawnAreaType
+>>>>>>> Stashed changes
