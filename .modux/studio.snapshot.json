@@ -1,13 +1,18 @@
 {
   "protocolVersion": 2,
   "workspaceHash": "736a2e7eab6df47cb55c5c203e101d096b387b355c70917fa481dffe2a0183c7",
-  "contractHash": "59714422a753e9d3a1928b08732b95c892bf5f28f633b570e491fcbec7fc7c79",
-  "generatedAt": "2026-06-15T01:28:05.587Z",
+  "contractHash": "ec1380219d1cf65bed4e07dfe438030fa4372f87582dcbc08cd76e33b01984ca",
+  "generatedAt": "2026-06-15T19:41:51.958Z",
   "place": {
     "id": 117698582873122,
-    "name": "THE GAME"
+    "name": "Escape From Mars"
   },
   "components": [
+    {
+      "id": "AliensComponent",
+      "tag": "Aliens",
+      "instances": []
+    },
     {
       "id": "BasicSolarComponent",
       "tag": "BasicSolar",
@@ -98,6 +103,16 @@
       ]
     },
     {
+      "id": "BrutusComponent",
+      "tag": "Brutus",
+      "instances": []
+    },
+    {
+      "id": "CommonAlienComponent",
+      "tag": "CommonAlien",
+      "instances": []
+    },
+    {
       "id": "DebugVitalComponent",
       "tag": "DebugVital",
       "instances": [
@@ -149,8 +164,33 @@
       ]
     },
     {
+      "id": "EnemyBaseComponent",
+      "tag": "EnemyBase",
+      "instances": []
+    },
+    {
+      "id": "FieldAreaComponent",
+      "tag": "FieldArea",
+      "instances": []
+    },
+    {
+      "id": "GenericAlienComponent",
+      "tag": "Aliens",
+      "instances": []
+    },
+    {
       "id": "HungerComponent",
       "tag": "HungerComponent",
+      "instances": []
+    },
+    {
+      "id": "IntermediateAlienComponent",
+      "tag": "IntermediateAlien",
+      "instances": []
+    },
+    {
+      "id": "KniferComponent",
+      "tag": "Knifer",
       "instances": []
     },
     {
@@ -188,8 +228,33 @@
       ]
     },
     {
+      "id": "RageComponent",
+      "tag": "Rage",
+      "instances": []
+    },
+    {
       "id": "RegionComponent",
       "tag": "Region",
+      "instances": []
+    },
+    {
+      "id": "RunnerAlienComponent",
+      "tag": "RunnerAlien",
+      "instances": []
+    },
+    {
+      "id": "RunnerComponent",
+      "tag": "Runner",
+      "instances": []
+    },
+    {
+      "id": "ScreamerComponent",
+      "tag": "Screamer",
+      "instances": []
+    },
+    {
+      "id": "ShooterComponent",
+      "tag": "Shooter",
       "instances": []
     },
     {
@@ -198,8 +263,44 @@
       "instances": []
     },
     {
+      "id": "SniperComponent",
+      "tag": "Sniper",
+      "instances": []
+    },
+    {
+      "id": "SpawnAreaComponent",
+      "tag": "SpawnArea",
+      "instances": [
+        {
+          "path": "Workspace.Map.SpawnAreas.Part",
+          "className": "Part",
+          "tags": [
+            "SpawnArea"
+          ],
+          "attributes": {
+            "AreaType": "string",
+            "Enabled": "boolean",
+            "Padding": "number",
+            "SpawnHeightOffset": "number"
+          },
+          "children": [],
+          "classMatches": true
+        }
+      ]
+    },
+    {
       "id": "SquishyBlockComponent",
       "tag": "SquishyBlock",
+      "instances": []
+    },
+    {
+      "id": "TankerComponent",
+      "tag": "Tanker",
+      "instances": []
+    },
+    {
+      "id": "TelekinesisComponent",
+      "tag": "Telekinesis",
       "instances": []
     },
     {

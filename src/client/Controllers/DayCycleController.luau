@@ -28,6 +28,7 @@ DayCycleController:OnInit(function(self)
 	end)
 
 	self.Network.Packages.TransitionCycle:on(function(data: { DayTime: string })
+		print(`[CLIENT-SIDE] Daytime:`, data.DayTime)
 	end)
 end)
 
