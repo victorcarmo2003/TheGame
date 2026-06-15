@@ -12,20 +12,23 @@ local DEBUG_ALIEN_MARKERS_FOLDER = "DEBUG_AlienPositions"
 local Loaded = false
 local RandomGenerator = Random.new()
 
-type BaseTypes = AreasConfig.SpawnType
-type AreaConfig = AreasConfig.SpawnAreaConfig
+type SpawnType = AreasConfig.SpawnType
+type SpawnAreaConfig = AreasConfig.SpawnAreaConfig
 type AlienType = AliensList.AlienType
-type AlienState = AliensList.AlienStates
+type AlienStates = AliensList.AlienStates
+type FSM<State> = FSM.FSM<State>
 
 export type AlienConfig = {
 	AlienType: AlienType,
 	Position: CFrame,
-	State: FSM.FSM<AlienState>,
+	State: FSM<AlienStates>,
 	Alived: boolean,
-	Visible: FSM.FSM<boolean>
+	Visible: FSM<boolean>
 }
 
-EnemyService._Aliens = {} :: { [string]: AlienConfig }
+EnemyService.Aliens = {} :: { [string]: AlienConfig }
+
+export type removeTypes = "Visible" | "Destroy"
 
 local function GetAliensFolder(): Folder
 	local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -63,11 +66,11 @@ local function ChekingAliensModels(): boolean
 	return true
 end
 
-local function GetAreaConfig(Area: BaseTypes): AreaConfig?
+local function GetAreaConfig(Area: SpawnType): SpawnAreaConfig?
 	return AreasConfig[Area]
 end
 
-local function IsDifficultyAllowed(Config: AreaConfig, Difficult: number): boolean
+local function IsDifficultyAllowed(Config: SpawnAreaConfig, Difficult: number): boolean
 	return Difficult >= Config.MinDifficulty and Difficult <= Config.MaxDifficulty
 end
 
@@ -100,9 +103,21 @@ local function GetRandomAlienType(AlienWeights: { [AlienType]: number }): AlienT
 	return
 end
 
+local function CreateAlienConnection(ReferenceKey: string)
+	local AlienConfig: AlienConfig = EnemyService.Aliens[ReferenceKey]
+
+	AlienConfig.State:OnTransition(function(previousState: AlienStates, nextState: AlienStates)
+		
+	end)
+
+	AlienConfig.Visible:OnTransition(function(previousState: boolean, nextState: boolean)
+		
+	end)
+end
+
 local function CreateAlienConfig(AlienModelName: AlienType, SpawnCFrame: CFrame): string
 	local AlienKey = tostring(HttpService:GenerateGUID(false))
-	local AlienStateTransitions: FSM.Transitions<AlienState> = {
+	local AlienStateTransitions: FSM.Transitions<AlienStates> = {
 		Idle = { "Walk", "Running", "Jumping", "attacking", "attacked" },
 		Walk = { "Idle", "Running", "Jumping", "attacking", "attacked" },
 		Running = { "Idle", "Walk", "Jumping", "attacking", "attacked" },
@@ -115,14 +130,15 @@ local function CreateAlienConfig(AlienModelName: AlienType, SpawnCFrame: CFrame)
 		[false] = { true },
 	}
 
-	EnemyService._Aliens[AlienKey] = {
+	EnemyService.Aliens[AlienKey] = {
 		AlienType = AlienModelName,
 		Position = SpawnCFrame,
-		State = FSM.new<<AlienState>>("Idle" :: AlienState, AlienStateTransitions),
+		State = FSM.new<<AlienStates>>("Idle" :: AlienStates, AlienStateTransitions),
 		Alived = true,
 		Visible = FSM.new<<boolean>>(false, VisibleTransitions)
 	}
 
+	CreateAlienConnection(AlienKey)
 	return AlienKey
 end
 
@@ -186,35 +202,40 @@ local function GetRandomCFrameInArea(AreaInstance: BasePart): CFrame?
 	return nil
 end
 
-function EnemyService:RemoveAlienByKey(Key: string): boolean
-	local ReferenteAlien = self._Aliens[Key]
+function EnemyService:RemoveAlienByKey(Key: string, RemoveType: removeTypes): boolean
+	local removeEnum = {
+		Visible = "VISIBLE",
+		Destroy = "DESTROY"
+	}
+	
+	local ReferenteAlien = self.Aliens[Key] :: AlienConfig
 	if not ReferenteAlien then
-		warn()
+		warn(`[{script.Name} - RemoveAlienByKey] Alien not find.`)
 		return false
 	end
 
-	
-
-	-- PEDIR AJUDA DO HAKOR AQUI
-	return false
+	if string.upper("RemoveType") == removeEnum.Visible then
+		return ReferenteAlien.Visible:Transition(false)
+	elseif string.upper("RemoveType") == removeEnum.Destroy then
+		local OldList = table.remove(self.Aliens, table.find(self.Aliens, ReferenteAlien))
+		OldList.State:Destroy()
+		OldList.Visible:Destroy()
+		return true
+	else
+		return false
+	end
 end
 
 function EnemyService:GetAlienByKey(Key: string): AlienConfig?
-	return self._Aliens[Key]
+	return self.Aliens[Key]
 end
 
 function EnemyService:GetRandomAlienPosition(AreaInstance: BasePart): CFrame?
-	local RandomPos: CFrame? = GetRandomCFrameInArea(AreaInstance)
-
-	if not RandomPos then
-		return
-	end
-
-	return RandomPos
+	return GetRandomCFrameInArea(AreaInstance)
 end
 
-function EnemyService:GetRandomAlienType(BaseType: BaseTypes, Difficult: number): AlienType?
-	local AreaConfig: AreaConfig? = GetAreaConfig(BaseType)
+function EnemyService:GetRandomAlienType(BaseType: SpawnType, Difficult: number): AlienType?
+	local AreaConfig: SpawnAreaConfig? = GetAreaConfig(BaseType)
 	if not AreaConfig then
 		warn(`[{script.Name} - GetRandomAlienType] BaseType not registred in AreaConfig or returned nil.`)
 		return
@@ -241,8 +262,8 @@ function EnemyService:GetRandomAlienType(BaseType: BaseTypes, Difficult: number)
 	return SelectedAlienType
 end
 
-function EnemyService:CreateAlien(BaseType: BaseTypes, Difficult: number, SpawnCFrame: CFrame): string?
-	local AreaConfig: AreaConfig? = GetAreaConfig(BaseType)
+function EnemyService:CreateAlien(BaseType: SpawnType, Difficult: number, SpawnCFrame: CFrame): string?
+	local AreaConfig: SpawnAreaConfig? = GetAreaConfig(BaseType)
 	if not AreaConfig then
 		warn(`[{script.Name} - CreateAlien] BaseType not registred in AreaConfig or returned nil`)
 		return

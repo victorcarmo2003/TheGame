@@ -10,13 +10,14 @@ SpawnnersService.AreasRegistred = {} :: AreaRegistredType
 
 type AreaState = "Active" | "Unactive"
 type SpawnType = AreasConfig.SpawnType
+type FSM<State> = FSM.FSM<State>
 type AreaRegistredType = {
 	ID: number,
 	Instance: BasePart,
 	AreaType: SpawnType,
 	CurrentDifficult: number,
 	DifficultMode: "EASY" | "MEDIUM" | "HARD",
-	State: FSM.FSM<AreaState>,
+	State: FSM<AreaState>,
 }
 
 local DEBUG_MODE = true
