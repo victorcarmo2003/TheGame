@@ -1,6 +1,6 @@
 return {
-	DayDuration = 20,
-	NightDuration = 20,
+	DayDuration = 10,
+	NightDuration = 10,
 
 	DayClock = 12,
 	NightClock = 0,

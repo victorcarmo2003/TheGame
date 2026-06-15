@@ -51,6 +51,13 @@ export type DataKeyPayload =
 	| { key: "SoundVolume", value: number }
 	| { key: "MusicEnabled", value: boolean }
 	| { key: "SoundEnabled", value: boolean }
+export type HandlerType = {
+	OnPress: (() -> ()) -> (),
+	OnRelease: (() -> ()) -> (),
+	_onPressCallbacks: { [number]: () -> () },
+	_onReleaseCallbacks: { [number]: () -> () },
+}
+export type Context = "Gameplay" | "Menu" | "Cutscene"
 type MainGui = ScreenGuiRoot
 type WindowId = UIWindowId
 type AnimationHandle<T> = {
@@ -126,7 +133,10 @@ export type FSM<State> = {
 	_transitionListeners: { TransitionCallback<State> },
 	_destroyed: boolean,
 }
-export type DayCycle = "Day" | "Night" | "Idle"
+export type MovementStates = "Walking" | "Running" | "Crouch" | "Jumping" | "Dead"
+export type OxygenStates = "Avaliable" | "Unavaliable" | "Low"
+export type VitalAttributes = "Armor" | "Hunger" | "Health" | "Oxygen" | "MaxOxygen"
+export type DayCycle = "Day" | "Night" | "Idle" | "Transition"
 export type removeTypes = "Visible" | "Destroy"
 export type AlienType = "Common"
 	| "Intermediate"

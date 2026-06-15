@@ -2,15 +2,15 @@ local Shared = game:GetService("ReplicatedStorage").Shared
 local Settings = require(Shared.Settings.DayCycle)
 
 local Modux = require(Shared.Modux)
-local Types = require(Shared.Modux.Types)
-export type DayCycle = "Day" | "Night" | "Idle"
+
+export type DayCycle = "Day" | "Night" | "Idle" | "Transition"
 
 local DayNightService = Modux.Service("DayNightService")
 
 DayNightService.CurrentClock = 0 :: number
 DayNightService.CurrentDay = 0 :: number
+DayNightService.OnCycleChanged = DayNightService.Signal.new() :: Modux.Signal<DayCycle, DayCycle>
 DayNightService.CurrentCycle = "Day" :: DayCycle
-DayNightService.OnCycleChanged = DayNightService.Signal.new() :: Types.Signal<DayCycle, DayCycle>
 
 local TRANSITION_INFO = {
 	Damping = 1,
@@ -53,7 +53,8 @@ DayNightService.StartTransition = function(self, DayTime: "Night" | "Day")
 			self.CurrentClock = Settings.DayDuration
 		end,
 	})
-	self:SetCycle("Idle")
+
+	self:SetCycle("Transition")
 	if DayTime == "Night" then
 		changeToNight:Play()
 		changeToNight.Completed:Wait()
@@ -63,6 +64,7 @@ DayNightService.StartTransition = function(self, DayTime: "Night" | "Day")
 		changeToDay.Completed:Wait()
 		self:SetCycle("Day")
 	end
+	self:ReplicateClock()
 end
 
 DayNightService.ReplicateClock = function(self)
@@ -82,6 +84,14 @@ DayNightService.IncreaseDay = function(self)
 	self.Network.Packages.DayCycle:send({ CurrentDay = self.CurrentDay }, self.Network.all)
 end
 
+DayNightService.GetDay = function(self)
+	return self.CurrentDay
+end
+
+DayNightService.GetCycle = function(self)
+	return self.CurrentCycle
+end
+
 DayNightService.SetCycle = function(self, cycle: DayCycle)
 	local previousCycle = self.CurrentCycle
 
@@ -99,7 +109,7 @@ DayNightService.ToggleCycle = function(self)
 	if self.CurrentCycle == "Day" then
 		self.Network.Packages.TransitionCycle:send({ DayTime = "Night" }, self.Network.all)
 		self:StartTransition("Night")
-	else
+	elseif self.CurrentCycle == "Night" then
 		self.Network.Packages.TransitionCycle:send({ DayTime = "Day" }, self.Network.all)
 		self:StartTransition("Day")
 	end
@@ -116,7 +126,7 @@ DayNightService:OnStart(function(self)
 end)
 
 DayNightService:OnTick(function(self)
-	if self.CurrentCycle == "Idle" then
+	if self.CurrentCycle == "Idle" or self.CurrentCycle == "Transition" then
 		return
 	end
 	if self.CurrentClock <= 0 then
