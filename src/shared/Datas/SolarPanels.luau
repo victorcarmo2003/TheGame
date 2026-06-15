@@ -1,24 +1,30 @@
 return {
-	["Basic"] = {
+	basic = {
 		Name = "Basic",
+		DisplayName = "Basic Panel",
 		Boost = false,
 		Production = 1,
+		MaxCapacity = 10,
 		ConnectedTo = nil :: Instance?,
 		Position = nil :: Vector3?,
 		Craft = { iron_ingot = 10, solar_cell = 10, eletronic_parts = 2 },
 	},
-	["Intermediate"] = {
+	intermediate = {
 		Name = "Intermediate",
+		DisplayName = "Intermediate Panel",
 		Boost = false,
 		Production = 1,
+		MaxCapacity = 25,
 		ConnectedTo = nil :: Instance?,
 		Position = nil :: Vector3?,
 		Craft = { iron_ingot = 10, solar_cell = 10, eletronic_parts = 2 },
 	},
-	["Advanced"] = {
+	advanced = {
 		Name = "Advanced",
+		DisplayName = "Advanced Panel",
 		Boost = false,
 		Production = 1,
+		MaxCapacity = 100,
 		ConnectedTo = nil :: Instance?,
 		Position = nil :: Vector3?,
 		Craft = { iron_ingot = 10, solar_cell = 10, eletronic_parts = 2 },

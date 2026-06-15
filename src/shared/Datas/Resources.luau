@@ -6,79 +6,79 @@ return {
         StackSize = 99
     },
     rusted_iron = {
-        Name = "",
+        Name = "Rusted Iron",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     iron_ore = {
-        Name = "",
+        Name = "Iron Ore",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     iron_ingot = {
-        Name = "",
+        Name = "Iron Ingot",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     steel = {
-        Name = "",
+        Name = "Steel",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     copper_ore = {
-        Name = "",
+        Name = "Copper Ore",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     copper_ingot = {
-        Name = "",
+        Name = "Copper Ingot",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     eletronic_parts = {
-        Name = "",
+        Name = "Eletronic Parts",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     circuit_board = {
-        Name = "",
+        Name = "Circuit Board",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     solar_cell = {
-        Name = "",
+        Name = "Solar Cell",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     battery_cell = {
-        Name = "",
+        Name = "Battery Cell",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     fuel_canister = {
-        Name = "",
+        Name = "Fuel Canister",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     crystal_shard = {
-        Name = "",
+        Name = "Crystal Shard",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99
     },
     meteorite = {
-        Name = "",
+        Name = "Meteorite",
         Category = "Resource",
         Rarity = "Common",
         StackSize = 99

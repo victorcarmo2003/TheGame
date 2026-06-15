@@ -1,22 +1,101 @@
 {
-  "protocolVersion": 1,
+  "protocolVersion": 2,
   "workspaceHash": "736a2e7eab6df47cb55c5c203e101d096b387b355c70917fa481dffe2a0183c7",
-  "contractHash": "a00c32aac48337418311f781351bc94040d7eace0ff272f1259c5d2a77e52cd1",
-  "generatedAt": "2026-06-14T00:30:20.192Z",
+  "contractHash": "59714422a753e9d3a1928b08732b95c892bf5f28f633b570e491fcbec7fc7c79",
+  "generatedAt": "2026-06-15T01:28:05.587Z",
   "place": {
     "id": 117698582873122,
-    "name": "Escape From Mars"
+    "name": "THE GAME"
   },
   "components": [
     {
-      "id": "AliensComponent",
-      "tag": "Aliens",
-      "instances": []
-    },
-    {
-      "id": "CommonAlienComponent",
-      "tag": "CommonAlien",
-      "instances": []
+      "id": "BasicSolarComponent",
+      "tag": "BasicSolar",
+      "instances": [
+        {
+          "path": "Workspace.SolarPanels.Basic",
+          "className": "Model",
+          "tags": [
+            "BasicSolar"
+          ],
+          "attributes": {
+            "RBX_ReimportId": "string"
+          },
+          "children": [
+            {
+              "name": "Cube_Node",
+              "className": "Model",
+              "children": [
+                {
+                  "name": "Cube",
+                  "className": "MeshPart",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Cube.001",
+              "className": "Model",
+              "children": [
+                {
+                  "name": "Cube.002",
+                  "className": "MeshPart",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Panel",
+              "className": "MeshPart",
+              "children": [
+                {
+                  "name": "BillboardGui",
+                  "className": "BillboardGui",
+                  "children": [
+                    {
+                      "name": "Frame",
+                      "className": "Frame",
+                      "children": [
+                        {
+                          "name": "Storage",
+                          "className": "TextLabel",
+                          "children": [
+                            {
+                              "name": "UIStroke",
+                              "className": "UIStroke",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "name": "UIGridLayout",
+                          "className": "UIGridLayout",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ProximityPrompt",
+                  "className": "ProximityPrompt",
+                  "children": []
+                },
+                {
+                  "name": "RopeAttachment",
+                  "className": "Attachment",
+                  "children": []
+                },
+                {
+                  "name": "Texture",
+                  "className": "Texture",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "DebugVitalComponent",
@@ -32,7 +111,8 @@
           "children": [
             {
               "name": "ProximityPrompt",
-              "className": "ProximityPrompt"
+              "className": "ProximityPrompt",
+              "children": []
             }
           ]
         },
@@ -46,7 +126,8 @@
           "children": [
             {
               "name": "ProximityPrompt",
-              "className": "ProximityPrompt"
+              "className": "ProximityPrompt",
+              "children": []
             }
           ]
         },
@@ -60,25 +141,16 @@
           "children": [
             {
               "name": "ProximityPrompt",
-              "className": "ProximityPrompt"
+              "className": "ProximityPrompt",
+              "children": []
             }
           ]
         }
       ]
     },
     {
-      "id": "GenericAlienComponent",
-      "tag": "Aliens",
-      "instances": []
-    },
-    {
       "id": "HungerComponent",
       "tag": "HungerComponent",
-      "instances": []
-    },
-    {
-      "id": "IntermediateAlienComponent",
-      "tag": "IntermediateAlien",
       "instances": []
     },
     {
@@ -121,95 +193,9 @@
       "instances": []
     },
     {
-      "id": "RunnerAlienComponent",
-      "tag": "RunnerAlien",
-      "instances": []
-    },
-    {
       "id": "SmashButterComponent",
       "tag": "ButterSmash",
       "instances": []
-    },
-    {
-      "id": "SolarPanelComponent",
-      "tag": "SolarPanel",
-      "instances": [
-        {
-          "path": "Workspace.SolarPanels.Basic",
-          "className": "Model",
-          "tags": [
-            "SolarPanel"
-          ],
-          "attributes": {
-            "RBX_ReimportId": "string"
-          },
-          "children": [
-            {
-              "name": "Cube_Node",
-              "className": "Model"
-            },
-            {
-              "name": "Cube.001",
-              "className": "Model"
-            },
-            {
-              "name": "Panel",
-              "className": "MeshPart"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "SolarPanelComponent",
-      "tag": "SolarPanel",
-      "instances": [
-        {
-          "path": "Workspace.SolarPanels.Basic",
-          "className": "Model",
-          "tags": [
-            "SolarPanel"
-          ],
-          "attributes": {
-            "RBX_ReimportId": "string"
-          },
-          "children": [
-            {
-              "name": "Cube_Node",
-              "className": "Model"
-            },
-            {
-              "name": "Cube.001",
-              "className": "Model"
-            },
-            {
-              "name": "Panel",
-              "className": "MeshPart"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "SpawnAreaComponent",
-      "tag": "SpawnArea",
-      "instances": [
-        {
-          "path": "Workspace.Map.SpawnAreas.Part",
-          "className": "Part",
-          "tags": [
-            "SpawnArea"
-          ],
-          "attributes": {
-            "AreaType": "string",
-            "Enabled": "boolean",
-            "Padding": "number",
-            "SpawnHeightOffset": "number"
-          },
-          "children": [],
-          "classMatches": true
-        }
-      ]
     },
     {
       "id": "SquishyBlockComponent",
