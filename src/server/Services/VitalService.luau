@@ -25,8 +25,12 @@ VitalService:OnInit(function(self)
 	end)
 
 	self.PlayerService:OnPlayerAdded(function(Player: Player)
-		CollectionService:AddTag(Player, "Vital")
+		CollectionService:AddTag(Player, "VitalComponent")
+		CollectionService:AddTag(Player, "OxygenComponent")
+		CollectionService:AddTag(Player, "HungerComponent")
 	end)
+
+	self:GetComponent()
 end)
 
 return VitalService

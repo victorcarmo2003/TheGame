@@ -5,9 +5,13 @@ local Types = require(ReplicatedStorage.Shared.Modux.Types)
 
 export type ClassStats = {
 	MaxHealth: number?,
-	WalkSpeed: number?,
-	JumpPower: number?,
-	JumpHeight: number?,
+	MaxStamina: number?,
+	WalkSpeed: number?, -- walkspeed base
+	LifeRegen: number?, -- passive regeneration
+	StaminaConsume: number?, -- -% reduces stamina consume
+	Armor: number?, --% reduces damage intake
+	Heal: number?, -- % increase heal bonus from all sources
+	DamageBonus: number? -- % that increases the damage bonus
 }
 
 export type ClassDefinition<T> = {

@@ -7,8 +7,6 @@ local localPlayer = game.Players.LocalPlayer
 local ScreenGui = localPlayer.PlayerGui:WaitForChild("ScreenGui")
 local statusUI = ScreenGui.Conteiner.Status
 
-type NumberMessage = { Message: number }
-
 DayCycleController.UpdateClock = function(self, seconds: number)
 	local ClockLabel = statusUI.ClockLabel
 	local timeString = string.format("%d:%02d", math.floor(seconds / 60), seconds % 60)
@@ -21,12 +19,15 @@ DayCycleController.UpdateDay = function(self, currentDay: number)
 end
 
 DayCycleController:OnInit(function(self)
-	self.Network.Packages.SecondsCycle:on(function(payload: NumberMessage)
-		self:UpdateClock(payload.Message)
+	self.Network.Packages.SecondsCycle:on(function(payload)
+		self:UpdateClock(payload.Seconds)
 	end)
 
-	self.Network.Packages.DayCycle:on(function(payload: NumberMessage)
-		self:UpdateDay(payload.Message)
+	self.Network.Packages.DayCycle:on(function(payload)
+		self:UpdateDay(payload.CurrentDay)
+	end)
+
+	self.Network.Packages.TransitionCycle:on(function(data: { DayTime: string })
 	end)
 end)
 

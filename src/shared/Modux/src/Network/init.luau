@@ -9,7 +9,10 @@ type DataTemplateKey = Types.DataTemplateKey
 type DataKeyPayload = Types.DataKeyPayload
 type KeyedPacket<K, V> = Packet<{ key: K, value: V }> & {
 	sendKey: (self: KeyedPacket<K, V>, key: K, value: V, target: any?) -> (),
-	onKey: (self: KeyedPacket<K, V>, fn: (key: K, value: V, sender: Player?, timestamp: number?) -> ()) -> lync.Connection,
+	onKey: (
+		self: KeyedPacket<K, V>,
+		fn: (key: K, value: V, sender: Player?, timestamp: number?) -> ()
+	) -> lync.Connection,
 }
 
 local Network = {}
@@ -67,7 +70,13 @@ end
 
 -- Codec compartilhado para as keys individuais (reutilizado em Packages e Types)
 Network.Packages = {
-	-- Pacote completo: enviado no login ou quando múltiplas keys mudam de uma vez
+	ZoneNotification = Network.packet("ZoneNotification", Network.struct({ Message = Network.string(20) })),
+	TransitionCycle = Network.packet("TransitionCycle", Network.struct({ DayTime = Network.string(5) })),
+	SecondsCycle = Network.packet("SecondsCycle", Network.struct({ Seconds = Network.int(0, 420) })),
+	DayCycle = Network.packet("DayCycle", Network.struct({ CurrentDay = Network.int(0, 10000) })),
+	ChangeMovement = Network.packet("ChangeMovement", Network.struct({ ActionName = Network.string(10) })),
+	ChangeWalkSpeed = Network.packet("ChangeWalkSpeed", Network.struct({ WalkSpeed = Network.int(0, 48) })),
+
 	Data = Network.packet(
 		"Data",
 		Network.struct({
@@ -99,72 +108,43 @@ Network.Packages = {
 		})
 	) :: Packet<DataTemplate>,
 
-	-- Pacote de key única: 1 byte de tag + N bytes do valor
-	-- Payload cru oficial: { key = "Gems", value = 1000 }
-	DataKey = Network.keyPacket(
-		"DataKey",
-		{
-			Gems = Network.int(0, 4294967295),
-			Gamepasses = Network.map(Network.string(10), Network.bool),
+	DataKey = Network.keyPacket("DataKey", {
+		Gems = Network.int(0, 4294967295),
+		Gamepasses = Network.map(Network.string(10), Network.bool),
 
-			Item = Network.map(Network.string(32), Network.int(0, 65535)),
-			UnlockedItems = Network.map(Network.int(0, 65535), Network.bool),
-			UnlockedClasses = Network.map(Network.int(0, 65535), Network.bool),
-			Badgets = Network.map(Network.int(0, 65535), Network.bool),
+		Item = Network.map(Network.string(32), Network.int(0, 65535)),
+		UnlockedItems = Network.map(Network.int(0, 65535), Network.bool),
+		UnlockedClasses = Network.map(Network.int(0, 65535), Network.bool),
+		Badgets = Network.map(Network.int(0, 65535), Network.bool),
 
-			FirstLogin = Network.bool,
+		FirstLogin = Network.bool,
 
-			Wins = Network.int(0, 65536),
-			DayCount = Network.int(0, 65536),
-			CurrentZone = Network.string(15),
-			CurrentClass = Network.string(32),
+		Wins = Network.int(0, 65536),
+		DayCount = Network.int(0, 65536),
+		CurrentZone = Network.string(15),
+		CurrentClass = Network.string(32),
 
-			TimeSpent = Network.f32,
+		TimeSpent = Network.f32,
 
-			RobuxSpent = Network.int(0, 1000000),
-			GemsSpent = Network.int(0, 1000000),
-			ChestOpen = Network.int(0, 100000),
-			SpinWheel = Network.int(0, 100000),
+		RobuxSpent = Network.int(0, 1000000),
+		GemsSpent = Network.int(0, 1000000),
+		ChestOpen = Network.int(0, 100000),
+		SpinWheel = Network.int(0, 100000),
 
-			MusicVolume = Network.int(0, 1),
-			SoundVolume = Network.int(0, 1),
-			SoundEnabled = Network.bool,
-			MusicEnabled = Network.bool,
-		}
-	) :: KeyedPacket<DataTemplateKey, any> & Packet<DataKeyPayload>,
+		MusicVolume = Network.int(0, 1),
+		SoundVolume = Network.int(0, 1),
+		SoundEnabled = Network.bool,
+		MusicEnabled = Network.bool,
+	}) :: KeyedPacket<DataTemplateKey, any> & Packet<DataKeyPayload>,
 
-	ZoneNotification = Network.packet(
-		"ZoneNotification",
-		Network.struct({
-			Message = Network.string(20),
-		})
-	),
-
-	SecondsCycle = Network.packet(
-		"SecondsCycle",
-		Network.struct({
-			Message = Network.int(0, 420),
-		})
-	),
-
-	DayCycle = Network.packet(
-		"DayCycle",
-		Network.struct({
-			Message = Network.int(0, 10000),
-		})
-	),
-
-	VitalKey = Network.keyPacket(
-		"VitalKey",
-		{
-			Armor = Network.int(0, 100),
-			Health = Network.int(0, 100),
-			Hunger = Network.int(0, 100),
-			Stamina = Network.int(0, 100),
-			Oxygen = Network.int(0, 300),
-			MaxOxygen = Network.int(0, 300),
-		}
-	),
+	VitalKey = Network.keyPacket("VitalKey", {
+		Armor = Network.int(0, 100),
+		Health = Network.int(0, 100),
+		Hunger = Network.int(0, 100),
+		Stamina = Network.int(0, 100),
+		Oxygen = Network.int(0, 300),
+		MaxOxygen = Network.int(0, 300),
+	}),
 
 	GetVitals = Network.query(
 		"GetVitals",
@@ -178,7 +158,6 @@ Network.Packages = {
 			MaxOxygen = Network.int(0, 300),
 		})
 	),
-
 }
 
 Network.start()
