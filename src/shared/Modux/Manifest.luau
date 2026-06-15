@@ -32,7 +32,6 @@ return {
 		"Components.Player.VitalComponent",
 		"Components.ZoneComponent",
 		"Services.DayNightService",
-		"Services.EnemiesService",
 		"Services.EnemyService",
 		"Services.GameService",
 		"Services.GeneratorService",
