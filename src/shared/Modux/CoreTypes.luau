@@ -102,6 +102,15 @@ type SequenceAnimationHandle = {
 	GetCurrentPos: (self: SequenceAnimationHandle) -> any,
 	Destroy: (self: SequenceAnimationHandle) -> SequenceAnimationHandle,
 }
+type EnemyConfig = {
+	BaseHealth: number,
+	BaseDamage: number,
+	WalkSpeed: number,
+}
+type AlienVisibleStatus = "Show" | "Hiden"
+export type State<T> = PubTypes.Value<T> & {
+	_value: T
+}
 export type StateCallback<State> = (state: State, otherState: State) -> ()
 export type Disconnect = () -> ()
 export type TransitionCallback<State> = (previousState: State, nextState: State) -> ()
@@ -130,18 +139,22 @@ export type VitalAttributes = "Armor" | "Hunger" | "Health" | "Oxygen" | "MaxOxy
 export type DayCycle = "Day" | "Night" | "Idle" | "Transition"
 export type removeTypes = "Visible" | "Destroy"
 export type AlienType = "Common"
-| "Intermediate"
-| "Runner"
-| "Rage"
-| "Telekinesis"
-| "Screamer"
-| "Shooter"
-| "Knifer"
-| "Sniper"
-| "Tanker"
-| "Brutus"
-| "AlienAnimal"
-type AlienStates = AliensList.AlienStates
+	| "Intermediate"
+	| "Runner"
+	| "Rage"
+	| "Telekinesis"
+	| "Screamer"
+	| "Shooter"
+	| "Knifer"
+	| "Sniper"
+	| "Tanker"
+	| "Brutus"
+export type AlienStates = "Idle"
+	| "Walk"
+	| "Running"
+	| "Jumping"
+	| "attacking"
+	| "attacked"
 export type AlienConfig = {
 	AlienType: AlienType,
 	Position: CFrame,
@@ -149,7 +162,7 @@ export type AlienConfig = {
 	Alived: boolean,
 	Visible: FSM<boolean>
 }
-export type SpawnType = "Base" | "Field"
+export type SpawnType = "Base" | "Field" | "EnemyBase"
 type GameStates = "Begin" | "Normal" | "DarkMoon"
 export type R6 = {
 	Head: {
@@ -241,6 +254,15 @@ export type R6 = {
 	} & LocalScript,
 	Body_Colors: BodyColors,
 } & Model
+type AreaState = "Active" | "Unactive"
+type AreaRegistredType = {
+	ID: number,
+	Instance: BasePart,
+	AreaType: SpawnType,
+	CurrentDifficult: number,
+	DifficultMode: "EASY" | "MEDIUM" | "HARD",
+	State: FSM<AreaState>,
+}
 export type PlayerZoneConfig = {
 	MinHeight: number,
 	Padding: Vector3?,

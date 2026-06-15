@@ -5,6 +5,7 @@
 local CoreTypes = require(script.Parent.CoreTypes)
 local ComponentTypes = require(script.Parent.ComponentTypes)
 type AlienConfig = CoreTypes.AlienConfig
+type AlienStates = CoreTypes.AlienStates
 type AlienType = CoreTypes.AlienType
 type callbackZone = CoreTypes.callbackZone
 type Context = CoreTypes.Context
@@ -41,6 +42,7 @@ type Signal<T...> = CoreTypes.Signal<T...>
 type SignalAPI = CoreTypes.SignalAPI
 type SignalConnection = CoreTypes.SignalConnection
 type SpawnType = CoreTypes.SpawnType
+type State<T> = CoreTypes.State<T>
 type StateCallback<State> = CoreTypes.StateCallback<State>
 type TickRate = CoreTypes.TickRate
 type Tools = CoreTypes.Tools
@@ -48,26 +50,41 @@ type TransitionCallback<State> = CoreTypes.TransitionCallback<State>
 type Transitions<State> = CoreTypes.Transitions<State>
 type Type = CoreTypes.Type
 type VitalAttributes = CoreTypes.VitalAttributes
+type AlienBaseMixin = ComponentTypes.AlienBaseMixin
+type AreaMixin = ComponentTypes.AreaMixin
 type BasicSolarComponent = ComponentTypes.BasicSolarComponent
+type BrutusComponent = ComponentTypes.BrutusComponent
+type CommonComponent = ComponentTypes.CommonComponent
 type ComponentExtendFn = ComponentTypes.ComponentExtendFn
 type ComponentFn = ComponentTypes.ComponentFn
 type ComponentImportFn = ComponentTypes.ComponentImportFn
 type DebugVitalComponent = ComponentTypes.DebugVitalComponent
+type EnemyBaseComponent = ComponentTypes.EnemyBaseComponent
+type FieldAreaComponent = ComponentTypes.FieldAreaComponent
 type GetAllComponentsFn = ComponentTypes.GetAllComponentsFn
 type GetComponentFn = ComponentTypes.GetComponentFn
 type GetRequiredComponentFn = ComponentTypes.GetRequiredComponentFn
 type HungerComponent = ComponentTypes.HungerComponent
 type ImportFn = ComponentTypes.ImportFn
+type IntermediateComponent = ComponentTypes.IntermediateComponent
+type KniferComponent = ComponentTypes.KniferComponent
 type MixinExtendFn = ComponentTypes.MixinExtendFn
 type MixinFn = ComponentTypes.MixinFn
 type MovementComponent = ComponentTypes.MovementComponent
 type OxygenComponent = ComponentTypes.OxygenComponent
 type OxygenZoneComponent = ComponentTypes.OxygenZoneComponent
 type PlayerZoneComponent = ComponentTypes.PlayerZoneComponent
+type RageComponent = ComponentTypes.RageComponent
 type RegionComponent = ComponentTypes.RegionComponent
+type RunnerComponent = ComponentTypes.RunnerComponent
+type ScreamerComponent = ComponentTypes.ScreamerComponent
+type ShooterComponent = ComponentTypes.ShooterComponent
 type SmashButterComponent = ComponentTypes.SmashButterComponent
+type SniperComponent = ComponentTypes.SniperComponent
 type SolarPanelMixin = ComponentTypes.SolarPanelMixin
 type SquishyBlockComponent = ComponentTypes.SquishyBlockComponent
+type TankerComponent = ComponentTypes.TankerComponent
+type TelekinesisComponent = ComponentTypes.TelekinesisComponent
 type VitalComponent = ComponentTypes.VitalComponent
 type ZoneComponent = ComponentTypes.ZoneComponent
 type DayCycleController = {
@@ -78,7 +95,7 @@ type DayCycleController = {
 	LocalHumanoid: Humanoid?,
 	UpdateClock: (self: DayCycleController, seconds: number) -> (),
 	UpdateDay: (self: DayCycleController, currentDay: number) -> (),
-	Extend: (self: DayCycleController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> DayCycleController,
+	Extend: (self: DayCycleController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> DayCycleController,
 	Import: ImportFn,
 	OnInit: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
 	OnStart: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
@@ -121,7 +138,7 @@ type EnemyRenderController = {
 	Parent: Workspace,
 },
 	Rendered: { [any]: any },
-	Extend: (self: EnemyRenderController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> EnemyRenderController,
+	Extend: (self: EnemyRenderController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> EnemyRenderController,
 	Import: ImportFn,
 	OnInit: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
 	OnStart: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
@@ -157,7 +174,7 @@ type InputController = {
 	ChangeContext: (self: InputController, newContext: Context) -> (),
 	allHandlers: { [string]: HandlerType },
 	Context: Context,
-	Extend: (self: InputController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> InputController,
+	Extend: (self: InputController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> InputController,
 	Import: ImportFn,
 	OnInit: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
 	OnStart: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
@@ -190,7 +207,7 @@ type MovementController = {
 	LocalHumanoid: Humanoid?,
 	InputController: InputController,
 	BindKeys: (self: MovementController) -> (),
-	Extend: (self: MovementController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> MovementController,
+	Extend: (self: MovementController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> MovementController,
 	Import: ImportFn,
 	OnInit: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
 	OnStart: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
@@ -221,7 +238,7 @@ type NotificationController = {
 	LocalPlayer: Player,
 	LocalCharacter: Model?,
 	LocalHumanoid: Humanoid?,
-	Extend: (self: NotificationController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> NotificationController,
+	Extend: (self: NotificationController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> NotificationController,
 	Import: ImportFn,
 	OnInit: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
 	OnStart: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
@@ -252,7 +269,7 @@ type PlugController = {
 	LocalPlayer: Player,
 	LocalCharacter: Model?,
 	LocalHumanoid: Humanoid?,
-	Extend: (self: PlugController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> PlugController,
+	Extend: (self: PlugController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> PlugController,
 	Import: ImportFn,
 	OnInit: (self: PlugController, cb: (self: PlugController) -> ()) -> PlugController,
 	OnStart: (self: PlugController, cb: (self: PlugController) -> ()) -> PlugController,
@@ -283,7 +300,7 @@ type ProfileController = {
 	LocalPlayer: Player,
 	LocalCharacter: Model?,
 	LocalHumanoid: Humanoid?,
-	Extend: (self: ProfileController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> ProfileController,
+	Extend: (self: ProfileController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ProfileController,
 	Import: ImportFn,
 	OnInit: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
 	OnStart: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
@@ -319,18 +336,18 @@ type ScreenController = {
 	GetWindowId: (self: ScreenController, window: GuiObject) -> WindowId,
 	IsInsideGui: (self: ScreenController, instance: Instance) -> boolean,
 	RegisterWindow: ((self: ScreenController, window: GuiObject) -> GuiObject) & ((self: ScreenController, window: GuiObject, id: WindowId?) -> GuiObject),
-	TryRegisterWindow: (self: ScreenController, instance: Instance) -> any,
+	TryRegisterWindow: (self: ScreenController, instance: Instance) -> any | nil,
 	RegisterTaggedWindows: (self: ScreenController) -> (),
 	OnOpen: (self: ScreenController, id: WindowId, callback: (window: GuiObject) -> ()) -> (),
 	OnClose: (self: ScreenController, id: WindowId, callback: (window: GuiObject) -> ()) -> (),
 	GetWindow: (self: ScreenController, id: WindowId) -> GuiObject?,
 	GetCurrentWindow: (self: ScreenController) -> WindowId?,
 	FireWindowCallbacks: (self: ScreenController, callbacks: { [WindowId]: { (window: GuiObject) -> () } }, id: WindowId, window: GuiObject) -> any,
-	CloseWindow: (self: ScreenController) -> any,
-	OpenWindow: (self: ScreenController, id: WindowId) -> any,
+	CloseWindow: (self: ScreenController) -> any | nil,
+	OpenWindow: (self: ScreenController, id: WindowId) -> any | nil,
 	BindButton: (self: ScreenController, button: GuiButton, id: WindowId) -> RBXScriptConnection,
-	TryBindOpenButton: (self: ScreenController, instance: Instance) -> any,
-	TryBindCloseButton: (self: ScreenController, instance: Instance) -> any,
+	TryBindOpenButton: (self: ScreenController, instance: Instance) -> any | nil,
+	TryBindCloseButton: (self: ScreenController, instance: Instance) -> any | nil,
 	BindTaggedButtons: (self: ScreenController) -> (),
 	Gui: MainGui,
 	Windows: { [WindowId]: GuiObject },
@@ -339,7 +356,7 @@ type ScreenController = {
 	ButtonConnections: { [Instance]: RBXScriptConnection },
 	OnOpenCallbacks: { [WindowId]: { (window: GuiObject) -> () } },
 	OnCloseCallbacks: { [WindowId]: { (window: GuiObject) -> () } },
-	Extend: (self: ScreenController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> ScreenController,
+	Extend: (self: ScreenController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ScreenController,
 	Import: ImportFn,
 	OnInit: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
 	OnStart: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
@@ -403,7 +420,7 @@ type UIAnimationsController = {
 	ActiveConnections: { [GuiObject]: RBXScriptConnection },
 	ActiveAnimations: { [Instance]: { [any]: boolean } },
 	TaggedTasks: { [Instance]: { [string]: { any } } },
-	Extend: (self: UIAnimationsController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> UIAnimationsController,
+	Extend: (self: UIAnimationsController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> UIAnimationsController,
 	Import: ImportFn,
 	OnInit: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
 	OnStart: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
@@ -445,53 +462,12 @@ type VitalController = {
 	Hunger: number,
 	Oxygen: number,
 	MaxOxygen: number,
-	PlayerStatus: Frame & {
-	Health: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	Hunger: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	Oxygen: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	UIAspectRatioConstraint: UIAspectRatioConstraint,
-},
+	PlayerStatus: any,
 	Armor: number,
 	Stamina: number,
 	MaxHunger: number,
 	MaxStamina: number,
-	Extend: (self: VitalController, id: "SolarPanelMixin" | "PlayerZoneComponent") -> VitalController,
+	Extend: (self: VitalController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> VitalController,
 	Import: ImportFn,
 	OnInit: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
 	OnStart: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
@@ -532,7 +508,7 @@ export type DayNightService = {
 	CurrentDay: number,
 	OnCycleChanged: Signal<DayCycle, DayCycle>,
 	CurrentCycle: DayCycle,
-	Extend: (self: DayNightService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> DayNightService,
+	Extend: (self: DayNightService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> DayNightService,
 	Import: ServiceImportFn,
 	OnInit: (self: DayNightService, cb: (self: DayNightService) -> ()) -> DayNightService,
 	OnStart: (self: DayNightService, cb: (self: DayNightService) -> ()) -> DayNightService,
@@ -566,7 +542,41 @@ export type EnemyService = {
 	GetRandomAlienType: (self: EnemyService, BaseType: SpawnType, Difficult: number) -> AlienType?,
 	CreateAlien: (self: EnemyService, BaseType: SpawnType, Difficult: number, SpawnCFrame: CFrame) -> string?,
 	Aliens: { [string]: AlienConfig },
-	Extend: (self: EnemyService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> EnemyService,
+	Extend: (self: EnemyService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> EnemyService,
+	Import: ServiceImportFn,
+	OnInit: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
+	OnStart: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
+	OnTick: (self: EnemyService, cb: (self: EnemyService, deltaTime: number) -> (), rate: number, priority: number?) -> EnemyService,
+	OnSimulation: (self: EnemyService, cb: (self: EnemyService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> EnemyService,
+	OnDestroy: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
+	Tag: (self: EnemyService, tag: string) -> EnemyService,
+	ClassName: (self: EnemyService, className: string) -> EnemyService,
+	AttributeDefaults: (self: EnemyService, schema: { [string]: any }) -> EnemyService,
+	Children: (self: EnemyService, children: { string }) -> EnemyService,
+	RequireComponent: (self: EnemyService, id: string) -> EnemyService,
+	New: (self: EnemyService, ID: string, Type: Type) -> EnemyService,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type EnemyService = {
+	ID: string,
+	Type: Type,
+	RemoveAlienByKey: (self: EnemyService, Key: string, RemoveType: removeTypes) -> boolean,
+	GetAlienByKey: (self: EnemyService, Key: string) -> AlienConfig?,
+	GetRandomAlienPosition: (self: EnemyService, AreaInstance: BasePart) -> CFrame?,
+	GetRandomAlienType: (self: EnemyService, BaseType: SpawnType, Difficult: number) -> AlienType?,
+	CreateAlien: (self: EnemyService, BaseType: SpawnType, Difficult: number, SpawnCFrame: CFrame) -> string?,
+	Aliens: { [string]: AlienConfig },
+	Extend: (self: EnemyService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> EnemyService,
 	Import: ServiceImportFn,
 	OnInit: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
 	OnStart: (self: EnemyService, cb: (self: EnemyService) -> ()) -> EnemyService,
@@ -600,7 +610,7 @@ export type GameService = {
 	OnNormal: Signal<>,
 	OnDarkMoon: Signal<>,
 	State: FSM<GameStates>,
-	Extend: (self: GameService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> GameService,
+	Extend: (self: GameService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> GameService,
 	Import: ServiceImportFn,
 	OnInit: (self: GameService, cb: (self: GameService) -> ()) -> GameService,
 	OnStart: (self: GameService, cb: (self: GameService) -> ()) -> GameService,
@@ -628,7 +638,7 @@ export type GameService = {
 export type GeneratorService = {
 	ID: string,
 	Type: Type,
-	Extend: (self: GeneratorService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> GeneratorService,
+	Extend: (self: GeneratorService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> GeneratorService,
 	Import: ServiceImportFn,
 	OnInit: (self: GeneratorService, cb: (self: GeneratorService) -> ()) -> GeneratorService,
 	OnStart: (self: GeneratorService, cb: (self: GeneratorService) -> ()) -> GeneratorService,
@@ -656,7 +666,7 @@ export type GeneratorService = {
 export type LeaderstatsService = {
 	ID: string,
 	Type: Type,
-	Extend: (self: LeaderstatsService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> LeaderstatsService,
+	Extend: (self: LeaderstatsService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> LeaderstatsService,
 	Import: ServiceImportFn,
 	OnInit: (self: LeaderstatsService, cb: (self: LeaderstatsService) -> ()) -> LeaderstatsService,
 	OnStart: (self: LeaderstatsService, cb: (self: LeaderstatsService) -> ()) -> LeaderstatsService,
@@ -685,7 +695,7 @@ export type MovementService = {
 	ID: string,
 	Type: Type,
 	PlayerService: PlayerService,
-	Extend: (self: MovementService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> MovementService,
+	Extend: (self: MovementService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> MovementService,
 	Import: ServiceImportFn,
 	OnInit: (self: MovementService, cb: (self: MovementService) -> ()) -> MovementService,
 	OnStart: (self: MovementService, cb: (self: MovementService) -> ()) -> MovementService,
@@ -714,7 +724,7 @@ export type PlayerBilboardService = {
 	ID: string,
 	Type: Type,
 	PlayerService: PlayerService,
-	Extend: (self: PlayerBilboardService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> PlayerBilboardService,
+	Extend: (self: PlayerBilboardService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> PlayerBilboardService,
 	Import: ServiceImportFn,
 	OnInit: (self: PlayerBilboardService, cb: (self: PlayerBilboardService) -> ()) -> PlayerBilboardService,
 	OnStart: (self: PlayerBilboardService, cb: (self: PlayerBilboardService) -> ()) -> PlayerBilboardService,
@@ -750,7 +760,7 @@ export type PlayerService = {
 	GetAllCharacters: (self: PlayerService) -> { R6 },
 	allPlayers: { [number]: Player },
 	allCharacters: { [number]: R6 },
-	Extend: (self: PlayerService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> PlayerService,
+	Extend: (self: PlayerService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> PlayerService,
 	Import: ServiceImportFn,
 	OnInit: (self: PlayerService, cb: (self: PlayerService) -> ()) -> PlayerService,
 	OnStart: (self: PlayerService, cb: (self: PlayerService) -> ()) -> PlayerService,
@@ -779,7 +789,7 @@ export type ProfileService = {
 	ID: string,
 	Type: Type,
 	PlayerService: PlayerService,
-	Set: (self: ProfileService, Player: Player, Key: DataTemplateKey, value: any) -> any,
+	Set: (self: ProfileService, Player: Player, Key: DataTemplateKey, value: any) -> any | nil,
 	ReplicateKey: (self: ProfileService, Player: Player, Key: DataTemplateKey) -> (),
 	Replicate: (self: ProfileService, Player: Player) -> any,
 	GetData: (self: ProfileService, Player: Player) -> DataTemplate?,
@@ -787,7 +797,7 @@ export type ProfileService = {
 	Profiles: { [Player]: any },
 	OnUpdateData: Signal<Player, DataTemplate>,
 	OnUpdateKey: Signal<Player, DataTemplateKey, any>,
-	Extend: (self: ProfileService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> ProfileService,
+	Extend: (self: ProfileService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ProfileService,
 	Import: ServiceImportFn,
 	OnInit: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
 	OnStart: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
@@ -812,31 +822,29 @@ export type ProfileService = {
 	Attributes: { [string]: any },
 }
 
-export type ProfileService = {
+export type SpawnnersService = {
 	ID: string,
 	Type: Type,
-	PlayerService: PlayerService,
-	Set: (self: ProfileService, Player: Player, Key: DataTemplateKey, value: any) -> any,
-	ReplicateKey: (self: ProfileService, Player: Player, Key: DataTemplateKey) -> (),
-	Replicate: (self: ProfileService, Player: Player) -> any,
-	GetData: (self: ProfileService, Player: Player) -> DataTemplate?,
-	PrintData: boolean,
-	Profiles: { [Player]: any },
-	OnUpdateData: Signal<Player, DataTemplate>,
-	OnUpdateKey: Signal<Player, DataTemplateKey, any>,
-	Extend: (self: ProfileService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> ProfileService,
+	GetRegistredsArea: (self: SpawnnersService) -> { AreaRegistredType },
+	HasArea: (self: SpawnnersService, instance: BasePart) -> any,
+	ResumeArea: (self: SpawnnersService, Instance: BasePart) -> boolean,
+	PausaArea: (self: SpawnnersService, Area: BasePart | string) -> boolean,
+	RegisterArea: (self: SpawnnersService, Instance: BasePart, difficulty: number, AreaType: SpawnType) -> boolean,
+	UnregisterArea: ((self: SpawnnersService) -> boolean) & ((self: SpawnnersService, Area: Instance | BasePart?) -> boolean) & ((self: SpawnnersService, Area: Instance | BasePart?, All: boolean?) -> boolean),
+	AreasRegistred: AreaRegistredType,
+	Extend: (self: SpawnnersService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> SpawnnersService,
 	Import: ServiceImportFn,
-	OnInit: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
-	OnStart: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
-	OnTick: (self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), rate: number, priority: number?) -> ProfileService,
-	OnSimulation: (self: ProfileService, cb: (self: ProfileService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ProfileService,
-	OnDestroy: (self: ProfileService, cb: (self: ProfileService) -> ()) -> ProfileService,
-	Tag: (self: ProfileService, tag: string) -> ProfileService,
-	ClassName: (self: ProfileService, className: string) -> ProfileService,
-	AttributeDefaults: (self: ProfileService, schema: { [string]: any }) -> ProfileService,
-	Children: (self: ProfileService, children: { string }) -> ProfileService,
-	RequireComponent: (self: ProfileService, id: string) -> ProfileService,
-	New: (self: ProfileService, ID: string, Type: Type) -> ProfileService,
+	OnInit: (self: SpawnnersService, cb: (self: SpawnnersService) -> ()) -> SpawnnersService,
+	OnStart: (self: SpawnnersService, cb: (self: SpawnnersService) -> ()) -> SpawnnersService,
+	OnTick: (self: SpawnnersService, cb: (self: SpawnnersService, deltaTime: number) -> (), rate: number, priority: number?) -> SpawnnersService,
+	OnSimulation: (self: SpawnnersService, cb: (self: SpawnnersService, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SpawnnersService,
+	OnDestroy: (self: SpawnnersService, cb: (self: SpawnnersService) -> ()) -> SpawnnersService,
+	Tag: (self: SpawnnersService, tag: string) -> SpawnnersService,
+	ClassName: (self: SpawnnersService, className: string) -> SpawnnersService,
+	AttributeDefaults: (self: SpawnnersService, schema: { [string]: any }) -> SpawnnersService,
+	Children: (self: SpawnnersService, children: { string }) -> SpawnnersService,
+	RequireComponent: (self: SpawnnersService, id: string) -> SpawnnersService,
+	New: (self: SpawnnersService, ID: string, Type: Type) -> SpawnnersService,
 	GetComponent: GetComponentFn,
 	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
@@ -852,7 +860,7 @@ export type ProfileService = {
 export type TesteService = {
 	ID: string,
 	Type: Type,
-	Extend: (self: TesteService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> TesteService,
+	Extend: (self: TesteService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> TesteService,
 	Import: ServiceImportFn,
 	OnInit: (self: TesteService, cb: (self: TesteService) -> ()) -> TesteService,
 	OnStart: (self: TesteService, cb: (self: TesteService) -> ()) -> TesteService,
@@ -881,7 +889,7 @@ export type VitalService = {
 	ID: string,
 	Type: Type,
 	PlayerService: PlayerService,
-	Extend: (self: VitalService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> VitalService,
+	Extend: (self: VitalService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> VitalService,
 	Import: ServiceImportFn,
 	OnInit: (self: VitalService, cb: (self: VitalService) -> ()) -> VitalService,
 	OnStart: (self: VitalService, cb: (self: VitalService) -> ()) -> VitalService,
@@ -914,7 +922,7 @@ export type ZoneService = {
 	ChangePlayerSafeZone: (self: ZoneService, Player: Player, Zone: any) -> (),
 	zonePlayers: { [Player]: string },
 	safezonePlayers: { [Player]: string },
-	Extend: (self: ZoneService, id: "SolarPanelMixin" | "PlayerZoneComponent") -> ZoneService,
+	Extend: (self: ZoneService, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ZoneService,
 	Import: ServiceImportFn,
 	OnInit: (self: ZoneService, cb: (self: ZoneService) -> ()) -> ZoneService,
 	OnStart: (self: ZoneService, cb: (self: ZoneService) -> ()) -> ZoneService,
@@ -943,6 +951,7 @@ export type ZoneService = {
 export type ServiceImportFn =
 	(<Self>(self: Self, id: "DayNightService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "EnemyService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "EnemyService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "GameService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "GeneratorService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "LeaderstatsService", scopeKey: string?) -> Self) &
@@ -950,7 +959,7 @@ export type ServiceImportFn =
 	(<Self>(self: Self, id: "PlayerBilboardService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "PlayerService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
-	(<Self>(self: Self, id: "ProfileService", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "SpawnnersService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "TesteService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "VitalService", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "ZoneService", scopeKey: string?) -> Self)
@@ -958,6 +967,8 @@ export type ServiceImportFn =
 --> EXTEND FUNCTIONS
 
 export type ServiceExtendFn =
+	(<Self>(self: Self, id: "AlienBaseMixin") -> Self) &
+	(<Self>(self: Self, id: "AreaMixin") -> Self) &
 	(<Self>(self: Self, id: "SolarPanelMixin") -> Self) &
 	(<Self>(self: Self, id: "PlayerZoneComponent") -> Self)
 
@@ -966,6 +977,7 @@ export type ServiceExtendFn =
 export type ServiceFn =
 	((id: "DayNightService", mode: Mode?) -> DayNightService) &
 	((id: "EnemyService", mode: Mode?) -> EnemyService) &
+	((id: "EnemyService", mode: Mode?) -> EnemyService) &
 	((id: "GameService", mode: Mode?) -> GameService) &
 	((id: "GeneratorService", mode: Mode?) -> GeneratorService) &
 	((id: "LeaderstatsService", mode: Mode?) -> LeaderstatsService) &
@@ -973,7 +985,7 @@ export type ServiceFn =
 	((id: "PlayerBilboardService", mode: Mode?) -> PlayerBilboardService) &
 	((id: "PlayerService", mode: Mode?) -> PlayerService) &
 	((id: "ProfileService", mode: Mode?) -> ProfileService) &
-	((id: "ProfileService", mode: Mode?) -> ProfileService) &
+	((id: "SpawnnersService", mode: Mode?) -> SpawnnersService) &
 	((id: "TesteService", mode: Mode?) -> TesteService) &
 	((id: "VitalService", mode: Mode?) -> VitalService) &
 	((id: "ZoneService", mode: Mode?) -> ZoneService)
