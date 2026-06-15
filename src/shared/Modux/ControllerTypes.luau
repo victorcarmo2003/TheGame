@@ -6,7 +6,6 @@ local CoreTypes = require(script.Parent.CoreTypes)
 local ComponentTypes = require(script.Parent.ComponentTypes)
 local ServiceTypes = require(script.Parent.ServiceTypes)
 type AlienConfig = CoreTypes.AlienConfig
-type AlienStates = CoreTypes.AlienStates
 type AlienType = CoreTypes.AlienType
 type callbackZone = CoreTypes.callbackZone
 type Context = CoreTypes.Context
@@ -52,40 +51,32 @@ type Transitions<State> = CoreTypes.Transitions<State>
 type Type = CoreTypes.Type
 type VitalAttributes = CoreTypes.VitalAttributes
 type AlienBaseMixin = ComponentTypes.AlienBaseMixin
-type AreaMixin = ComponentTypes.AreaMixin
+type AliensComponent = ComponentTypes.AliensComponent
 type BasicSolarComponent = ComponentTypes.BasicSolarComponent
-type BrutusComponent = ComponentTypes.BrutusComponent
-type CommonComponent = ComponentTypes.CommonComponent
+type CommonAlienComponent = ComponentTypes.CommonAlienComponent
 type ComponentExtendFn = ComponentTypes.ComponentExtendFn
 type ComponentFn = ComponentTypes.ComponentFn
 type ComponentImportFn = ComponentTypes.ComponentImportFn
 type DebugVitalComponent = ComponentTypes.DebugVitalComponent
-type EnemyBaseComponent = ComponentTypes.EnemyBaseComponent
-type FieldAreaComponent = ComponentTypes.FieldAreaComponent
+type GenericAlienComponent = ComponentTypes.GenericAlienComponent
 type GetAllComponentsFn = ComponentTypes.GetAllComponentsFn
 type GetComponentFn = ComponentTypes.GetComponentFn
 type GetRequiredComponentFn = ComponentTypes.GetRequiredComponentFn
 type HungerComponent = ComponentTypes.HungerComponent
 type ImportFn = ComponentTypes.ImportFn
-type IntermediateComponent = ComponentTypes.IntermediateComponent
-type KniferComponent = ComponentTypes.KniferComponent
+type IntermediateAlienComponent = ComponentTypes.IntermediateAlienComponent
 type MixinExtendFn = ComponentTypes.MixinExtendFn
 type MixinFn = ComponentTypes.MixinFn
 type MovementComponent = ComponentTypes.MovementComponent
 type OxygenComponent = ComponentTypes.OxygenComponent
 type OxygenZoneComponent = ComponentTypes.OxygenZoneComponent
 type PlayerZoneComponent = ComponentTypes.PlayerZoneComponent
-type RageComponent = ComponentTypes.RageComponent
 type RegionComponent = ComponentTypes.RegionComponent
-type RunnerComponent = ComponentTypes.RunnerComponent
-type ScreamerComponent = ComponentTypes.ScreamerComponent
-type ShooterComponent = ComponentTypes.ShooterComponent
+type RunnerAlienComponent = ComponentTypes.RunnerAlienComponent
 type SmashButterComponent = ComponentTypes.SmashButterComponent
-type SniperComponent = ComponentTypes.SniperComponent
 type SolarPanelMixin = ComponentTypes.SolarPanelMixin
+type SpawnAreaComponent = ComponentTypes.SpawnAreaComponent
 type SquishyBlockComponent = ComponentTypes.SquishyBlockComponent
-type TankerComponent = ComponentTypes.TankerComponent
-type TelekinesisComponent = ComponentTypes.TelekinesisComponent
 type VitalComponent = ComponentTypes.VitalComponent
 type ZoneComponent = ComponentTypes.ZoneComponent
 type DayNightService = ServiceTypes.DayNightService
@@ -100,7 +91,6 @@ type ProfileService = ServiceTypes.ProfileService
 type ServiceExtendFn = ServiceTypes.ServiceExtendFn
 type ServiceFn = ServiceTypes.ServiceFn
 type ServiceImportFn = ServiceTypes.ServiceImportFn
-type SpawnnersService = ServiceTypes.SpawnnersService
 type TesteService = ServiceTypes.TesteService
 type VitalService = ServiceTypes.VitalService
 type ZoneService = ServiceTypes.ZoneService
@@ -113,7 +103,7 @@ export type DayCycleController = {
 	LocalHumanoid: Humanoid?,
 	UpdateClock: (self: DayCycleController, seconds: number) -> (),
 	UpdateDay: (self: DayCycleController, currentDay: number) -> (),
-	Extend: (self: DayCycleController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> DayCycleController,
+	Extend: (self: DayCycleController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> DayCycleController,
 	Import: ControllerImportFn,
 	OnInit: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
 	OnStart: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
@@ -156,7 +146,7 @@ export type EnemyRenderController = {
 	Parent: Workspace,
 },
 	Rendered: { [any]: any },
-	Extend: (self: EnemyRenderController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> EnemyRenderController,
+	Extend: (self: EnemyRenderController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> EnemyRenderController,
 	Import: ControllerImportFn,
 	OnInit: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
 	OnStart: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
@@ -181,82 +171,13 @@ export type EnemyRenderController = {
 	Attributes: { [string]: any },
 }
 
-export type InputController = {
-	ID: string,
-	Type: Type,
-	LocalPlayer: Player,
-	LocalCharacter: Model?,
-	LocalHumanoid: Humanoid?,
-	UnbindAction: (self: InputController, ActionName: string) -> (),
-	BindAction: ((self: InputController, ActionName: string, ActionKey: Enum.KeyCode, TouchButton: boolean?, ActionPriority: number) -> HandlerType) & ((self: InputController, ActionName: string, ActionKey: Enum.KeyCode, TouchButton: boolean?, ActionPriority: number, Context: Context?) -> HandlerType),
-	ChangeContext: (self: InputController, newContext: Context) -> (),
-	allHandlers: { [string]: HandlerType },
-	Context: Context,
-	Extend: (self: InputController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> InputController,
-	Import: ControllerImportFn,
-	OnInit: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
-	OnStart: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
-	OnTick: (self: InputController, cb: (self: InputController, deltaTime: number) -> (), rate: number, priority: number?) -> InputController,
-	OnSimulation: (self: InputController, cb: (self: InputController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> InputController,
-	OnDestroy: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
-	Tag: (self: InputController, tag: string) -> InputController,
-	ClassName: (self: InputController, className: string) -> InputController,
-	AttributeDefaults: (self: InputController, schema: { [string]: any }) -> InputController,
-	Children: (self: InputController, children: { string }) -> InputController,
-	RequireComponent: (self: InputController, id: string) -> InputController,
-	New: (self: InputController, ID: string, Type: Type) -> InputController,
-	GetComponent: GetComponentFn,
-	GetRequiredComponent: GetRequiredComponentFn,
-	GetAllComponents: GetAllComponentsFn,
-	Cleanup: <T>(self: any, task: T) -> T,
-	Network: Network,
-	Promise: PromiseAPI,
-	GlobalClock: GlobalClock,
-	Signal: SignalAPI,
-	Tools: Tools,
-	Attributes: { [string]: any },
-}
-
-export type MovementController = {
-	ID: string,
-	Type: Type,
-	LocalPlayer: Player,
-	LocalCharacter: Model?,
-	LocalHumanoid: Humanoid?,
-	InputController: InputController,
-	BindKeys: (self: MovementController) -> (),
-	Extend: (self: MovementController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> MovementController,
-	Import: ControllerImportFn,
-	OnInit: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
-	OnStart: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
-	OnTick: (self: MovementController, cb: (self: MovementController, deltaTime: number) -> (), rate: number, priority: number?) -> MovementController,
-	OnSimulation: (self: MovementController, cb: (self: MovementController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> MovementController,
-	OnDestroy: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
-	Tag: (self: MovementController, tag: string) -> MovementController,
-	ClassName: (self: MovementController, className: string) -> MovementController,
-	AttributeDefaults: (self: MovementController, schema: { [string]: any }) -> MovementController,
-	Children: (self: MovementController, children: { string }) -> MovementController,
-	RequireComponent: (self: MovementController, id: string) -> MovementController,
-	New: (self: MovementController, ID: string, Type: Type) -> MovementController,
-	GetComponent: GetComponentFn,
-	GetRequiredComponent: GetRequiredComponentFn,
-	GetAllComponents: GetAllComponentsFn,
-	Cleanup: <T>(self: any, task: T) -> T,
-	Network: Network,
-	Promise: PromiseAPI,
-	GlobalClock: GlobalClock,
-	Signal: SignalAPI,
-	Tools: Tools,
-	Attributes: { [string]: any },
-}
-
 export type NotificationController = {
 	ID: string,
 	Type: Type,
 	LocalPlayer: Player,
 	LocalCharacter: Model?,
 	LocalHumanoid: Humanoid?,
-	Extend: (self: NotificationController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> NotificationController,
+	Extend: (self: NotificationController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> NotificationController,
 	Import: ControllerImportFn,
 	OnInit: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
 	OnStart: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
@@ -281,44 +202,13 @@ export type NotificationController = {
 	Attributes: { [string]: any },
 }
 
-export type PlugController = {
-	ID: string,
-	Type: Type,
-	LocalPlayer: Player,
-	LocalCharacter: Model?,
-	LocalHumanoid: Humanoid?,
-	Extend: (self: PlugController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> PlugController,
-	Import: ControllerImportFn,
-	OnInit: (self: PlugController, cb: (self: PlugController) -> ()) -> PlugController,
-	OnStart: (self: PlugController, cb: (self: PlugController) -> ()) -> PlugController,
-	OnTick: (self: PlugController, cb: (self: PlugController, deltaTime: number) -> (), rate: number, priority: number?) -> PlugController,
-	OnSimulation: (self: PlugController, cb: (self: PlugController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> PlugController,
-	OnDestroy: (self: PlugController, cb: (self: PlugController) -> ()) -> PlugController,
-	Tag: (self: PlugController, tag: string) -> PlugController,
-	ClassName: (self: PlugController, className: string) -> PlugController,
-	AttributeDefaults: (self: PlugController, schema: { [string]: any }) -> PlugController,
-	Children: (self: PlugController, children: { string }) -> PlugController,
-	RequireComponent: (self: PlugController, id: string) -> PlugController,
-	New: (self: PlugController, ID: string, Type: Type) -> PlugController,
-	GetComponent: GetComponentFn,
-	GetRequiredComponent: GetRequiredComponentFn,
-	GetAllComponents: GetAllComponentsFn,
-	Cleanup: <T>(self: any, task: T) -> T,
-	Network: Network,
-	Promise: PromiseAPI,
-	GlobalClock: GlobalClock,
-	Signal: SignalAPI,
-	Tools: Tools,
-	Attributes: { [string]: any },
-}
-
 export type ProfileController = {
 	ID: string,
 	Type: Type,
 	LocalPlayer: Player,
 	LocalCharacter: Model?,
 	LocalHumanoid: Humanoid?,
-	Extend: (self: ProfileController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ProfileController,
+	Extend: (self: ProfileController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ProfileController,
 	Import: ControllerImportFn,
 	OnInit: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
 	OnStart: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
@@ -354,27 +244,27 @@ export type ScreenController = {
 	GetWindowId: (self: ScreenController, window: GuiObject) -> WindowId,
 	IsInsideGui: (self: ScreenController, instance: Instance) -> boolean,
 	RegisterWindow: ((self: ScreenController, window: GuiObject) -> GuiObject) & ((self: ScreenController, window: GuiObject, id: WindowId?) -> GuiObject),
-	TryRegisterWindow: (self: ScreenController, instance: Instance) -> any | nil,
+	TryRegisterWindow: (self: ScreenController, instance: Instance) -> any,
 	RegisterTaggedWindows: (self: ScreenController) -> (),
 	OnOpen: (self: ScreenController, id: WindowId, callback: (window: GuiObject) -> ()) -> (),
 	OnClose: (self: ScreenController, id: WindowId, callback: (window: GuiObject) -> ()) -> (),
 	GetWindow: (self: ScreenController, id: WindowId) -> GuiObject?,
 	GetCurrentWindow: (self: ScreenController) -> WindowId?,
 	FireWindowCallbacks: (self: ScreenController, callbacks: { [WindowId]: { (window: GuiObject) -> () } }, id: WindowId, window: GuiObject) -> any,
-	CloseWindow: (self: ScreenController) -> any | nil,
-	OpenWindow: (self: ScreenController, id: WindowId) -> any | nil,
+	CloseWindow: (self: ScreenController) -> any,
+	OpenWindow: (self: ScreenController, id: WindowId) -> any,
 	BindButton: (self: ScreenController, button: GuiButton, id: WindowId) -> RBXScriptConnection,
-	TryBindOpenButton: (self: ScreenController, instance: Instance) -> any | nil,
-	TryBindCloseButton: (self: ScreenController, instance: Instance) -> any | nil,
+	TryBindOpenButton: (self: ScreenController, instance: Instance) -> any,
+	TryBindCloseButton: (self: ScreenController, instance: Instance) -> any,
 	BindTaggedButtons: (self: ScreenController) -> (),
-	Gui: MainGui,
+	Gui: MainGui?,
 	Windows: { [WindowId]: GuiObject },
 	CurrentWindow: WindowId?,
 	BoundButtons: { [Instance]: boolean },
 	ButtonConnections: { [Instance]: RBXScriptConnection },
 	OnOpenCallbacks: { [WindowId]: { (window: GuiObject) -> () } },
 	OnCloseCallbacks: { [WindowId]: { (window: GuiObject) -> () } },
-	Extend: (self: ScreenController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ScreenController,
+	Extend: (self: ScreenController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ScreenController,
 	Import: ControllerImportFn,
 	OnInit: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
 	OnStart: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
@@ -438,7 +328,412 @@ export type UIAnimationsController = {
 	ActiveConnections: { [GuiObject]: RBXScriptConnection },
 	ActiveAnimations: { [Instance]: { [any]: boolean } },
 	TaggedTasks: { [Instance]: { [string]: { any } } },
-	Extend: (self: UIAnimationsController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> UIAnimationsController,
+	Extend: (self: UIAnimationsController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> UIAnimationsController,
+	Import: ControllerImportFn,
+	OnInit: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
+	OnStart: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
+	OnTick: (self: UIAnimationsController, cb: (self: UIAnimationsController, deltaTime: number) -> (), rate: number, priority: number?) -> UIAnimationsController,
+	OnSimulation: (self: UIAnimationsController, cb: (self: UIAnimationsController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> UIAnimationsController,
+	OnDestroy: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
+	Tag: (self: UIAnimationsController, tag: string) -> UIAnimationsController,
+	ClassName: (self: UIAnimationsController, className: string) -> UIAnimationsController,
+	AttributeDefaults: (self: UIAnimationsController, schema: { [string]: any }) -> UIAnimationsController,
+	Children: (self: UIAnimationsController, children: { string }) -> UIAnimationsController,
+	RequireComponent: (self: UIAnimationsController, id: string) -> UIAnimationsController,
+	New: (self: UIAnimationsController, ID: string, Type: Type) -> UIAnimationsController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type VitalController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	ScreenController: ScreenController,
+	UIAnimationsController: UIAnimationsController,
+	UpdateHunger: (self: VitalController, arg1: number) -> (),
+	UpdateOxygen: (self: VitalController, arg1: number) -> (),
+	UpdateHealth: (self: VitalController, arg1: number) -> (),
+	Health: number,
+	MaxHealth: number,
+	Hunger: number,
+	Oxygen: number,
+	MaxOxygen: number,
+	Test: RemoteEvent,
+	PlayerStatus: any,
+	Armor: number,
+	Stamina: number,
+	MaxHunger: number,
+	MaxStamina: number,
+	Extend: (self: VitalController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> VitalController,
+	Import: ControllerImportFn,
+	OnInit: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
+	OnStart: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
+	OnTick: (self: VitalController, cb: (self: VitalController, deltaTime: number) -> (), rate: number, priority: number?) -> VitalController,
+	OnSimulation: (self: VitalController, cb: (self: VitalController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> VitalController,
+	OnDestroy: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
+	Tag: (self: VitalController, tag: string) -> VitalController,
+	ClassName: (self: VitalController, className: string) -> VitalController,
+	AttributeDefaults: (self: VitalController, schema: { [string]: any }) -> VitalController,
+	Children: (self: VitalController, children: { string }) -> VitalController,
+	RequireComponent: (self: VitalController, id: string) -> VitalController,
+	New: (self: VitalController, ID: string, Type: Type) -> VitalController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type DayCycleController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	UpdateClock: (self: DayCycleController, seconds: number) -> (),
+	UpdateDay: (self: DayCycleController, currentDay: number) -> (),
+	Extend: (self: DayCycleController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> DayCycleController,
+	Import: ControllerImportFn,
+	OnInit: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
+	OnStart: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
+	OnTick: (self: DayCycleController, cb: (self: DayCycleController, deltaTime: number) -> (), rate: number, priority: number?) -> DayCycleController,
+	OnSimulation: (self: DayCycleController, cb: (self: DayCycleController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> DayCycleController,
+	OnDestroy: (self: DayCycleController, cb: (self: DayCycleController) -> ()) -> DayCycleController,
+	Tag: (self: DayCycleController, tag: string) -> DayCycleController,
+	ClassName: (self: DayCycleController, className: string) -> DayCycleController,
+	AttributeDefaults: (self: DayCycleController, schema: { [string]: any }) -> DayCycleController,
+	Children: (self: DayCycleController, children: { string }) -> DayCycleController,
+	RequireComponent: (self: DayCycleController, id: string) -> DayCycleController,
+	New: (self: DayCycleController, ID: string, Type: Type) -> DayCycleController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type EnemyRenderController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	GetRenderFolder: (self: EnemyRenderController) -> Folder,
+	GetAlienTemplate: (self: EnemyRenderController, alienType: string) -> Model?,
+	RenderProxy: (self: EnemyRenderController, proxy: BasePart) -> any,
+	DespawnProxy: (self: EnemyRenderController, proxy: Instance) -> (),
+	DespawnAll: (self: EnemyRenderController) -> (),
+	LerpRenderedProxy: (self: EnemyRenderController, proxy: BasePart, deltaTime: number) -> any,
+	UpdateProxy: (self: EnemyRenderController, proxy: Instance, root: BasePart, deltaTime: number) -> any,
+	RenderFolder: {
+	Name: string,
+	Parent: Workspace,
+},
+	Rendered: { [any]: any },
+	Extend: (self: EnemyRenderController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> EnemyRenderController,
+	Import: ControllerImportFn,
+	OnInit: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
+	OnStart: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
+	OnTick: (self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), rate: number, priority: number?) -> EnemyRenderController,
+	OnSimulation: (self: EnemyRenderController, cb: (self: EnemyRenderController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> EnemyRenderController,
+	OnDestroy: (self: EnemyRenderController, cb: (self: EnemyRenderController) -> ()) -> EnemyRenderController,
+	Tag: (self: EnemyRenderController, tag: string) -> EnemyRenderController,
+	ClassName: (self: EnemyRenderController, className: string) -> EnemyRenderController,
+	AttributeDefaults: (self: EnemyRenderController, schema: { [string]: any }) -> EnemyRenderController,
+	Children: (self: EnemyRenderController, children: { string }) -> EnemyRenderController,
+	RequireComponent: (self: EnemyRenderController, id: string) -> EnemyRenderController,
+	New: (self: EnemyRenderController, ID: string, Type: Type) -> EnemyRenderController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type InputController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	UnbindAction: (self: InputController, ActionName: string) -> (),
+	BindAction: ((self: InputController, ActionName: string, ActionKey: Enum.KeyCode, TouchButton: boolean?, ActionPriority: number) -> HandlerType) & ((self: InputController, ActionName: string, ActionKey: Enum.KeyCode, TouchButton: boolean?, ActionPriority: number, Context: Context?) -> HandlerType),
+	ChangeContext: (self: InputController, newContext: Context) -> (),
+	allHandlers: { [string]: HandlerType },
+	Context: Context,
+	Extend: (self: InputController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> InputController,
+	Import: ControllerImportFn,
+	OnInit: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
+	OnStart: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
+	OnTick: (self: InputController, cb: (self: InputController, deltaTime: number) -> (), rate: number, priority: number?) -> InputController,
+	OnSimulation: (self: InputController, cb: (self: InputController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> InputController,
+	OnDestroy: (self: InputController, cb: (self: InputController) -> ()) -> InputController,
+	Tag: (self: InputController, tag: string) -> InputController,
+	ClassName: (self: InputController, className: string) -> InputController,
+	AttributeDefaults: (self: InputController, schema: { [string]: any }) -> InputController,
+	Children: (self: InputController, children: { string }) -> InputController,
+	RequireComponent: (self: InputController, id: string) -> InputController,
+	New: (self: InputController, ID: string, Type: Type) -> InputController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type MovementController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	InputController: InputController,
+	BindKeys: (self: MovementController) -> (),
+	Extend: (self: MovementController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> MovementController,
+	Import: ControllerImportFn,
+	OnInit: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
+	OnStart: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
+	OnTick: (self: MovementController, cb: (self: MovementController, deltaTime: number) -> (), rate: number, priority: number?) -> MovementController,
+	OnSimulation: (self: MovementController, cb: (self: MovementController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> MovementController,
+	OnDestroy: (self: MovementController, cb: (self: MovementController) -> ()) -> MovementController,
+	Tag: (self: MovementController, tag: string) -> MovementController,
+	ClassName: (self: MovementController, className: string) -> MovementController,
+	AttributeDefaults: (self: MovementController, schema: { [string]: any }) -> MovementController,
+	Children: (self: MovementController, children: { string }) -> MovementController,
+	RequireComponent: (self: MovementController, id: string) -> MovementController,
+	New: (self: MovementController, ID: string, Type: Type) -> MovementController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type NotificationController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	Extend: (self: NotificationController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> NotificationController,
+	Import: ControllerImportFn,
+	OnInit: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
+	OnStart: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
+	OnTick: (self: NotificationController, cb: (self: NotificationController, deltaTime: number) -> (), rate: number, priority: number?) -> NotificationController,
+	OnSimulation: (self: NotificationController, cb: (self: NotificationController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> NotificationController,
+	OnDestroy: (self: NotificationController, cb: (self: NotificationController) -> ()) -> NotificationController,
+	Tag: (self: NotificationController, tag: string) -> NotificationController,
+	ClassName: (self: NotificationController, className: string) -> NotificationController,
+	AttributeDefaults: (self: NotificationController, schema: { [string]: any }) -> NotificationController,
+	Children: (self: NotificationController, children: { string }) -> NotificationController,
+	RequireComponent: (self: NotificationController, id: string) -> NotificationController,
+	New: (self: NotificationController, ID: string, Type: Type) -> NotificationController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type PlugController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	Extend: (self: PlugController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> PlugController,
+	Import: ControllerImportFn,
+	OnInit: (self: PlugController, cb: (self: PlugController) -> ()) -> PlugController,
+	OnStart: (self: PlugController, cb: (self: PlugController) -> ()) -> PlugController,
+	OnTick: (self: PlugController, cb: (self: PlugController, deltaTime: number) -> (), rate: number, priority: number?) -> PlugController,
+	OnSimulation: (self: PlugController, cb: (self: PlugController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> PlugController,
+	OnDestroy: (self: PlugController, cb: (self: PlugController) -> ()) -> PlugController,
+	Tag: (self: PlugController, tag: string) -> PlugController,
+	ClassName: (self: PlugController, className: string) -> PlugController,
+	AttributeDefaults: (self: PlugController, schema: { [string]: any }) -> PlugController,
+	Children: (self: PlugController, children: { string }) -> PlugController,
+	RequireComponent: (self: PlugController, id: string) -> PlugController,
+	New: (self: PlugController, ID: string, Type: Type) -> PlugController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type ProfileController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	Extend: (self: ProfileController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ProfileController,
+	Import: ControllerImportFn,
+	OnInit: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
+	OnStart: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
+	OnTick: (self: ProfileController, cb: (self: ProfileController, deltaTime: number) -> (), rate: number, priority: number?) -> ProfileController,
+	OnSimulation: (self: ProfileController, cb: (self: ProfileController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ProfileController,
+	OnDestroy: (self: ProfileController, cb: (self: ProfileController) -> ()) -> ProfileController,
+	Tag: (self: ProfileController, tag: string) -> ProfileController,
+	ClassName: (self: ProfileController, className: string) -> ProfileController,
+	AttributeDefaults: (self: ProfileController, schema: { [string]: any }) -> ProfileController,
+	Children: (self: ProfileController, children: { string }) -> ProfileController,
+	RequireComponent: (self: ProfileController, id: string) -> ProfileController,
+	New: (self: ProfileController, ID: string, Type: Type) -> ProfileController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type ScreenController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	UIAnimationsController: UIAnimationsController,
+	GetGui: (self: ScreenController) -> MainGui,
+	GetWindowId: (self: ScreenController, window: GuiObject) -> WindowId,
+	IsInsideGui: (self: ScreenController, instance: Instance) -> boolean,
+	RegisterWindow: ((self: ScreenController, window: GuiObject) -> GuiObject) & ((self: ScreenController, window: GuiObject, id: WindowId?) -> GuiObject),
+	TryRegisterWindow: (self: ScreenController, instance: Instance) -> any,
+	RegisterTaggedWindows: (self: ScreenController) -> (),
+	OnOpen: (self: ScreenController, id: WindowId, callback: (window: GuiObject) -> ()) -> (),
+	OnClose: (self: ScreenController, id: WindowId, callback: (window: GuiObject) -> ()) -> (),
+	GetWindow: (self: ScreenController, id: WindowId) -> GuiObject?,
+	GetCurrentWindow: (self: ScreenController) -> WindowId?,
+	FireWindowCallbacks: (self: ScreenController, callbacks: { [WindowId]: { (window: GuiObject) -> () } }, id: WindowId, window: GuiObject) -> any,
+	CloseWindow: (self: ScreenController) -> any,
+	OpenWindow: (self: ScreenController, id: WindowId) -> any,
+	BindButton: (self: ScreenController, button: GuiButton, id: WindowId) -> RBXScriptConnection,
+	TryBindOpenButton: (self: ScreenController, instance: Instance) -> any,
+	TryBindCloseButton: (self: ScreenController, instance: Instance) -> any,
+	BindTaggedButtons: (self: ScreenController) -> (),
+	Gui: MainGui,
+	Windows: { [WindowId]: GuiObject },
+	CurrentWindow: WindowId?,
+	BoundButtons: { [Instance]: boolean },
+	ButtonConnections: { [Instance]: RBXScriptConnection },
+	OnOpenCallbacks: { [WindowId]: { (window: GuiObject) -> () } },
+	OnCloseCallbacks: { [WindowId]: { (window: GuiObject) -> () } },
+	Extend: (self: ScreenController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> ScreenController,
+	Import: ControllerImportFn,
+	OnInit: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
+	OnStart: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
+	OnTick: (self: ScreenController, cb: (self: ScreenController, deltaTime: number) -> (), rate: number, priority: number?) -> ScreenController,
+	OnSimulation: (self: ScreenController, cb: (self: ScreenController, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> ScreenController,
+	OnDestroy: (self: ScreenController, cb: (self: ScreenController) -> ()) -> ScreenController,
+	Tag: (self: ScreenController, tag: string) -> ScreenController,
+	ClassName: (self: ScreenController, className: string) -> ScreenController,
+	AttributeDefaults: (self: ScreenController, schema: { [string]: any }) -> ScreenController,
+	Children: (self: ScreenController, children: { string }) -> ScreenController,
+	RequireComponent: (self: ScreenController, id: string) -> ScreenController,
+	New: (self: ScreenController, ID: string, Type: Type) -> ScreenController,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+}
+
+export type UIAnimationsController = {
+	ID: string,
+	Type: Type,
+	LocalPlayer: Player,
+	LocalCharacter: Model?,
+	LocalHumanoid: Humanoid?,
+	EnsureScale: (self: UIAnimationsController, window: GuiObject) -> UIScale,
+	FindCanvas: (self: UIAnimationsController, window: GuiObject) -> CanvasGroup?,
+	RegisterAnimation: (self: UIAnimationsController, target: Instance?, animation: any) -> any,
+	UnregisterAnimation: (self: UIAnimationsController, target: Instance?, animation: any) -> any,
+	Stop: (self: UIAnimationsController, target: Instance) -> (),
+	IsTaggedBound: (self: UIAnimationsController, instance: Instance, tag: string) -> boolean,
+	TrackTaggedTasks: (self: UIAnimationsController, instance: Instance, tag: string, tasks: { any }) -> (),
+	UnbindTag: (self: UIAnimationsController, instance: Instance, tag: string) -> any,
+	UnbindAllTags: (self: UIAnimationsController, instance: Instance) -> any,
+	BindTaggedPreset: (self: UIAnimationsController, tag: string, binder: (self: UIAnimationsController, instance: Instance) -> ()) -> (),
+	CreateSpring: (self: UIAnimationsController, options: SpringOptions) -> AnimationHandle<any>,
+	Group: (self: UIAnimationsController, animations: { any }) -> GroupAnimationHandle,
+	Sequence: (self: UIAnimationsController, animations: { any }) -> SequenceAnimationHandle,
+	Scale: ((self: UIAnimationsController, window: GuiObject, toScale: number) -> AnimationHandle<number>) & ((self: UIAnimationsController, window: GuiObject, toScale: number, options: SpringOptions?) -> AnimationHandle<number>),
+	Fade: ((self: UIAnimationsController, target: GuiObject, toTransparency: number) -> AnimationHandle<number>) & ((self: UIAnimationsController, target: GuiObject, toTransparency: number, options: SpringOptions?) -> AnimationHandle<number>),
+	Slide: ((self: UIAnimationsController, window: GuiObject, toPosition: UDim2) -> AnimationHandle<number>) & ((self: UIAnimationsController, window: GuiObject, toPosition: UDim2, options: SpringOptions?) -> AnimationHandle<number>),
+	Bar: ((self: UIAnimationsController, fill: GuiObject, ratio: number) -> AnimationHandle<number>) & ((self: UIAnimationsController, fill: GuiObject, ratio: number, options: SpringOptions?) -> AnimationHandle<number>),
+	Pop: ((self: UIAnimationsController, window: GuiObject) -> AnimationHandle<number>) & ((self: UIAnimationsController, window: GuiObject, options: SpringOptions?) -> AnimationHandle<number>),
+	Collapse: ((self: UIAnimationsController, window: GuiObject) -> AnimationHandle<number>) & ((self: UIAnimationsController, window: GuiObject, options: SpringOptions?) -> AnimationHandle<number>),
+	Press: ((self: UIAnimationsController, window: GuiObject) -> SequenceAnimationHandle) & ((self: UIAnimationsController, window: GuiObject, options: SpringOptions?) -> SequenceAnimationHandle),
+	Pulse: ((self: UIAnimationsController, window: GuiObject) -> SequenceAnimationHandle) & ((self: UIAnimationsController, window: GuiObject, options: SpringOptions?) -> SequenceAnimationHandle),
+	PlayScale: ((self: UIAnimationsController, window: GuiObject, fromScale: number, toScale: number) -> AnimationHandle<number>) & ((self: UIAnimationsController, window: GuiObject, fromScale: number, toScale: number, onStep: ((alpha: number) -> ())?) -> AnimationHandle<number>) & ((self: UIAnimationsController, window: GuiObject, fromScale: number, toScale: number, onStep: ((alpha: number) -> ())?, onDone: (() -> ())?) -> AnimationHandle<number>),
+	Open: (self: UIAnimationsController, window: GuiObject) -> AnimationHandle<number>,
+	Close: ((self: UIAnimationsController, window: GuiObject) -> AnimationHandle<number>) & ((self: UIAnimationsController, window: GuiObject, onDone: (() -> ())?) -> AnimationHandle<number>),
+	BindHoverScale: (self: UIAnimationsController, instance: Instance) -> any,
+	BindHoverFade: (self: UIAnimationsController, instance: Instance) -> any,
+	BindPress: (self: UIAnimationsController, instance: Instance) -> any,
+	PlayTaggedPop: (self: UIAnimationsController, instance: Instance) -> any,
+	PlayTaggedCollapse: (self: UIAnimationsController, instance: Instance) -> any,
+	PlayTaggedPulse: (self: UIAnimationsController, instance: Instance) -> any,
+	ActiveConnections: { [GuiObject]: RBXScriptConnection },
+	ActiveAnimations: { [Instance]: { [any]: boolean } },
+	TaggedTasks: { [Instance]: { [string]: { any } } },
+	Extend: (self: UIAnimationsController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> UIAnimationsController,
 	Import: ControllerImportFn,
 	OnInit: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
 	OnStart: (self: UIAnimationsController, cb: (self: UIAnimationsController) -> ()) -> UIAnimationsController,
@@ -485,7 +780,7 @@ export type VitalController = {
 	Stamina: number,
 	MaxHunger: number,
 	MaxStamina: number,
-	Extend: (self: VitalController, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> VitalController,
+	Extend: (self: VitalController, id: "AlienBaseMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> VitalController,
 	Import: ControllerImportFn,
 	OnInit: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
 	OnStart: (self: VitalController, cb: (self: VitalController) -> ()) -> VitalController,
@@ -514,6 +809,13 @@ export type VitalController = {
 export type ControllerImportFn =
 	(<Self>(self: Self, id: "DayCycleController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "EnemyRenderController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "NotificationController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "ProfileController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "ScreenController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "UIAnimationsController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "VitalController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "DayCycleController", scopeKey: string?) -> Self) &
+	(<Self>(self: Self, id: "EnemyRenderController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "InputController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "MovementController", scopeKey: string?) -> Self) &
 	(<Self>(self: Self, id: "NotificationController", scopeKey: string?) -> Self) &
@@ -527,13 +829,19 @@ export type ControllerImportFn =
 
 export type ControllerExtendFn =
 	(<Self>(self: Self, id: "AlienBaseMixin") -> Self) &
-	(<Self>(self: Self, id: "AreaMixin") -> Self) &
 	(<Self>(self: Self, id: "SolarPanelMixin") -> Self) &
 	(<Self>(self: Self, id: "PlayerZoneComponent") -> Self)
 
 --> MODUX OVERLOADS
 
 export type ControllerFn =
+	((id: "DayCycleController", mode: Mode?) -> DayCycleController) &
+	((id: "EnemyRenderController", mode: Mode?) -> EnemyRenderController) &
+	((id: "NotificationController", mode: Mode?) -> NotificationController) &
+	((id: "ProfileController", mode: Mode?) -> ProfileController) &
+	((id: "ScreenController", mode: Mode?) -> ScreenController) &
+	((id: "UIAnimationsController", mode: Mode?) -> UIAnimationsController) &
+	((id: "VitalController", mode: Mode?) -> VitalController) &
 	((id: "DayCycleController", mode: Mode?) -> DayCycleController) &
 	((id: "EnemyRenderController", mode: Mode?) -> EnemyRenderController) &
 	((id: "InputController", mode: Mode?) -> InputController) &

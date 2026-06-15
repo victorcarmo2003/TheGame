@@ -1,24 +1,17 @@
 -- modux ignore file
 export type AlienType =
 	"Common"
-	| "Intermediate"
-	| "Runner"
-	| "Rage"
-	| "Telekinesis"
-	| "Screamer"
-	| "Shooter"
-	| "Knifer"
-	| "Sniper"
-	| "Tanker"
-	| "Brutus"
-
-export type AlienStates = 
-	"Idle"
-	| "Walk"
-	| "Running"
-	| "Jumping"
-	| "attacking"
-	| "attacked"
+| "Intermediate"
+| "Runner"
+| "Rage"
+| "Telekinesis"
+| "Screamer"
+| "Shooter"
+| "Knifer"
+| "Sniper"
+| "Tanker"
+| "Brutus"
+| "AlienAnimal"
 
 export type AliensEnum = {
 	Common: "Common",
@@ -32,6 +25,7 @@ export type AliensEnum = {
 	Sniper: "Sniper",
 	Tanker: "Tanker",
 	Brutus: "Brutus",
+	AlienAnimal: "AlienAnimal",
 }
 
 return {
@@ -46,4 +40,5 @@ return {
 	Sniper = "Sniper",
 	Tanker = "Tanker",
 	Brutus = "Brutus",
+	AlienAnimal = "AlienAnimal",
 } :: AliensEnum

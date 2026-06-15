@@ -10,23 +10,19 @@ export type StarterGuiTypes = {
 }
 --> COMPONENT INSTANCE TYPES
 
+export type AliensComponentInstance = Model
+
 export type BasicSolarComponentInstance = Instance
 
-export type BrutusComponentInstance = Model
-
-export type CommonComponentInstance = Model
+export type CommonAlienComponentInstance = Model
 
 export type DebugVitalComponentInstance = Instance
 
-export type EnemyBaseComponentInstance = BasePart
-
-export type FieldAreaComponentInstance = Part
+export type GenericAlienComponentInstance = Model
 
 export type HungerComponentInstance = Player
 
-export type IntermediateComponentInstance = Model
-
-export type KniferComponentInstance = Model
+export type IntermediateAlienComponentInstance = Model
 
 export type MovementComponentInstance = Instance
 
@@ -34,25 +30,15 @@ export type OxygenComponentInstance = Player
 
 export type OxygenZoneComponentInstance = Instance
 
-export type RageComponentInstance = Model
-
 export type RegionComponentInstance = Instance
 
-export type RunnerComponentInstance = Model
-
-export type ScreamerComponentInstance = Model
-
-export type ShooterComponentInstance = Model
+export type RunnerAlienComponentInstance = Model
 
 export type SmashButterComponentInstance = BasePart
 
-export type SniperComponentInstance = Model
+export type SpawnAreaComponentInstance = BasePart
 
 export type SquishyBlockComponentInstance = BasePart
-
-export type TankerComponentInstance = Model
-
-export type TelekinesisComponentInstance = Model
 
 export type VitalComponentInstance = Player
 
