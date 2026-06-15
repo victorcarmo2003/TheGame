@@ -1,9 +1,0 @@
-{
-  "targetFile": "d:\\GitHub\\TheGame\\src\\server\\Components\\Areas\\EnemyBaseComponent.luau",
-  "instancePath": "ServerScriptService.Server.Components.Areas.EnemyBaseComponent",
-  "className": "ModuleScript",
-  "localHash": "83392abb73982d810880b130b70ef5a2647f364c07dac45b11d25a01cddeacba",
-  "studioHash": "96576dbafa455ba401471c335f05b1256439ee90062f0cef4f73711fab29bf65",
-  "updatedAt": "2026-06-09T17:23:20Z",
-  "policy": "studio-authoritative"
-}

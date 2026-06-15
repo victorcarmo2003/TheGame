@@ -1,9 +1,0 @@
-{
-  "targetFile": "d:\\GitHub\\TheGame\\src\\shared\\Modux\\src\\Network\\init.luau",
-  "instancePath": "ReplicatedStorage.Shared.Modux.src.Network",
-  "className": "ModuleScript",
-  "localHash": "ee5531d4a98b334936f09046886fdf275095845d7a109350032e58c39835ce3a",
-  "studioHash": "dcb04c7196f724a98e95259cf00c8545c806844e8750a680c046ced9fc751e09",
-  "updatedAt": "2026-06-09T17:23:20Z",
-  "policy": "studio-authoritative"
-}
