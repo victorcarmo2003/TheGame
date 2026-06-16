@@ -1,11 +1,11 @@
 {
   "protocolVersion": 2,
-  "workspaceHash": "736a2e7eab6df47cb55c5c203e101d096b387b355c70917fa481dffe2a0183c7",
-  "contractHash": "59714422a753e9d3a1928b08732b95c892bf5f28f633b570e491fcbec7fc7c79",
-  "generatedAt": "2026-06-15T01:28:05.587Z",
+  "workspaceHash": "06697fb004ee8e2abd1d02dc613b31c2d4f4475bbf85af5e93d85c34a535e4ee",
+  "contractHash": "c479a68e452b3aeeefb73f21c9e041223e0ee5a7c1317dd731c12cab2388f969",
+  "generatedAt": "2026-06-15T17:53:33.902Z",
   "place": {
     "id": 117698582873122,
-    "name": "THE GAME"
+    "name": "Place1"
   },
   "components": [
     {
@@ -98,6 +98,16 @@
       ]
     },
     {
+      "id": "BrutusComponent",
+      "tag": "Brutus",
+      "instances": []
+    },
+    {
+      "id": "CommonComponent",
+      "tag": "Common",
+      "instances": []
+    },
+    {
       "id": "DebugVitalComponent",
       "tag": "DebugVital",
       "instances": [
@@ -149,8 +159,28 @@
       ]
     },
     {
+      "id": "EnemyBaseComponent",
+      "tag": "EnemyBase",
+      "instances": []
+    },
+    {
+      "id": "FieldAreaComponent",
+      "tag": "FieldArea",
+      "instances": []
+    },
+    {
       "id": "HungerComponent",
       "tag": "HungerComponent",
+      "instances": []
+    },
+    {
+      "id": "IntermediateComponent",
+      "tag": "Intermediate",
+      "instances": []
+    },
+    {
+      "id": "KniferComponent",
+      "tag": "Knifer",
       "instances": []
     },
     {
@@ -188,8 +218,28 @@
       ]
     },
     {
+      "id": "RageComponent",
+      "tag": "Rage",
+      "instances": []
+    },
+    {
       "id": "RegionComponent",
       "tag": "Region",
+      "instances": []
+    },
+    {
+      "id": "RunnerComponent",
+      "tag": "Runner",
+      "instances": []
+    },
+    {
+      "id": "ScreamerComponent",
+      "tag": "Screamer",
+      "instances": []
+    },
+    {
+      "id": "ShooterComponent",
+      "tag": "Shooter",
       "instances": []
     },
     {
@@ -198,8 +248,23 @@
       "instances": []
     },
     {
+      "id": "SniperComponent",
+      "tag": "Sniper",
+      "instances": []
+    },
+    {
       "id": "SquishyBlockComponent",
       "tag": "SquishyBlock",
+      "instances": []
+    },
+    {
+      "id": "TankerComponent",
+      "tag": "Tanker",
+      "instances": []
+    },
+    {
+      "id": "TelekinesisComponent",
+      "tag": "Telekinesis",
       "instances": []
     },
     {

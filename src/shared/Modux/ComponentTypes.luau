@@ -50,6 +50,7 @@ type TransitionCallback<State> = CoreTypes.TransitionCallback<State>
 type Transitions<State> = CoreTypes.Transitions<State>
 type Type = CoreTypes.Type
 type VitalAttributes = CoreTypes.VitalAttributes
+type Basic = InstanceTypes.Basic
 type BasicSolarComponentInstance = InstanceTypes.BasicSolarComponentInstance
 type BrutusComponentInstance = InstanceTypes.BrutusComponentInstance
 type CommonComponentInstance = InstanceTypes.CommonComponentInstance

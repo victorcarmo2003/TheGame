@@ -480,7 +480,48 @@ export type VitalController = {
 	Hunger: number,
 	Oxygen: number,
 	MaxOxygen: number,
-	PlayerStatus: any,
+	PlayerStatus: Frame & {
+	Health: Frame & {
+		Icon: ImageLabel,
+		Inner: Frame & {
+			UICorner: UICorner,
+			UIGradient: UIGradient,
+		},
+		TextLabel: TextLabel & {
+			UIStroke: UIStroke,
+			UITextSizeConstraint: UITextSizeConstraint,
+		},
+		UICorner: UICorner,
+		UIStroke: UIStroke,
+	},
+	Hunger: Frame & {
+		Icon: ImageLabel,
+		Inner: Frame & {
+			UICorner: UICorner,
+			UIGradient: UIGradient,
+		},
+		TextLabel: TextLabel & {
+			UIStroke: UIStroke,
+			UITextSizeConstraint: UITextSizeConstraint,
+		},
+		UICorner: UICorner,
+		UIStroke: UIStroke,
+	},
+	Oxygen: Frame & {
+		Icon: ImageLabel,
+		Inner: Frame & {
+			UICorner: UICorner,
+			UIGradient: UIGradient,
+		},
+		TextLabel: TextLabel & {
+			UIStroke: UIStroke,
+			UITextSizeConstraint: UITextSizeConstraint,
+		},
+		UICorner: UICorner,
+		UIStroke: UIStroke,
+	},
+	UIAspectRatioConstraint: UIAspectRatioConstraint,
+},
 	Armor: number,
 	Stamina: number,
 	MaxHunger: number,

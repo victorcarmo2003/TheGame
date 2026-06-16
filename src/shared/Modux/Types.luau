@@ -54,6 +54,7 @@ export type TransitionCallback<State> = CoreTypes.TransitionCallback<State>
 export type Transitions<State> = CoreTypes.Transitions<State>
 export type Type = CoreTypes.Type
 export type VitalAttributes = CoreTypes.VitalAttributes
+export type Basic = InstanceTypes.Basic
 export type BasicSolarComponentInstance = InstanceTypes.BasicSolarComponentInstance
 export type BrutusComponentInstance = InstanceTypes.BrutusComponentInstance
 export type CommonComponentInstance = InstanceTypes.CommonComponentInstance
