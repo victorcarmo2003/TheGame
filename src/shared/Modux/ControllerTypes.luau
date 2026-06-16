@@ -5,8 +5,6 @@
 local CoreTypes = require(script.Parent.CoreTypes)
 local ComponentTypes = require(script.Parent.ComponentTypes)
 local ServiceTypes = require(script.Parent.ServiceTypes)
-type AlienConfig = CoreTypes.AlienConfig
-type AlienStates = CoreTypes.AlienStates
 type AlienType = CoreTypes.AlienType
 type callbackZone = CoreTypes.callbackZone
 type Context = CoreTypes.Context
@@ -37,11 +35,11 @@ type PromiseLike = CoreTypes.PromiseLike
 type PromiseStatus = CoreTypes.PromiseStatus
 type R6 = CoreTypes.R6
 type Reject = CoreTypes.Reject
-type removeTypes = CoreTypes.removeTypes
 type Resolve<T> = CoreTypes.Resolve<T>
 type Signal<T...> = CoreTypes.Signal<T...>
 type SignalAPI = CoreTypes.SignalAPI
 type SignalConnection = CoreTypes.SignalConnection
+type SpawnAreaConfig = CoreTypes.SpawnAreaConfig
 type SpawnType = CoreTypes.SpawnType
 type State<T> = CoreTypes.State<T>
 type StateCallback<State> = CoreTypes.StateCallback<State>
@@ -52,22 +50,24 @@ type Transitions<State> = CoreTypes.Transitions<State>
 type Type = CoreTypes.Type
 type VitalAttributes = CoreTypes.VitalAttributes
 type AlienBaseMixin = ComponentTypes.AlienBaseMixin
+type AliensComponent = ComponentTypes.AliensComponent
 type AreaMixin = ComponentTypes.AreaMixin
 type BasicSolarComponent = ComponentTypes.BasicSolarComponent
 type BrutusComponent = ComponentTypes.BrutusComponent
-type CommonComponent = ComponentTypes.CommonComponent
+type CommonAlienComponent = ComponentTypes.CommonAlienComponent
 type ComponentExtendFn = ComponentTypes.ComponentExtendFn
 type ComponentFn = ComponentTypes.ComponentFn
 type ComponentImportFn = ComponentTypes.ComponentImportFn
 type DebugVitalComponent = ComponentTypes.DebugVitalComponent
 type EnemyBaseComponent = ComponentTypes.EnemyBaseComponent
 type FieldAreaComponent = ComponentTypes.FieldAreaComponent
+type GenericAlienComponent = ComponentTypes.GenericAlienComponent
 type GetAllComponentsFn = ComponentTypes.GetAllComponentsFn
 type GetComponentFn = ComponentTypes.GetComponentFn
 type GetRequiredComponentFn = ComponentTypes.GetRequiredComponentFn
 type HungerComponent = ComponentTypes.HungerComponent
 type ImportFn = ComponentTypes.ImportFn
-type IntermediateComponent = ComponentTypes.IntermediateComponent
+type IntermediateAlienComponent = ComponentTypes.IntermediateAlienComponent
 type KniferComponent = ComponentTypes.KniferComponent
 type MixinExtendFn = ComponentTypes.MixinExtendFn
 type MixinFn = ComponentTypes.MixinFn
@@ -77,12 +77,14 @@ type OxygenZoneComponent = ComponentTypes.OxygenZoneComponent
 type PlayerZoneComponent = ComponentTypes.PlayerZoneComponent
 type RageComponent = ComponentTypes.RageComponent
 type RegionComponent = ComponentTypes.RegionComponent
+type RunnerAlienComponent = ComponentTypes.RunnerAlienComponent
 type RunnerComponent = ComponentTypes.RunnerComponent
 type ScreamerComponent = ComponentTypes.ScreamerComponent
 type ShooterComponent = ComponentTypes.ShooterComponent
 type SmashButterComponent = ComponentTypes.SmashButterComponent
 type SniperComponent = ComponentTypes.SniperComponent
 type SolarPanelMixin = ComponentTypes.SolarPanelMixin
+type SpawnAreaComponent = ComponentTypes.SpawnAreaComponent
 type SquishyBlockComponent = ComponentTypes.SquishyBlockComponent
 type TankerComponent = ComponentTypes.TankerComponent
 type TelekinesisComponent = ComponentTypes.TelekinesisComponent
@@ -480,48 +482,7 @@ export type VitalController = {
 	Hunger: number,
 	Oxygen: number,
 	MaxOxygen: number,
-	PlayerStatus: Frame & {
-	Health: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	Hunger: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	Oxygen: Frame & {
-		Icon: ImageLabel,
-		Inner: Frame & {
-			UICorner: UICorner,
-			UIGradient: UIGradient,
-		},
-		TextLabel: TextLabel & {
-			UIStroke: UIStroke,
-			UITextSizeConstraint: UITextSizeConstraint,
-		},
-		UICorner: UICorner,
-		UIStroke: UIStroke,
-	},
-	UIAspectRatioConstraint: UIAspectRatioConstraint,
-},
+	PlayerStatus: any,
 	Armor: number,
 	Stamina: number,
 	MaxHunger: number,

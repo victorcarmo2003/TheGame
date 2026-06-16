@@ -4,8 +4,6 @@
 
 local CoreTypes = require(script.Parent.CoreTypes)
 local InstanceTypes = require(script.Parent.InstanceTypes)
-type AlienConfig = CoreTypes.AlienConfig
-type AlienStates = CoreTypes.AlienStates
 type AlienType = CoreTypes.AlienType
 type callbackZone = CoreTypes.callbackZone
 type Context = CoreTypes.Context
@@ -36,11 +34,11 @@ type PromiseLike = CoreTypes.PromiseLike
 type PromiseStatus = CoreTypes.PromiseStatus
 type R6 = CoreTypes.R6
 type Reject = CoreTypes.Reject
-type removeTypes = CoreTypes.removeTypes
 type Resolve<T> = CoreTypes.Resolve<T>
 type Signal<T...> = CoreTypes.Signal<T...>
 type SignalAPI = CoreTypes.SignalAPI
 type SignalConnection = CoreTypes.SignalConnection
+type SpawnAreaConfig = CoreTypes.SpawnAreaConfig
 type SpawnType = CoreTypes.SpawnType
 type State<T> = CoreTypes.State<T>
 type StateCallback<State> = CoreTypes.StateCallback<State>
@@ -50,27 +48,30 @@ type TransitionCallback<State> = CoreTypes.TransitionCallback<State>
 type Transitions<State> = CoreTypes.Transitions<State>
 type Type = CoreTypes.Type
 type VitalAttributes = CoreTypes.VitalAttributes
-type Basic = InstanceTypes.Basic
+type AliensComponentInstance = InstanceTypes.AliensComponentInstance
 type BasicSolarComponentInstance = InstanceTypes.BasicSolarComponentInstance
 type BrutusComponentInstance = InstanceTypes.BrutusComponentInstance
-type CommonComponentInstance = InstanceTypes.CommonComponentInstance
+type CommonAlienComponentInstance = InstanceTypes.CommonAlienComponentInstance
 type DebugVitalComponentInstance = InstanceTypes.DebugVitalComponentInstance
 type EnemyBaseComponentInstance = InstanceTypes.EnemyBaseComponentInstance
 type FieldAreaComponentInstance = InstanceTypes.FieldAreaComponentInstance
+type GenericAlienComponentInstance = InstanceTypes.GenericAlienComponentInstance
 type HungerComponentInstance = InstanceTypes.HungerComponentInstance
-type IntermediateComponentInstance = InstanceTypes.IntermediateComponentInstance
+type IntermediateAlienComponentInstance = InstanceTypes.IntermediateAlienComponentInstance
 type KniferComponentInstance = InstanceTypes.KniferComponentInstance
 type MovementComponentInstance = InstanceTypes.MovementComponentInstance
 type OxygenComponentInstance = InstanceTypes.OxygenComponentInstance
 type OxygenZoneComponentInstance = InstanceTypes.OxygenZoneComponentInstance
 type RageComponentInstance = InstanceTypes.RageComponentInstance
 type RegionComponentInstance = InstanceTypes.RegionComponentInstance
+type RunnerAlienComponentInstance = InstanceTypes.RunnerAlienComponentInstance
 type RunnerComponentInstance = InstanceTypes.RunnerComponentInstance
 type ScreamerComponentInstance = InstanceTypes.ScreamerComponentInstance
 type ScreenGuiRoot = InstanceTypes.ScreenGuiRoot
 type ShooterComponentInstance = InstanceTypes.ShooterComponentInstance
 type SmashButterComponentInstance = InstanceTypes.SmashButterComponentInstance
 type SniperComponentInstance = InstanceTypes.SniperComponentInstance
+type SpawnAreaComponentInstance = InstanceTypes.SpawnAreaComponentInstance
 type SquishyBlockComponentInstance = InstanceTypes.SquishyBlockComponentInstance
 type StarterGuiTypes = InstanceTypes.StarterGuiTypes
 type TankerComponentInstance = InstanceTypes.TankerComponentInstance
@@ -255,17 +256,17 @@ export type BrutusComponent = {
 	Instance: BrutusComponentInstance,
 }
 
-export type CommonComponent = {
+export type CommonAlienComponent = {
 	ID: string,
 	Type: Type,
-	Configure: (self: CommonComponent, config: EnemyConfig) -> (),
-	TakeDamage: (self: CommonComponent, amount: number) -> any,
-	Die: (self: CommonComponent) -> any,
-	MoveTo: (self: CommonComponent, position: Vector3) -> (),
-	StopMoving: (self: CommonComponent) -> (),
-	UpdateMovement: (self: CommonComponent, deltaTime: number) -> any,
-	ChooseTarget: (self: CommonComponent) -> (),
-	StartSonar: (self: CommonComponent) -> (),
+	Configure: (self: CommonAlienComponent, config: EnemyConfig) -> (),
+	TakeDamage: (self: CommonAlienComponent, amount: number) -> any,
+	Die: (self: CommonAlienComponent) -> any,
+	MoveTo: (self: CommonAlienComponent, position: Vector3) -> (),
+	StopMoving: (self: CommonAlienComponent) -> (),
+	UpdateMovement: (self: CommonAlienComponent, deltaTime: number) -> any,
+	ChooseTarget: (self: CommonAlienComponent) -> (),
+	StartSonar: (self: CommonAlienComponent) -> (),
 	Config: EnemyConfig,
 	Health: number,
 	MaxHealth: number,
@@ -274,19 +275,20 @@ export type CommonComponent = {
 	IsDead: boolean,
 	MoveTarget: Vector3,
 	IsMoving: boolean,
-	Extend: (self: CommonComponent, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> CommonComponent,
+	Behavior: string,
+	Extend: (self: CommonAlienComponent, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> CommonAlienComponent,
 	Import: ComponentImportFn,
-	OnInit: (self: CommonComponent, cb: (self: CommonComponent) -> ()) -> CommonComponent,
-	OnStart: (self: CommonComponent, cb: (self: CommonComponent) -> ()) -> CommonComponent,
-	OnTick: (self: CommonComponent, cb: (self: CommonComponent, deltaTime: number) -> (), rate: number, priority: number?) -> CommonComponent,
-	OnSimulation: (self: CommonComponent, cb: (self: CommonComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> CommonComponent,
-	OnDestroy: (self: CommonComponent, cb: (self: CommonComponent) -> ()) -> CommonComponent,
-	Tag: (self: CommonComponent, tag: string) -> CommonComponent,
-	ClassName: (self: CommonComponent, className: string) -> CommonComponent,
-	AttributeDefaults: (self: CommonComponent, schema: { [string]: any }) -> CommonComponent,
-	Children: (self: CommonComponent, children: { string }) -> CommonComponent,
-	RequireComponent: (self: CommonComponent, id: string) -> CommonComponent,
-	New: (self: CommonComponent, ID: string, Type: Type) -> CommonComponent,
+	OnInit: (self: CommonAlienComponent, cb: (self: CommonAlienComponent) -> ()) -> CommonAlienComponent,
+	OnStart: (self: CommonAlienComponent, cb: (self: CommonAlienComponent) -> ()) -> CommonAlienComponent,
+	OnTick: (self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> CommonAlienComponent,
+	OnSimulation: (self: CommonAlienComponent, cb: (self: CommonAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> CommonAlienComponent,
+	OnDestroy: (self: CommonAlienComponent, cb: (self: CommonAlienComponent) -> ()) -> CommonAlienComponent,
+	Tag: (self: CommonAlienComponent, tag: string) -> CommonAlienComponent,
+	ClassName: (self: CommonAlienComponent, className: string) -> CommonAlienComponent,
+	AttributeDefaults: (self: CommonAlienComponent, schema: { [string]: any }) -> CommonAlienComponent,
+	Children: (self: CommonAlienComponent, children: { string }) -> CommonAlienComponent,
+	RequireComponent: (self: CommonAlienComponent, id: string) -> CommonAlienComponent,
+	New: (self: CommonAlienComponent, ID: string, Type: Type) -> CommonAlienComponent,
 	GetComponent: GetComponentFn,
 	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
@@ -297,20 +299,20 @@ export type CommonComponent = {
 	Signal: SignalAPI,
 	Tools: Tools,
 	Attributes: { [string]: any },
-	Instance: CommonComponentInstance,
+	Instance: CommonAlienComponentInstance,
 }
 
-export type IntermediateComponent = {
+export type GenericAlienComponent = {
 	ID: string,
 	Type: Type,
-	Configure: (self: IntermediateComponent, config: EnemyConfig) -> (),
-	TakeDamage: (self: IntermediateComponent, amount: number) -> any,
-	Die: (self: IntermediateComponent) -> any,
-	MoveTo: (self: IntermediateComponent, position: Vector3) -> (),
-	StopMoving: (self: IntermediateComponent) -> (),
-	UpdateMovement: (self: IntermediateComponent, deltaTime: number) -> any,
-	ChooseTarget: (self: IntermediateComponent) -> (),
-	StartSonar: (self: IntermediateComponent) -> (),
+	Configure: (self: GenericAlienComponent, config: EnemyConfig) -> (),
+	TakeDamage: (self: GenericAlienComponent, amount: number) -> any,
+	Die: (self: GenericAlienComponent) -> any,
+	MoveTo: (self: GenericAlienComponent, position: Vector3) -> (),
+	StopMoving: (self: GenericAlienComponent) -> (),
+	UpdateMovement: (self: GenericAlienComponent, deltaTime: number) -> any,
+	ChooseTarget: (self: GenericAlienComponent) -> (),
+	StartSonar: (self: GenericAlienComponent) -> (),
 	Config: EnemyConfig,
 	Health: number,
 	MaxHealth: number,
@@ -319,19 +321,20 @@ export type IntermediateComponent = {
 	IsDead: boolean,
 	MoveTarget: Vector3,
 	IsMoving: boolean,
-	Extend: (self: IntermediateComponent, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> IntermediateComponent,
+	Behavior: string,
+	Extend: (self: GenericAlienComponent, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> GenericAlienComponent,
 	Import: ComponentImportFn,
-	OnInit: (self: IntermediateComponent, cb: (self: IntermediateComponent) -> ()) -> IntermediateComponent,
-	OnStart: (self: IntermediateComponent, cb: (self: IntermediateComponent) -> ()) -> IntermediateComponent,
-	OnTick: (self: IntermediateComponent, cb: (self: IntermediateComponent, deltaTime: number) -> (), rate: number, priority: number?) -> IntermediateComponent,
-	OnSimulation: (self: IntermediateComponent, cb: (self: IntermediateComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> IntermediateComponent,
-	OnDestroy: (self: IntermediateComponent, cb: (self: IntermediateComponent) -> ()) -> IntermediateComponent,
-	Tag: (self: IntermediateComponent, tag: string) -> IntermediateComponent,
-	ClassName: (self: IntermediateComponent, className: string) -> IntermediateComponent,
-	AttributeDefaults: (self: IntermediateComponent, schema: { [string]: any }) -> IntermediateComponent,
-	Children: (self: IntermediateComponent, children: { string }) -> IntermediateComponent,
-	RequireComponent: (self: IntermediateComponent, id: string) -> IntermediateComponent,
-	New: (self: IntermediateComponent, ID: string, Type: Type) -> IntermediateComponent,
+	OnInit: (self: GenericAlienComponent, cb: (self: GenericAlienComponent) -> ()) -> GenericAlienComponent,
+	OnStart: (self: GenericAlienComponent, cb: (self: GenericAlienComponent) -> ()) -> GenericAlienComponent,
+	OnTick: (self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> GenericAlienComponent,
+	OnSimulation: (self: GenericAlienComponent, cb: (self: GenericAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> GenericAlienComponent,
+	OnDestroy: (self: GenericAlienComponent, cb: (self: GenericAlienComponent) -> ()) -> GenericAlienComponent,
+	Tag: (self: GenericAlienComponent, tag: string) -> GenericAlienComponent,
+	ClassName: (self: GenericAlienComponent, className: string) -> GenericAlienComponent,
+	AttributeDefaults: (self: GenericAlienComponent, schema: { [string]: any }) -> GenericAlienComponent,
+	Children: (self: GenericAlienComponent, children: { string }) -> GenericAlienComponent,
+	RequireComponent: (self: GenericAlienComponent, id: string) -> GenericAlienComponent,
+	New: (self: GenericAlienComponent, ID: string, Type: Type) -> GenericAlienComponent,
 	GetComponent: GetComponentFn,
 	GetRequiredComponent: GetRequiredComponentFn,
 	GetAllComponents: GetAllComponentsFn,
@@ -342,7 +345,53 @@ export type IntermediateComponent = {
 	Signal: SignalAPI,
 	Tools: Tools,
 	Attributes: { [string]: any },
-	Instance: IntermediateComponentInstance,
+	Instance: GenericAlienComponentInstance,
+}
+
+export type IntermediateAlienComponent = {
+	ID: string,
+	Type: Type,
+	Configure: (self: IntermediateAlienComponent, config: EnemyConfig) -> (),
+	TakeDamage: (self: IntermediateAlienComponent, amount: number) -> any,
+	Die: (self: IntermediateAlienComponent) -> any,
+	MoveTo: (self: IntermediateAlienComponent, position: Vector3) -> (),
+	StopMoving: (self: IntermediateAlienComponent) -> (),
+	UpdateMovement: (self: IntermediateAlienComponent, deltaTime: number) -> any,
+	ChooseTarget: (self: IntermediateAlienComponent) -> (),
+	StartSonar: (self: IntermediateAlienComponent) -> (),
+	Config: EnemyConfig,
+	Health: number,
+	MaxHealth: number,
+	Damage: number,
+	WalkSpeed: number,
+	IsDead: boolean,
+	MoveTarget: Vector3,
+	IsMoving: boolean,
+	Behavior: string,
+	Extend: (self: IntermediateAlienComponent, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> IntermediateAlienComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent) -> ()) -> IntermediateAlienComponent,
+	OnStart: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent) -> ()) -> IntermediateAlienComponent,
+	OnTick: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> IntermediateAlienComponent,
+	OnSimulation: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> IntermediateAlienComponent,
+	OnDestroy: (self: IntermediateAlienComponent, cb: (self: IntermediateAlienComponent) -> ()) -> IntermediateAlienComponent,
+	Tag: (self: IntermediateAlienComponent, tag: string) -> IntermediateAlienComponent,
+	ClassName: (self: IntermediateAlienComponent, className: string) -> IntermediateAlienComponent,
+	AttributeDefaults: (self: IntermediateAlienComponent, schema: { [string]: any }) -> IntermediateAlienComponent,
+	Children: (self: IntermediateAlienComponent, children: { string }) -> IntermediateAlienComponent,
+	RequireComponent: (self: IntermediateAlienComponent, id: string) -> IntermediateAlienComponent,
+	New: (self: IntermediateAlienComponent, ID: string, Type: Type) -> IntermediateAlienComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: IntermediateAlienComponentInstance,
 }
 
 export type KniferComponent = {
@@ -480,6 +529,52 @@ export type RunnerComponent = {
 	Instance: RunnerComponentInstance,
 }
 
+export type RunnerAlienComponent = {
+	ID: string,
+	Type: Type,
+	Configure: (self: RunnerAlienComponent, config: EnemyConfig) -> (),
+	TakeDamage: (self: RunnerAlienComponent, amount: number) -> any,
+	Die: (self: RunnerAlienComponent) -> any,
+	MoveTo: (self: RunnerAlienComponent, position: Vector3) -> (),
+	StopMoving: (self: RunnerAlienComponent) -> (),
+	UpdateMovement: (self: RunnerAlienComponent, deltaTime: number) -> any,
+	ChooseTarget: (self: RunnerAlienComponent) -> (),
+	StartSonar: (self: RunnerAlienComponent) -> (),
+	Config: EnemyConfig,
+	Health: number,
+	MaxHealth: number,
+	Damage: number,
+	WalkSpeed: number,
+	IsDead: boolean,
+	MoveTarget: Vector3,
+	IsMoving: boolean,
+	Behavior: string,
+	Extend: (self: RunnerAlienComponent, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> RunnerAlienComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent) -> ()) -> RunnerAlienComponent,
+	OnStart: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent) -> ()) -> RunnerAlienComponent,
+	OnTick: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), rate: number, priority: number?) -> RunnerAlienComponent,
+	OnSimulation: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> RunnerAlienComponent,
+	OnDestroy: (self: RunnerAlienComponent, cb: (self: RunnerAlienComponent) -> ()) -> RunnerAlienComponent,
+	Tag: (self: RunnerAlienComponent, tag: string) -> RunnerAlienComponent,
+	ClassName: (self: RunnerAlienComponent, className: string) -> RunnerAlienComponent,
+	AttributeDefaults: (self: RunnerAlienComponent, schema: { [string]: any }) -> RunnerAlienComponent,
+	Children: (self: RunnerAlienComponent, children: { string }) -> RunnerAlienComponent,
+	RequireComponent: (self: RunnerAlienComponent, id: string) -> RunnerAlienComponent,
+	New: (self: RunnerAlienComponent, ID: string, Type: Type) -> RunnerAlienComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: RunnerAlienComponentInstance,
+}
+
 export type ScreamerComponent = {
 	ID: string,
 	Type: Type,
@@ -615,6 +710,41 @@ export type SniperComponent = {
 	Instance: SniperComponentInstance,
 }
 
+export type SpawnAreaComponent = {
+	ID: string,
+	Type: Type,
+	GetAreaType: (self: SpawnAreaComponent) -> string,
+	GetConfig: (self: SpawnAreaComponent) -> SpawnAreaConfig,
+	CanSpawn: (self: SpawnAreaComponent, difficulty: number) -> boolean,
+	GetAlienWeights: ((self: SpawnAreaComponent) -> { [AlienType]: number }) & ((self: SpawnAreaComponent, difficulty: number?) -> { [AlienType]: number }),
+	GetSpawnCFrame: (self: SpawnAreaComponent) -> CFrame,
+	AreaType: string,
+	Extend: (self: SpawnAreaComponent, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> SpawnAreaComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent) -> ()) -> SpawnAreaComponent,
+	OnStart: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent) -> ()) -> SpawnAreaComponent,
+	OnTick: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), rate: number, priority: number?) -> SpawnAreaComponent,
+	OnSimulation: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> SpawnAreaComponent,
+	OnDestroy: (self: SpawnAreaComponent, cb: (self: SpawnAreaComponent) -> ()) -> SpawnAreaComponent,
+	Tag: (self: SpawnAreaComponent, tag: string) -> SpawnAreaComponent,
+	ClassName: (self: SpawnAreaComponent, className: string) -> SpawnAreaComponent,
+	AttributeDefaults: (self: SpawnAreaComponent, schema: { [string]: any }) -> SpawnAreaComponent,
+	Children: (self: SpawnAreaComponent, children: { string }) -> SpawnAreaComponent,
+	RequireComponent: (self: SpawnAreaComponent, id: string) -> SpawnAreaComponent,
+	New: (self: SpawnAreaComponent, ID: string, Type: Type) -> SpawnAreaComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: SpawnAreaComponentInstance,
+}
+
 export type TankerComponent = {
 	ID: string,
 	Type: Type,
@@ -703,6 +833,43 @@ export type TelekinesisComponent = {
 	Tools: Tools,
 	Attributes: { [string]: any },
 	Instance: TelekinesisComponentInstance,
+}
+
+export type AliensComponent = {
+	ID: string,
+	Type: Type,
+	PlayerService: PlayerService,
+	TakeDamage: (self: AliensComponent, amount: number) -> (),
+	MoveTo: (self: AliensComponent) -> (),
+	ChooseTarget: (self: AliensComponent) -> (),
+	StartSonar: (self: AliensComponent) -> (),
+	Health: number,
+	Range: number,
+	Damage: number,
+	Extend: (self: AliensComponent, id: "AlienBaseMixin" | "AreaMixin" | "SolarPanelMixin" | "PlayerZoneComponent") -> AliensComponent,
+	Import: ComponentImportFn,
+	OnInit: (self: AliensComponent, cb: (self: AliensComponent) -> ()) -> AliensComponent,
+	OnStart: (self: AliensComponent, cb: (self: AliensComponent) -> ()) -> AliensComponent,
+	OnTick: (self: AliensComponent, cb: (self: AliensComponent, deltaTime: number) -> (), rate: number, priority: number?) -> AliensComponent,
+	OnSimulation: (self: AliensComponent, cb: (self: AliensComponent, deltaTime: number) -> (), frequency: Enum.StepFrequency?, priority: number?) -> AliensComponent,
+	OnDestroy: (self: AliensComponent, cb: (self: AliensComponent) -> ()) -> AliensComponent,
+	Tag: (self: AliensComponent, tag: string) -> AliensComponent,
+	ClassName: (self: AliensComponent, className: string) -> AliensComponent,
+	AttributeDefaults: (self: AliensComponent, schema: { [string]: any }) -> AliensComponent,
+	Children: (self: AliensComponent, children: { string }) -> AliensComponent,
+	RequireComponent: (self: AliensComponent, id: string) -> AliensComponent,
+	New: (self: AliensComponent, ID: string, Type: Type) -> AliensComponent,
+	GetComponent: GetComponentFn,
+	GetRequiredComponent: GetRequiredComponentFn,
+	GetAllComponents: GetAllComponentsFn,
+	Cleanup: <T>(self: any, task: T) -> T,
+	Network: Network,
+	Promise: PromiseAPI,
+	GlobalClock: GlobalClock,
+	Signal: SignalAPI,
+	Tools: Tools,
+	Attributes: { [string]: any },
+	Instance: AliensComponentInstance,
 }
 
 export type AreaMixin = {
@@ -1296,25 +1463,29 @@ export type MixinExtendFn =
 --> COMPONENT LOOKUP FUNCTIONS
 
 export type GetComponentFn =
+	(<Self>(self: Self, instance: AliensComponentInstance, id: "AliensComponent") -> AliensComponent?) &
 	(<Self>(self: Self, instance: BasicSolarComponentInstance, id: "BasicSolarComponent") -> BasicSolarComponent?) &
 	(<Self>(self: Self, instance: BrutusComponentInstance, id: "BrutusComponent") -> BrutusComponent?) &
-	(<Self>(self: Self, instance: CommonComponentInstance, id: "CommonComponent") -> CommonComponent?) &
+	(<Self>(self: Self, instance: CommonAlienComponentInstance, id: "CommonAlienComponent") -> CommonAlienComponent?) &
 	(<Self>(self: Self, instance: DebugVitalComponentInstance, id: "DebugVitalComponent") -> DebugVitalComponent?) &
 	(<Self>(self: Self, instance: EnemyBaseComponentInstance, id: "EnemyBaseComponent") -> EnemyBaseComponent?) &
 	(<Self>(self: Self, instance: FieldAreaComponentInstance, id: "FieldAreaComponent") -> FieldAreaComponent?) &
+	(<Self>(self: Self, instance: GenericAlienComponentInstance, id: "GenericAlienComponent") -> GenericAlienComponent?) &
 	(<Self>(self: Self, instance: HungerComponentInstance, id: "HungerComponent") -> HungerComponent?) &
-	(<Self>(self: Self, instance: IntermediateComponentInstance, id: "IntermediateComponent") -> IntermediateComponent?) &
+	(<Self>(self: Self, instance: IntermediateAlienComponentInstance, id: "IntermediateAlienComponent") -> IntermediateAlienComponent?) &
 	(<Self>(self: Self, instance: KniferComponentInstance, id: "KniferComponent") -> KniferComponent?) &
 	(<Self>(self: Self, instance: MovementComponentInstance, id: "MovementComponent") -> MovementComponent?) &
 	(<Self>(self: Self, instance: OxygenComponentInstance, id: "OxygenComponent") -> OxygenComponent?) &
 	(<Self>(self: Self, instance: OxygenZoneComponentInstance, id: "OxygenZoneComponent") -> OxygenZoneComponent?) &
 	(<Self>(self: Self, instance: RageComponentInstance, id: "RageComponent") -> RageComponent?) &
 	(<Self>(self: Self, instance: RegionComponentInstance, id: "RegionComponent") -> RegionComponent?) &
+	(<Self>(self: Self, instance: RunnerAlienComponentInstance, id: "RunnerAlienComponent") -> RunnerAlienComponent?) &
 	(<Self>(self: Self, instance: RunnerComponentInstance, id: "RunnerComponent") -> RunnerComponent?) &
 	(<Self>(self: Self, instance: ScreamerComponentInstance, id: "ScreamerComponent") -> ScreamerComponent?) &
 	(<Self>(self: Self, instance: ShooterComponentInstance, id: "ShooterComponent") -> ShooterComponent?) &
 	(<Self>(self: Self, instance: SmashButterComponentInstance, id: "SmashButterComponent") -> SmashButterComponent?) &
 	(<Self>(self: Self, instance: SniperComponentInstance, id: "SniperComponent") -> SniperComponent?) &
+	(<Self>(self: Self, instance: SpawnAreaComponentInstance, id: "SpawnAreaComponent") -> SpawnAreaComponent?) &
 	(<Self>(self: Self, instance: SquishyBlockComponentInstance, id: "SquishyBlockComponent") -> SquishyBlockComponent?) &
 	(<Self>(self: Self, instance: TankerComponentInstance, id: "TankerComponent") -> TankerComponent?) &
 	(<Self>(self: Self, instance: TelekinesisComponentInstance, id: "TelekinesisComponent") -> TelekinesisComponent?) &
@@ -1323,25 +1494,29 @@ export type GetComponentFn =
 	(<Self>(self: Self, instance: Instance, id: string) -> any)
 
 export type GetRequiredComponentFn =
+	(<Self>(self: Self, instance: AliensComponentInstance, id: "AliensComponent") -> AliensComponent) &
 	(<Self>(self: Self, instance: BasicSolarComponentInstance, id: "BasicSolarComponent") -> BasicSolarComponent) &
 	(<Self>(self: Self, instance: BrutusComponentInstance, id: "BrutusComponent") -> BrutusComponent) &
-	(<Self>(self: Self, instance: CommonComponentInstance, id: "CommonComponent") -> CommonComponent) &
+	(<Self>(self: Self, instance: CommonAlienComponentInstance, id: "CommonAlienComponent") -> CommonAlienComponent) &
 	(<Self>(self: Self, instance: DebugVitalComponentInstance, id: "DebugVitalComponent") -> DebugVitalComponent) &
 	(<Self>(self: Self, instance: EnemyBaseComponentInstance, id: "EnemyBaseComponent") -> EnemyBaseComponent) &
 	(<Self>(self: Self, instance: FieldAreaComponentInstance, id: "FieldAreaComponent") -> FieldAreaComponent) &
+	(<Self>(self: Self, instance: GenericAlienComponentInstance, id: "GenericAlienComponent") -> GenericAlienComponent) &
 	(<Self>(self: Self, instance: HungerComponentInstance, id: "HungerComponent") -> HungerComponent) &
-	(<Self>(self: Self, instance: IntermediateComponentInstance, id: "IntermediateComponent") -> IntermediateComponent) &
+	(<Self>(self: Self, instance: IntermediateAlienComponentInstance, id: "IntermediateAlienComponent") -> IntermediateAlienComponent) &
 	(<Self>(self: Self, instance: KniferComponentInstance, id: "KniferComponent") -> KniferComponent) &
 	(<Self>(self: Self, instance: MovementComponentInstance, id: "MovementComponent") -> MovementComponent) &
 	(<Self>(self: Self, instance: OxygenComponentInstance, id: "OxygenComponent") -> OxygenComponent) &
 	(<Self>(self: Self, instance: OxygenZoneComponentInstance, id: "OxygenZoneComponent") -> OxygenZoneComponent) &
 	(<Self>(self: Self, instance: RageComponentInstance, id: "RageComponent") -> RageComponent) &
 	(<Self>(self: Self, instance: RegionComponentInstance, id: "RegionComponent") -> RegionComponent) &
+	(<Self>(self: Self, instance: RunnerAlienComponentInstance, id: "RunnerAlienComponent") -> RunnerAlienComponent) &
 	(<Self>(self: Self, instance: RunnerComponentInstance, id: "RunnerComponent") -> RunnerComponent) &
 	(<Self>(self: Self, instance: ScreamerComponentInstance, id: "ScreamerComponent") -> ScreamerComponent) &
 	(<Self>(self: Self, instance: ShooterComponentInstance, id: "ShooterComponent") -> ShooterComponent) &
 	(<Self>(self: Self, instance: SmashButterComponentInstance, id: "SmashButterComponent") -> SmashButterComponent) &
 	(<Self>(self: Self, instance: SniperComponentInstance, id: "SniperComponent") -> SniperComponent) &
+	(<Self>(self: Self, instance: SpawnAreaComponentInstance, id: "SpawnAreaComponent") -> SpawnAreaComponent) &
 	(<Self>(self: Self, instance: SquishyBlockComponentInstance, id: "SquishyBlockComponent") -> SquishyBlockComponent) &
 	(<Self>(self: Self, instance: TankerComponentInstance, id: "TankerComponent") -> TankerComponent) &
 	(<Self>(self: Self, instance: TelekinesisComponentInstance, id: "TelekinesisComponent") -> TelekinesisComponent) &
@@ -1350,25 +1525,29 @@ export type GetRequiredComponentFn =
 	(<Self>(self: Self, instance: Instance, id: string) -> any)
 
 export type GetAllComponentsFn =
+	(<Self>(self: Self, id: "AliensComponent") -> { AliensComponent }) &
 	(<Self>(self: Self, id: "BasicSolarComponent") -> { BasicSolarComponent }) &
 	(<Self>(self: Self, id: "BrutusComponent") -> { BrutusComponent }) &
-	(<Self>(self: Self, id: "CommonComponent") -> { CommonComponent }) &
+	(<Self>(self: Self, id: "CommonAlienComponent") -> { CommonAlienComponent }) &
 	(<Self>(self: Self, id: "DebugVitalComponent") -> { DebugVitalComponent }) &
 	(<Self>(self: Self, id: "EnemyBaseComponent") -> { EnemyBaseComponent }) &
 	(<Self>(self: Self, id: "FieldAreaComponent") -> { FieldAreaComponent }) &
+	(<Self>(self: Self, id: "GenericAlienComponent") -> { GenericAlienComponent }) &
 	(<Self>(self: Self, id: "HungerComponent") -> { HungerComponent }) &
-	(<Self>(self: Self, id: "IntermediateComponent") -> { IntermediateComponent }) &
+	(<Self>(self: Self, id: "IntermediateAlienComponent") -> { IntermediateAlienComponent }) &
 	(<Self>(self: Self, id: "KniferComponent") -> { KniferComponent }) &
 	(<Self>(self: Self, id: "MovementComponent") -> { MovementComponent }) &
 	(<Self>(self: Self, id: "OxygenComponent") -> { OxygenComponent }) &
 	(<Self>(self: Self, id: "OxygenZoneComponent") -> { OxygenZoneComponent }) &
 	(<Self>(self: Self, id: "RageComponent") -> { RageComponent }) &
 	(<Self>(self: Self, id: "RegionComponent") -> { RegionComponent }) &
+	(<Self>(self: Self, id: "RunnerAlienComponent") -> { RunnerAlienComponent }) &
 	(<Self>(self: Self, id: "RunnerComponent") -> { RunnerComponent }) &
 	(<Self>(self: Self, id: "ScreamerComponent") -> { ScreamerComponent }) &
 	(<Self>(self: Self, id: "ShooterComponent") -> { ShooterComponent }) &
 	(<Self>(self: Self, id: "SmashButterComponent") -> { SmashButterComponent }) &
 	(<Self>(self: Self, id: "SniperComponent") -> { SniperComponent }) &
+	(<Self>(self: Self, id: "SpawnAreaComponent") -> { SpawnAreaComponent }) &
 	(<Self>(self: Self, id: "SquishyBlockComponent") -> { SquishyBlockComponent }) &
 	(<Self>(self: Self, id: "TankerComponent") -> { TankerComponent }) &
 	(<Self>(self: Self, id: "TelekinesisComponent") -> { TelekinesisComponent }) &
@@ -1382,16 +1561,20 @@ export type ComponentFn =
 	((id: "SmashButterComponent", mode: Mode?) -> SmashButterComponent) &
 	((id: "SquishyBlockComponent", mode: Mode?) -> SquishyBlockComponent) &
 	((id: "BrutusComponent", mode: Mode?) -> BrutusComponent) &
-	((id: "CommonComponent", mode: Mode?) -> CommonComponent) &
-	((id: "IntermediateComponent", mode: Mode?) -> IntermediateComponent) &
+	((id: "CommonAlienComponent", mode: Mode?) -> CommonAlienComponent) &
+	((id: "GenericAlienComponent", mode: Mode?) -> GenericAlienComponent) &
+	((id: "IntermediateAlienComponent", mode: Mode?) -> IntermediateAlienComponent) &
 	((id: "KniferComponent", mode: Mode?) -> KniferComponent) &
 	((id: "RageComponent", mode: Mode?) -> RageComponent) &
 	((id: "RunnerComponent", mode: Mode?) -> RunnerComponent) &
+	((id: "RunnerAlienComponent", mode: Mode?) -> RunnerAlienComponent) &
 	((id: "ScreamerComponent", mode: Mode?) -> ScreamerComponent) &
 	((id: "ShooterComponent", mode: Mode?) -> ShooterComponent) &
 	((id: "SniperComponent", mode: Mode?) -> SniperComponent) &
+	((id: "SpawnAreaComponent", mode: Mode?) -> SpawnAreaComponent) &
 	((id: "TankerComponent", mode: Mode?) -> TankerComponent) &
 	((id: "TelekinesisComponent", mode: Mode?) -> TelekinesisComponent) &
+	((id: "AliensComponent", mode: Mode?) -> AliensComponent) &
 	((id: "EnemyBaseComponent", mode: Mode?) -> EnemyBaseComponent) &
 	((id: "FieldAreaComponent", mode: Mode?) -> FieldAreaComponent) &
 	((id: "OxygenZoneComponent", mode: Mode?) -> OxygenZoneComponent) &

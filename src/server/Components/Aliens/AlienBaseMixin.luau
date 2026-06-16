@@ -10,15 +10,18 @@ local Modux = require(game.ReplicatedStorage.Shared.Modux)
 local Aliens = require(game.ReplicatedStorage.Shared.Enums.Aliens)
 local EnemyTypes = require(game.ReplicatedStorage.Shared.Settings.EnemyTypes)
 
-type AlienType = Aliens.AlienType
-
 local AlienBaseMixin = Modux.Mixin("AlienBaseMixin")
 local ARRIVE_DISTANCE = 0.25
 local DEFAULT_WALK_SPEED = 10
 
-local function getAlienType(instance: Model): AlienType
-	if EnemyTypes[instance.Name :: AlienType] then
-		return instance.Name :: AlienType
+local function getAlienType(instance: Model): string
+	local attributeType = instance:GetAttribute("AlienType")
+	if typeof(attributeType) == "string" and EnemyTypes[attributeType] then
+		return attributeType
+	end
+
+	if EnemyTypes[instance.Name] then
+		return instance.Name
 	end
 
 	return Aliens.Common
@@ -51,6 +54,11 @@ function AlienBaseMixin:Configure(config: EnemyConfig)
 	self.MaxHealth = config.BaseHealth :: number
 	self.Damage = config.BaseDamage :: number
 	self.WalkSpeed = config.WalkSpeed :: number
+
+	self.Instance:SetAttribute("Health", self.Health)
+	self.Instance:SetAttribute("MaxHealth", self.MaxHealth)
+	self.Instance:SetAttribute("Damage", self.Damage)
+	self.Instance:SetAttribute("WalkSpeed", self.WalkSpeed)
 
 	setHumanoidStats(self.Instance, self.Health, self.WalkSpeed)
 end
@@ -115,7 +123,7 @@ end
 function AlienBaseMixin:StartSonar() end
 
 AlienBaseMixin:OnInit(function(self)
-	self.Type = getAlienType(self.Instance) :: AlienType
+	self.Type = getAlienType(self.Instance) :: string
 	local config = EnemyTypes[self.Type] or EnemyTypes[Aliens.Common]
 	self:Configure(config)
 end)

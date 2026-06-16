@@ -107,6 +107,24 @@ type EnemyConfig = {
 	BaseDamage: number,
 	WalkSpeed: number,
 }
+export type AlienType = "Common"
+| "Intermediate"
+| "Runner"
+| "Rage"
+| "Telekinesis"
+| "Screamer"
+| "Shooter"
+| "Knifer"
+| "Sniper"
+| "Tanker"
+| "Brutus"
+| "AlienAnimal"
+export type SpawnAreaConfig = {
+	Enabled: boolean,
+	MinDifficulty: number,
+	MaxDifficulty: number,
+	AlienWeights: { [AlienType]: number },
+}
 type AlienVisibleStatus = "Show" | "Hiden"
 export type State<T> = PubTypes.Value<T> & {
 	_value: T
@@ -137,32 +155,6 @@ export type MovementStates = "Walking" | "Running" | "Crouch" | "Jumping" | "Dea
 export type OxygenStates = "Avaliable" | "Unavaliable" | "Low"
 export type VitalAttributes = "Armor" | "Hunger" | "Health" | "Oxygen" | "MaxOxygen"
 export type DayCycle = "Day" | "Night" | "Idle" | "Transition"
-export type removeTypes = "Visible" | "Destroy"
-export type AlienType = "Common"
-	| "Intermediate"
-	| "Runner"
-	| "Rage"
-	| "Telekinesis"
-	| "Screamer"
-	| "Shooter"
-	| "Knifer"
-	| "Sniper"
-	| "Tanker"
-	| "Brutus"
-export type AlienStates = "Idle"
-	| "Walk"
-	| "Running"
-	| "Jumping"
-	| "attacking"
-	| "attacked"
-export type AlienConfig = {
-	AlienType: AlienType,
-	Position: CFrame,
-	State: FSM<AlienStates>,
-	Alived: boolean,
-	Visible: FSM<boolean>
-}
-export type SpawnType = "Base" | "Field" | "EnemyBase"
 type GameStates = "Begin" | "Normal" | "DarkMoon"
 export type R6 = {
 	Head: {
@@ -254,6 +246,7 @@ export type R6 = {
 	} & LocalScript,
 	Body_Colors: BodyColors,
 } & Model
+export type SpawnType = "Base" | "Field" | "EnemyBase"
 type AreaState = "Active" | "Unactive"
 type AreaRegistredType = {
 	ID: number,

@@ -1,13 +1,27 @@
 {
   "protocolVersion": 2,
+<<<<<<< HEAD
   "workspaceHash": "06697fb004ee8e2abd1d02dc613b31c2d4f4475bbf85af5e93d85c34a535e4ee",
   "contractHash": "c479a68e452b3aeeefb73f21c9e041223e0ee5a7c1317dd731c12cab2388f969",
   "generatedAt": "2026-06-15T17:53:33.902Z",
   "place": {
     "id": 117698582873122,
     "name": "Place1"
+=======
+  "workspaceHash": "736a2e7eab6df47cb55c5c203e101d096b387b355c70917fa481dffe2a0183c7",
+  "contractHash": "ec1380219d1cf65bed4e07dfe438030fa4372f87582dcbc08cd76e33b01984ca",
+  "generatedAt": "2026-06-15T19:41:51.958Z",
+  "place": {
+    "id": 117698582873122,
+    "name": "Escape From Mars"
+>>>>>>> 05ced6a8da92f901f86e9c46ecde048b115835d1
   },
   "components": [
+    {
+      "id": "AliensComponent",
+      "tag": "Aliens",
+      "instances": []
+    },
     {
       "id": "BasicSolarComponent",
       "tag": "BasicSolar",
@@ -103,8 +117,13 @@
       "instances": []
     },
     {
+<<<<<<< HEAD
       "id": "CommonComponent",
       "tag": "Common",
+=======
+      "id": "CommonAlienComponent",
+      "tag": "CommonAlien",
+>>>>>>> 05ced6a8da92f901f86e9c46ecde048b115835d1
       "instances": []
     },
     {
@@ -169,13 +188,26 @@
       "instances": []
     },
     {
+<<<<<<< HEAD
+=======
+      "id": "GenericAlienComponent",
+      "tag": "Aliens",
+      "instances": []
+    },
+    {
+>>>>>>> 05ced6a8da92f901f86e9c46ecde048b115835d1
       "id": "HungerComponent",
       "tag": "HungerComponent",
       "instances": []
     },
     {
+<<<<<<< HEAD
       "id": "IntermediateComponent",
       "tag": "Intermediate",
+=======
+      "id": "IntermediateAlienComponent",
+      "tag": "IntermediateAlien",
+>>>>>>> 05ced6a8da92f901f86e9c46ecde048b115835d1
       "instances": []
     },
     {
@@ -228,6 +260,14 @@
       "instances": []
     },
     {
+<<<<<<< HEAD
+=======
+      "id": "RunnerAlienComponent",
+      "tag": "RunnerAlien",
+      "instances": []
+    },
+    {
+>>>>>>> 05ced6a8da92f901f86e9c46ecde048b115835d1
       "id": "RunnerComponent",
       "tag": "Runner",
       "instances": []
@@ -253,6 +293,30 @@
       "instances": []
     },
     {
+<<<<<<< HEAD
+=======
+      "id": "SpawnAreaComponent",
+      "tag": "SpawnArea",
+      "instances": [
+        {
+          "path": "Workspace.Map.SpawnAreas.Part",
+          "className": "Part",
+          "tags": [
+            "SpawnArea"
+          ],
+          "attributes": {
+            "AreaType": "string",
+            "Enabled": "boolean",
+            "Padding": "number",
+            "SpawnHeightOffset": "number"
+          },
+          "children": [],
+          "classMatches": true
+        }
+      ]
+    },
+    {
+>>>>>>> 05ced6a8da92f901f86e9c46ecde048b115835d1
       "id": "SquishyBlockComponent",
       "tag": "SquishyBlock",
       "instances": []
