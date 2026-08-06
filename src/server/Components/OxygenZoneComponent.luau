@@ -11,7 +11,6 @@ OxygenZoneComponent:OnInit(function(self)
 
 	self:OnExit(function(Player: Player, Zone)
 		local oxygenComponent = self:GetComponent(Player, "OxygenComponent")
-		
 	end)
 end)
 

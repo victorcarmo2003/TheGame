@@ -30,7 +30,6 @@ VitalService:OnInit(function(self)
 		CollectionService:AddTag(Player, "HungerComponent")
 	end)
 
-	self:GetComponent()
 end)
 
 return VitalService

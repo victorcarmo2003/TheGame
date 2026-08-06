@@ -150,7 +150,6 @@ export type ServiceExtendFn = ServiceTypes.ServiceExtendFn
 export type ServiceFn = ServiceTypes.ServiceFn
 export type ServiceImportFn = ServiceTypes.ServiceImportFn
 export type SpawnnersService = ServiceTypes.SpawnnersService
-export type TesteService = ServiceTypes.TesteService
 export type VitalService = ServiceTypes.VitalService
 export type ZoneService = ServiceTypes.ZoneService
 

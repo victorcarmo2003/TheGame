@@ -45,7 +45,6 @@ return {
 		"Services.PlayerService",
 		"Services.ProfileService",
 		"Services.SpawnnersService",
-		"Services.TesteService",
 		"Services.VitalService",
 		"Services.ZoneService",
 	},

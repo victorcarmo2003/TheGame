@@ -19,7 +19,7 @@ MovementComponent.StartWalk = function(self, player)
 	if result then
 		self.Network.Packages.ChangeWalkSpeed:send({ WalkSpeed = 18 }, self.Instance)
 	end
-	return result
+	return result 
 end
 
 MovementComponent.StartRun = function(self, player)

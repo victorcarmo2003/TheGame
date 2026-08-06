@@ -12,5 +12,4 @@
     "[luau]": {
         "editor.defaultFormatter": "JohnnyMorganz.stylua"
     },
-    "modux.sync.cloudflareUrl": "https://modux-sync-relay.victorcarmo2003.workers.dev"
 }

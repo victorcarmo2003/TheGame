@@ -103,7 +103,6 @@ type ServiceExtendFn = ServiceTypes.ServiceExtendFn
 type ServiceFn = ServiceTypes.ServiceFn
 type ServiceImportFn = ServiceTypes.ServiceImportFn
 type SpawnnersService = ServiceTypes.SpawnnersService
-type TesteService = ServiceTypes.TesteService
 type VitalService = ServiceTypes.VitalService
 type ZoneService = ServiceTypes.ZoneService
 --> CONTROLLERS

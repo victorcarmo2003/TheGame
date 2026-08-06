@@ -59,7 +59,7 @@ VitalController:OnStart(function(self)
 	local screenGui = self.ScreenController:GetGui()
 	self.PlayerStatus = screenGui.Conteiner.Player
 	task.spawn(function()
-		local Vitals = self.Network.Packages.GetVitals:request(nil)
+		local Vitals = self.Network.Packages.GetVitals:request()
 
 		if Vitals then
 			self.Armor = Vitals.Armor
